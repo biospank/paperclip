@@ -3,7 +3,7 @@
 /pkg/
 /tmp/*.html
 /tmp/*.pdf
-/db/backup/*
+/db/backup/*.backup
 /nbproject
 /updates/
 /web/
