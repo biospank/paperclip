@@ -1,0 +1,368 @@
+$:.unshift File.dirname(__FILE__)
+require 'bundler/setup'
+require 'thor'
+require 'app/helpers/configurazione_helper'
+
+module Paperclip
+  class Package < Thor
+    include Thor::Actions
+    class_option :verbose, :type => :boolean
+
+    # Encoding files that are required, even if we don't need most of them if we select to {#exclude_encoding}.
+    REQUIRED_ENCODING_FILES = %w[encdb.bundle iso_8859_1.bundle utf_16le.bundle trans/single_byte.bundle trans/transdb.bundle trans/utf_16_32.bundle]
+
+    # Binary gems included in app.
+    BINARY_GEMS = %w[gosu texplay chipmunk]
+
+    desc "new", "Create brand new paperclip installation"
+    method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx"
+    method_option :preserve_db, :type => :boolean, :default => false, :aliases => '-d', :banner => "true"
+    def new()
+      case options.platform
+      when 'win'
+        invoke :new_schema unless options.preserve_db?
+        remove_dir 'pkg', :verbose => false
+        empty_directory 'pkg', :verbose => false
+        run ocra_command, :verbose => false
+
+        inside 'pkg' do
+          run 'paperclip.exe', :verbose => false
+          remove_file 'paperclip.exe', :verbose => false
+        end
+
+        FileUtils.mv Dir["pkg/ocr*.tmp"].first, "pkg/paperclip"
+        FileUtils.cp_r "bin/win", "pkg/paperclip/src/bin"
+        FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
+        purge! :dev
+        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip.exe"
+        run "iscc.exe paperclip3.dist.iss", :verbose => false
+      when 'osx'
+        app_name = 'Paperclip.app'
+        folder = 'pkg'
+        wrapper = "osxwrapper/gosu-mac-wrapper-0.7.44.tar.gz"
+
+        remove_dir folder, :verbose => true
+        empty_directory folder, :verbose => true
+
+        new_app = File.join folder, app_name
+
+        execute_command %[7z x -so -bd "#{wrapper}" 2>/dev/null | 7z x -si -mmt -bd -ttar -o"#{folder}"]
+        FileUtils.mv File.join(folder, "RubyGosu App.app"), new_app, :verbose => true
+
+        #remove_encoding folder, app_name
+
+        copy_gems_to File.join(new_app, 'Contents/Resources/vendor')
+        # Copy the app files.
+        copy_app_files_to File.join(new_app, 'Contents/Resources/application')
+        create_main new_app
+        edit_init new_app
+        remove_gems new_app
+        rename_executable new_app
+        update_icon new_app, nil
+        create_executable_setter app_name, folder
+        inside folder do
+          run 'set_app_executable.sh'
+        end
+      end
+    end
+
+    desc "update", "Create paperclip update installation"
+    method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx"
+    def update()
+      case options.platform
+      when 'win'
+        remove_dir 'pkg', :verbose => false
+        empty_directory 'pkg', :verbose => false
+        run ocra_command, :verbose => false
+
+        inside 'pkg' do
+          run 'paperclip.exe', :verbose => false
+          remove_file 'paperclip.exe', :verbose => false
+        end
+
+        FileUtils.mv Dir["pkg/ocr*.tmp"].first, "pkg/paperclip"
+        FileUtils.cp_r "bin/win", "pkg/paperclip/src/bin"
+        FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
+        purge! :all
+        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip.exe"
+        run "iscc.exe paperclip3.update.iss", :verbose => false
+      when 'osx'
+
+      end
+    end
+
+#    desc "update_source", "Create paperclip update installation (only src)"
+#    def update_source()
+#      remove_dir 'pkg/paperclip/src/**/', :verbose => false
+#      FileUtils.cp_r "app", "pkg/paperclip/src"
+#      run "iscc.exe paperclip3.update.iss", :verbose => false
+#    end
+
+    desc "new_schema", "Create new db schema"
+    def new_schema
+      invoke :migrate
+      invoke :schema_dump
+      remove_file 'db/development/bra.db', :verbose => false
+      invoke :schema_restore
+      invoke :seed
+      FileUtils.cp 'db/development/bra.db', 'db/production/bra.db'
+    end
+
+    desc "migrate", "Migrate the database through scripts in db/migrations. Target specific version with VERSION=x"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def migrate
+      load_environment! if options.load_env?
+      ActiveRecord::Migrator.migrate('db/migrations', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
+    end
+
+    desc "dump", "Dump local/remote db"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def dump
+      load_environment! if options.load_env?
+      invoke :schema_dump, :load_env => options.load_env?
+      invoke :data_dump, :load_env => options.load_env?
+    end
+
+    desc "schema_dump", "Dump local/remote schema"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def schema_dump
+      load_environment! if options.load_env?
+      Helpers::ConfigurazioneHelper::Db::Schema.dump()
+    end
+
+    desc "data_dump", "Dump local/remote data"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def data_dump
+      load_environment! if options.load_env?
+      Helpers::ConfigurazioneHelper::Db::Data.dump()
+    end
+
+    desc "restore", "Restore local/remote db"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def restore
+      load_environment! if options.load_env?
+      invoke :schema_restore, :load_env => options.load_env?
+      invoke :data_restore, :load_env => options.load_env?
+    end
+
+    desc "schema_restore", "Restore local/remote schema"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def schema_restore
+      load_environment! if options.load_env?
+      Helpers::ConfigurazioneHelper::Db::Schema.restore()
+    end
+
+    desc "data_restore", "Restore local/remote data"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def data_restore
+      load_environment! if options.load_env?
+      Helpers::ConfigurazioneHelper::Db::Data.restore()
+    end
+
+    desc "seed", "load db/seeds.rb"
+    method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    def seed
+      load_environment! if options.load_env?
+      load 'db/seed.rb'
+    end
+
+    protected
+
+    def load_environment!
+      require 'app/config/environment'
+    end
+
+    def ocra_command
+      #command = "bundle exec ocra '#{executable}' --windows --no-enc --dll rubyw.exe.manifest --dll hstart.exe --dll pdftk.exe --dll wkhtmltopdf.exe --dll sumatra.exe --icon 'resources/images/paperclip.ico' "
+      command = "bundle exec ocra '#{executable}' --windows --no-enc --dll rubyw.exe.manifest --icon 'resources/images/paperclip.ico' "
+      command += (files - [executable]).map {|f| %["#{f}"]}.join(" ")
+      command += " --output 'pkg/paperclip.exe' --debug-extract"
+      command
+    end
+
+    def executable
+      'start.rb'
+    end
+
+    def execute_command(command)
+      puts command
+
+      begin
+        IO.popen command do |output|
+          puts output.gets.strip until output.eof?
+        end
+
+        true
+      rescue Errno::ENOENT
+        false
+      end
+    end
+
+    def remove_encoding(folder, app_name)
+      encoding_files = Dir[File.join folder, "#{app_name}/Contents/Resources/lib/enc/**/*.bundle"]
+      required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "#{app_name}/Contents/Resources/lib/enc", f }
+      FileUtils.rm_r encoding_files - required_encoding_files, :verbose => true
+    end
+
+    def copy_gems_to(destination)
+      gems_dir = "#{destination}/gems"
+      specs_dir = "#{destination}/specifications"
+
+      gemspecs = Bundler.definition.specs_for([:default]).to_a
+      gems = vendored_gem_names(BINARY_GEMS, gemspecs)
+
+      inside destination do
+        empty_directory 'gems', :verbose => true
+        empty_directory 'specifications', :verbose => true
+      end
+
+      puts "Copying source gems from system"
+
+      gems.each do |gem|
+        spec = gemspecs.find {|g| g.name == gem }
+        gem_dir = spec.full_gem_path
+        puts "Copying gem: #{spec.name} #{spec.version}"
+        FileUtils.cp_r gem_dir, gems_dir, :verbose => true
+        spec_file = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
+        FileUtils.cp_r spec_file, specs_dir, :verbose => true
+      end
+
+      puts "Copying gem: wxruby-ruby19 2.0.1"
+      FileUtils.cp_r "/Users/biospank/.rvm/gems/ruby-1.9.2-p0/gems/wxruby-ruby19-2.0.1-x86-darwin-9", gems_dir, :verbose => true
+      FileUtils.cp_r "/Users/biospank/.rvm/gems/ruby-1.9.2-p0/specifications/wxruby-ruby19-2.0.1-x86-darwin-9.gemspec", specs_dir, :verbose => true
+    end
+
+    def copy_app_files_to(destination)
+      empty_directory destination, :verbose => true
+      FileUtils.cp_r "app", destination, :verbose => true
+      FileUtils.cp_r "resources", destination, :verbose => true
+      FileUtils.cp_r "conf", destination, :verbose => true
+      FileUtils.cp_r "db", destination, :verbose => true
+      FileUtils.cp_r "tmp", destination, :verbose => true
+      FileUtils.cp_r "log", destination, :verbose => true
+      FileUtils.cp "start.rb", destination, :verbose => true
+
+    end
+
+    # Don't include binary gems already in the .app or bundler, since it will get confused.
+    def vendored_gem_names(ignored_gems, gemspecs)
+      (gemspecs.map(&:name) - ignored_gems).sort
+    end
+
+    def purge!(what)
+      inside 'pkg/paperclip/src/resources/xrc/' do
+        remove_file 'paperclip.fbp', :verbose => false
+        remove_file 'ui.xrc', :verbose => false
+        remove_file 'attestazione.fbp', :verbose => false
+        remove_file 'attestazione.xrc', :verbose => false
+        remove_file 'paperclip.log', :verbose => false
+      end
+
+      if what.eql? :all
+        inside 'pkg/paperclip/src/' do
+          remove_file 'conf/paperclip.yml', :verbose => false
+          remove_file 'db/production/bra.db', :verbose => false
+        end
+      end
+    end
+
+    def files
+      [
+        "resources/**/*.*",
+        "conf/paperclip.yml",
+        "db/backup/backup.txt",
+        "db/production/bra.db",
+        "db/patch.rb",
+        "tmp/tmp.txt",
+        "log/paperclip.log"
+      ]
+    end
+
+    def create_main(app)
+      gemspecs = Bundler.definition.specs_for([:default]).to_a
+      # Something for the .app to run -> just a little redirection file.
+      puts "Creating Main.rb"
+
+      # Manually add all gemspec #require_paths to $LOAD_PATH
+      File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
+        require_paths = gemspecs.map do |spec|
+          spec.require_paths.map {|path| "#{spec.name}-#{spec.version}/#{path}" }
+        end
+
+        require_paths << "wxruby-ruby19-2.0.1-x86-darwin-9/lib"
+
+        file.puts <<END_TEXT
+# This is a workaround since the .app does not run rubygems properly.
+GEM_REQUIRE_PATHS = #{require_paths.flatten.inspect}
+
+GEM_REQUIRE_PATHS.each do |path|
+  $LOAD_PATH.unshift File.expand_path(File.join("../vendor/gems", path), __FILE__)
+end
+
+END_TEXT
+
+          # More generic stuff we need.
+        file.puts <<END_TEXT
+# Directory the .app is inside.
+OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
+
+# Really hacky fudge-fix for something oddly missing in the .app.
+class Encoding
+  BINARY = UTF_8 = UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = US_ASCII = Encoding.list.first
+end
+
+Dir.chdir 'application'
+load '#{executable}'
+END_TEXT
+      end
+    end
+
+    def edit_init(app)
+      file = "#{app}/Contents/Info.plist"
+      icon = ""
+      url =
+      # Edit the info file to be specific for my game.
+      puts "Editing init"
+      info = File.read(file)
+      #info.sub!('<string>Gosu</string>', "<string>Paperclip</string>") if icon
+      info.sub!('<string>RubyGosu App</string>', "<string>Paperclip</string>")
+      info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>com.github.biospank</string>")
+      File.open(file, "w") {|f| f.puts info }
+    end
+
+    def remove_gems(app)
+      %w[chingu].each do |gem|
+        FileUtils.rm_r "#{app}/Contents/Resources/lib/#{gem}", :verbose => true
+      end
+    end
+
+    def rename_executable(app)
+      new_executable = "#{app}/Contents/MacOS/Paprclip"
+      FileUtils.mv "#{app}/Contents/MacOS/RubyGosu App", new_executable, :verbose => true
+      FileUtils.chmod 0755, new_executable, :verbose => true
+    end
+
+    def update_icon(app, icon)
+      if icon
+        FileUtils.rm "#{app}/Contents/Resources/Gosu.icns", :verbose => true
+        FileUtils.cp icon, "#{app}/Contents/Resources", :verbose => true
+      end
+    end
+
+    def create_executable_setter(app_name, folder)
+      # Ensure that we have a Unixy file by setting binary ("wb") mode on Windows.
+      File.open(File.join(folder, "set_app_executable.sh"), "wb") do |file|
+        file.puts <<END
+#!/bin/sh
+chmod a+x "./#{app_name}/Contents/MacOS/Paperclip"
+echo "Made #{app_name} executable"
+END
+
+      end
+    end
+
+
+  end
+end
+
+Paperclip::Package.start()

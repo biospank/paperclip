@@ -1,0 +1,60 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fatturazione header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span4 offset8 right">
+          <small>
+            <%= dati_azienda.denominazione %> <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <div class="row">
+        <div class="span6 offset3">
+          <p class="center">
+            <strong><%= ["Report Movimenti (#{filtro.movimento}) ", (filtro.al.blank? ? '' : "al #{filtro.al.to_s(:italian_date)}")].join(' ') %></strong><br /><br />
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 15%;" class="left">Descrizione</th>
+                <th style="width: 10%;" class="left">Tipo</th>
+                <th style="width: 12%;" class="center">Data</th>
+                <th style="width: 8%;" class="center">Qta</th>
+                <th style="width: 15%;" class="right">Prezzo acq.</th>
+                <th style="width: 15%;" class="right">Prezzo ven.</th>
+                <th style="width: 10%;" class="center">Fattura</th>
+                <th style="width: 15%;" class="left">Note</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

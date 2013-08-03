@@ -1,0 +1,28 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <table id="doc" class="table table-bordered table-condensed">
+            <tbody>
+              <% ordine.righe_ordine.each do |riga| %>
+                <tr>
+                  <td style="width: 80%;"><div class="dontsplit"><%= riga.prodotto.descrizione %></div></td>
+                  <td style="width: 20%;" class="center"><%= riga.qta %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+development:
+adapter: sqlite3
+dbfile: db/development/bra.db
+encoding: utf8
+#production:
+#    adapter: sqlite3
+#    dbfile: db/production/bra.db
+#test:
+#    adapter: sqlite3
+#    dbfile: db/test/bra.db
+

@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html lang="en"><head>
+
+
+  <meta charset="utf-8">
+  <title>Paperclip - Fatturazione</title>
+
+  <!-- Le styles -->
+  <link rel="stylesheet" href="../stylesheets/bootstrap/css/bootstrap.css">
+  <script src="../javascripts/jquery-min.js"></script>
+  <script src="../stylesheets/bootstrap/js/bootstrap.min.js"></script>
+
+  <body>
+    <div class="container">
+
+      <!-- Docs nav
+      ================================================== -->
+      <div class="row">
+        <div class="span12">
+          <section id="anagrafica">
+            <div class="page-header">
+              <h1 class="muted">Fatturazione</h1>
+            </div>
+            <h2 class="text-info">Nota Spese/Avviso fattura/Avviso parcella</h2>
+            <p class="lead">
+              Permette l'inserimento, modifica e cancellazione dei proforma.
+            </p>
+            <h3 class="text-info">Inserimento</h3>
+            <p>
+              Premere il pulsante <code>Nuovo</code> <code>F12</code>, inserire i dati del cliente e premere il pulsante <code>Salva</code> <code>F8</code>. Seguire le indicazioni in caso di dati mancanti o incompleti.
+            </p>
+            <h2 class="text-info">Fattura</h2>
+            <p class="lead">
+              Permette l'inserimento, modifica e cancellazione delle fatture di vendita.
+            </p>
+            <h3 class="text-info">Inserimento</h3>
+            <p>
+              La fattura si compone dei seguenti dati obbligatori:<br>
+              <ol>
+                <li>
+                  Cliente
+                </li>
+                <li>
+                  <em class="text-info" id="progressivo"
+                                onmouseover="javascript:$('#progressivo').popover('show');"
+                                onmouseout="javascript:$('#progressivo').popover('hide');"
+                                data-original-title="Progressivo"
+                                data-content="Il numero della fattura è un numero incrementale generato automaticamente dal sistema. Pu&ograve; essere cambiato nel caso in cui la numerazione non corrisponde a quella voluta."
+                                data-placement="top"
+                                data-toggle="popover">Numero</em> fattura (generata dal sistema)
+                </li>
+                <li>
+                  <em class="text-info" id="data"
+                       onmouseover="javascript:$('#data').popover('show');"
+                       onmouseout="javascript:$('#data').popover('hide');"
+                       data-original-title="Data"
+                       data-html="true"
+                       data-content="La data viene espressa nel formato gg/mm/aaaa. Pu&ograve; essere inserita in tre modalit&agrave; differenti:<br>
+                       <ol><li><strong>estesa</strong>: gg/mm/aaaa</li>
+                       <li><strong>ridotta</strong>: ggmmaaaa</li>
+                       <li><strong>smart</strong>: il numero inserito (3 cifre max.) corrisponde al giorno a partire da oggi es:
+                       <ul><li>-3 corrisponde alla data di 3 giorni fa</li><li>0 corrisponde alla data di oggi</><li>5 corrisponde alla data tra 5 giorni</li></ul></li></ol>"
+                       data-placement="top" data-toggle="popover">Data</em> fattura (generata dal sistema)
+                </li>
+                <li>
+                  Righe fattura
+                </li>
+              </ol>
+            </p>
+            <p>
+              Inserire i dati del cliente premendo il pulsante <code>Cliente</code> <code>F6</code>.<br>
+              Verificare il <em class="text-info" id="progressivo1"
+                                onmouseover="javascript:$('#progressivo1').popover('show');"
+                                onmouseout="javascript:$('#progressivo1').popover('hide');"
+                                data-original-title="Progressivo"
+                                data-content="Il numero della fattura è un numero incrementale generato automaticamente dal sistema. Pu&ograve; essere cambiato nel caso in cui la numerazione non corrisponde a quella voluta."
+                                data-placement="top"
+                                data-toggle="popover">numero</em>
+              e la <em class="text-info" id="data1"
+                       onmouseover="javascript:$('#data1').popover('show');"
+                       onmouseout="javascript:$('#data1').popover('hide');"
+                       data-original-title="Data"
+                       data-html="true"
+                       data-content="La data viene espressa nel formato gg/mm/aaaa. Pu&ograve; essere inserita in tre modalit&agrave; differenti:<br>
+                       <ol><li><strong>estesa</strong>: gg/mm/aaaa</li>
+                       <li><strong>ridotta</strong>: ggmmaaaa</li>
+                       <li><strong>smart</strong>: il numero inserito (3 cifre max.) corrisponde al giorno a partire da oggi es:
+                       <ul><li>-3 corrisponde alla data di 3 giorni fa</li><li>0 corrisponde alla data di oggi</><li>5 corrisponde alla data tra 5 giorni</li></ul></li></ol>"
+                       data-placement="top" data-toggle="popover">data</em> della fattura.<br>
+            </p>
+            <p>
+              Le righe della fattura si compongono dei seguenti dati obbligatori:
+              <ol>
+                <li>
+                  Descrizione del prodotto o servizio
+                </li>
+                <li>
+                  Importo da incassare al netto dell'aliquota iva
+                </li>
+                <li>
+                  Aliquota iva
+                </li>
+              </ol>
+
+              Posizionare il cursore sulla descrizione della riga della fattra. Inserire la descrizione, l'importo e l'aliquota (vedi <a href="#gestione_aliquote">gestione aliquote</a>).
+              Premere <code>aggiungi</code> o <code>invio</code> per confermare i dati.
+              Per modificare una riga, selezionarla dalla lista e premere <code>modifica</code> o <code>invio</code> dopo aver modificato i dati.
+              
+              Spuntare la voce <code>Nota di credito</code> se si tratta di una nota di credito.<br>
+              Spuntare la voce <code>ritenuta</code> per applicare la ritenuta al conteggio della fattura.
+              Nel campo <code>codice ritenuta</code> premere <code>F5</code> per la ricerca della ritenuta da applicare (vedi <a href="#ritenute">gestione ritenute</a>).<br>
+              Inserire la descrizione
+              Seguire le indicazioni in caso di dati mancanti o incompleti.
+              Premere il pulsante <code>Nuovo</code> <code>F12</code> per ripulire la maschera.
+            </p>
+            <h3 class="text-info">Modifica</h3>
+            <div class="alert alert-block">
+              <strong>Nota:</strong> La modifica della fattura è possibile solo nel caso in cui non sia gi&agrave; stata registrata in <a href="./prima_nota.html">prima nota</a>.
+            </div>
+            <p>
+              Premere il pulsante <code>Variazione</code> <code>F3</code>, ricercare la fattura nella maschera di <a href="#ricerca_fatture_clienti">ricerca fatture clienti</a>.
+              Modificare i dati e premere il pulsante <code>Salva</code> <code>F8</code>. Seguire le indicazioni in caso di dati mancanti o incompleti.
+            </p>
+            <h3 class="text-info">Cancellazione</h3>
+            <div class="alert alert-block">
+              <strong>Nota:</strong> La cancellazione della fattura è possibile solo nel caso in cui non sia gi&agrave; stata registrata in <a href="./prima_nota.html">prima nota</a>.
+            </div>
+            <p>
+              Premere il pulsante <code>Variazione</code> <code>F3</code>, ricercare il cliente nella maschera di <a href="#ricerca_clienti_fornitori">ricerca cliente</a>.
+              Premere il pulsante <code>Elimina</code> <code>F10</code> per rimuovere il cliente dalla base dati.
+            </p>
+            <h2 class="text-info">Fornitori</h2>
+            <p class="lead">
+              Permette l'inserimento, modifica e cancellazione dei fornitori.
+            </p>
+            <h3 class="text-info">Inserimento</h3>
+            <p>
+              Premere il pulsante <code>Nuovo</code> <code>F12</code>, inserire i dati del fornitore e premere il pulsante <code>Salva</code> <code>F8</code>. Seguire le indicazioni in caso di dati mancanti o incompleti.
+            </p>
+            <h3 class="text-info">Modifica</h3>
+            <p>
+              Premere il pulsante <code>Variazione</code> <code>F3</code>, ricercare il fornitore nella maschera di <a href="#ricerca_clienti_fornitori">ricerca fornitore</a>.
+              Modificare i dati e premere il pulsante <code>Salva</code> <code>F8</code>. Seguire le indicazioni in caso di dati mancanti o incompleti.
+            </p>
+            <h3 class="text-info">Cancellazione</h3>
+            <div class="alert alert-block">
+              <strong>Nota:</strong> La cancellazione del fornitore è possibile solo nel caso in cui non sia gi&agrave; stato utilizzato nei moduli di Paperclip.
+            </div>
+            <p>
+              Premere il pulsante <code>Variazione</code> <code>F3</code>, ricercare il fornitore nella maschera di <a href="#ricerca_clienti_fornitori">ricerca fornitore</a>.
+              Premere il pulsante <code>Elimina</code> <code>F10</code> per rimuovere il fornitore dalla base dati.
+            </p>
+            <h2 class="text-info">Report Clienti/Fornitori</h2>
+            <p>
+              Il report clienti/fornitori permette di elencare e stampare l'elenco dei clienti/fornitori. L'opzione <code>attivi</code> filtra la ricerca solo per i clienti/fornitori attivi.
+            </p>
+            <h2 class="text-info" id="ricerca_clienti_fornitori">Ricerca Clienti/Fornitori</h2>
+            <p>
+              La ricerca dei clienti/fornitori &egrave; attivabile col pulsante <code>Variazione</code> <code>F3</code> o con i tasti funzione <code>F6</code> per il cliente <code>F7</code> per il fornitore.
+            </p>
+          </section>
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+</html>

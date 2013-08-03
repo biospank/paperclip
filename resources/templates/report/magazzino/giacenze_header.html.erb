@@ -1,0 +1,57 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fatturazione header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span4 offset8 right">
+          <small>
+            <%= dati_azienda.denominazione %> <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <div class="row">
+        <div class="span6 offset3">
+          <p class="center">
+            <strong><%= ["Report Giacenze Magazzino", (filtro.al.blank? ? '' : "al #{filtro.al.to_s(:italian_date)}")].join(' ') %></strong><br /><br />
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 15%;" class="left">Codice</th>
+                <th style="width: 45%;" class="left">Descrizione</th>
+                <th style="width: 10%;" class="center">Quantità</th>
+                <th style="width: 15%;" class="right">Prezzo unitario</th>
+                <th style="width: 15%;" class="right">Totale</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

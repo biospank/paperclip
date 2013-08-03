@@ -1,0 +1,67 @@
+Modifiche generiche
+- invito a completare i dati dell'azienda al primo avvio (messaggio e focus su impostazioni)
+- logo della stampa cliccabile (aggiungere campo sito in dati azienda)
+- accesso al db remoto via drb
+- opzione istallazione di rete (configurazione server automatica)
+- controllo sui progressivi al salvataggio per evitare concorrenze
+- configurazione automatica servizio windows (runassvc.exe --help per creare il servizio di start automatico pserver.rb)
+- SCRIVERE I TEST
+- documentazione contestuale (riassuntiva) e separata (dettagliata)
+- scegliere le viste da caricare in base alla configurazione su db
+- modificare il comportamento al cambio voce (commercio, servizi)
+    sarebbe meglio che la finestra si adattasse automaticamente (layout)
+- settaggio della variabile d'ambiente (InnoSetup) durante l'istallazione per ritrovare il path in aggiornamento
+- distinguere l'attivita' merceologica nel caso di piu' aziende (nel file paperclip.yml - togliere la scelta)
+- rendere piu' solida la licenza di utilizzo
+- iva ad esigibilita' differita disabilitato se fattura != new_record
+- aggiungere la PropertySheetDialog
+- report su piu clienti/fornitori
+- rendere libera la scelta della directory di istallazione
+- dati audit (chi ha fatto cosa) created_by, updated_by
+- opzione disabilita report attivi
+- gestione taskbar
+- ottimizzare le query dei report
+
+Wkhtmltopdf
+- ottimizzazione caricamento css (da linea di comando)
+
+Ruby 1.9
+- passare a git
+- servizio di backup automatico
+- istallazione su penna usb
+- pry
+- axlsx
+- childprocess (https://github.com/jarib/childprocess)
+- launchy (https://github.com/copiousfreetime/launchy)
+- queue_classic/clockwork (queuing/cron in postgresql)
+- postgres.heroku.com
+
+Modifiche generiche
+- sulle dialog abilitare l'ordinamento
+- SCRIVERE I TEST
+
+Magazzino
+- completare modulo ordine (codice a barre)
+- gestione magazzini multipli
+- gestione soglia prodotti
+- disabilitare l'aliquota sui prodotti utilizzati
+- grafico sull'andamento del prodotto (trend)
+- in configurazione prodotti la lettura del codice a barre non ripulisce la schermata se non trova un record corrispondente.
+- stampa del corrispettivo
+
+MACOSX
+- porting su macosx
+- stampe e preview stampe
+- pacchetto d'istallazione per mac
+
+Paperclip features
+- multi piattaforma (macosx windows)
+- multi utente
+- multi azienda
+- rete lan/wan
+- installazione su chiavetta usb
+- report attivi
+- gestione pagamenti e incassi multipli
+
+compilazione del file xrc
+    zip -9 -j -q ui.xrs ui.xrc

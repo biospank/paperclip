@@ -1,0 +1,144 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fattura header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="row">
+      <div class="span2 offset10 right">
+        <small>
+          <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+        </small>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="span5">
+          <% if configatron.fatturazione.carta_intestata %>
+            <%= '<br />' * 6 %>
+          <% else %>
+            <% if dati_azienda.logo.blank? %>
+              <address>
+                <strong><%= dati_azienda.denominazione %></strong><br />
+                <%= dati_azienda.indirizzo %><br />
+                <%= [dati_azienda.cap, dati_azienda.citta].join(' ') %><br />
+                <%= ['P.Iva', dati_azienda.p_iva, 'C.F.', dati_azienda.cod_fisc].join(' ') %><br />
+              </address>
+            <% else %>
+              <p>
+                <!-- image relative to tmp -->
+                <img src="<%= '../' + logo_path %>" class="img-rounded" height="90"/>
+              </p>
+            <% end %>
+            <br />
+          <% end %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <div class="row">
+            <% if configatron.attivita == Models::Azienda::ATTIVITA[:commercio] %>
+              <div class="span3">
+                <% unless fattura.rif_ddt.blank? %>
+                  <p>
+                    <strong>Rif. n. D.D.T.</strong><br />
+                    <%= fattura.rif_ddt %>
+                  </p>
+                <% end %>
+              </div>
+              <div class="span4">
+                <p>
+                  <% unless fattura.rif_pagamento.blank? %>
+                    <strong>Pagamento</strong><br />
+                    <%= fattura.rif_pagamento %><br />
+                  <% end %>
+                  <% if fattura.con_destinatario? %>
+                    <strong>Luogo di destinazione</strong><br />
+                    <% unless fattura.destinatario.blank? %>
+                      <%= fattura.destinatario %><br />
+                    <% end %>
+                    <% unless fattura.indirizzo_dest.blank? %>
+                      <%= fattura.indirizzo_dest %>
+                    <% end %>
+                    <% unless fattura.citta_dest.blank? %>
+                      <%= [(fattura.cap_dest.blank? ? '' : fattura.cap_dest), fattura.citta_dest].join(' ') %><br />
+                    <% end %>
+                  <% end %>
+                </p>
+              </div>
+            <% else %>
+              <div class="span7">
+                <% unless fattura.rif_pagamento.blank? %>
+                  <p>
+                    <strong>Pagamento</strong><br />
+                    <%= fattura.rif_pagamento %>
+                  </p>
+                <% end %>
+              </div>
+            <% end %>
+            <div class="span5">
+              <address>
+                Spett.le<br />
+                <strong><%= cliente.denominazione %></strong><br>
+                <%= Helpers::ApplicationHelper.truncate(cliente.indirizzo, :length => 65, :omission => '') %><br>
+                <%= [cliente.cap, cliente.citta].join(' ') %><br />
+                <%= ['P.Iva', cliente.p_iva, 'C.F.', cliente.cod_fisc].join(' ') %><br />
+              </address>
+              <br />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <address>
+            <%= [dati_azienda.citta, 'li,', fattura.data_emissione.to_s(:italian_date)].join(' ') %><br />
+            <% if fattura.nota_di_credito? %>
+              <strong>Nota di credito n. <%= fattura.num + '/' + fattura.data_emissione.to_s(:short_year)  %> </strong><br />
+            <% else %>
+              <strong>Fattura n. <%= fattura.num + '/' + fattura.data_emissione.to_s(:short_year)  %> </strong><br />
+            <% end %>
+            <% if fattura.iva_diff? %>
+              <small>Operazione con Iva ad esigibilità differita ex art. 7 D.L. 185/08</small><br />
+            <% end %>
+            <br />
+          </address>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <% if configatron.attivita == Models::Azienda::ATTIVITA[:commercio] %>
+                  <th style="width: 50%;" class="left">Descrizione</th>
+                  <th style="width: 10%;" class="center">Quantit&agrave;</th>
+                  <th style="width: 15%;" class="right">Prezzo&nbsp;Unitario</th>
+                  <th style="width: 15%;" class="right">Prezzo&nbsp;Totale</th>
+                  <th style="width: 10%;" class="center">Iva</th>
+                <% else %>
+                  <th style="width: 80%;" class="left">Descrizione</th>
+                  <th style="width: 20%;" class="right">Importo</th>
+                <% end %>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

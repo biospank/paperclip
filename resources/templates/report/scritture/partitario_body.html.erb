@@ -1,0 +1,35 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span12">
+          <table id="report" class="table table-striped table-bordered table-condensed">
+            <tbody>
+              <% self.result_set_lstrep_scritture.each do |riga| %>
+                <tr>
+                  <td style="width: 8%;" class="center"><%= riga[0].to_s(:italian_short_date)%></td>
+                  <td style="width: 3%;" class="center"><%= riga[1] unless riga[1].blank? %></td>
+                  <td style="width: 41%;" class="left"><div class="dontsplit"><%= riga[2] %></div></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[3]) %></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[4]) %></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[5]) %></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[6]) %></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[7]) %></td>
+                  <td style="width: 8%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[8]) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

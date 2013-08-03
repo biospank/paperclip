@@ -1,0 +1,88 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ordine header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="row">
+      <div class="span2 offset10 right">
+        <small>
+          <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+        </small>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="span5">
+          <% if configatron.fatturazione.carta_intestata %>
+            <%= '<br />' * 6 %>
+          <% else %>
+            <% if dati_azienda.logo.blank? %>
+              <address>
+                <strong><%= dati_azienda.denominazione %></strong><br />
+                <%= dati_azienda.indirizzo %><br />
+                <%= [dati_azienda.cap, dati_azienda.citta].join(' ') %><br />
+                <%= ['P.Iva', dati_azienda.p_iva, 'C.F.', dati_azienda.cod_fisc].join(' ') %><br />
+              </address>
+            <% else %>
+              <p>
+                <!-- image relative to tmp -->
+                <img src="<%= '../' + logo_path %>" class="img-rounded" height="90"/>
+              </p>
+            <% end %>
+            <br />
+          <% end %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span7">
+        </div>
+        <div class="span5">
+          <address>
+            Spett.le<br />
+            <strong><%= fornitore.denominazione %></strong><br />
+            <%= Helpers::ApplicationHelper.truncate(fornitore.indirizzo, :length => 65, :omission => '') %><br />
+            <%= [fornitore.cap, fornitore.citta].join(' ') %><br />
+            <%= ['P.Iva', fornitore.p_iva, 'C.F.', fornitore.cod_fisc].join(' ') %><br />
+          </address>
+          <br />
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <address>
+            <%= [dati_azienda.citta, 'li,', ordine.data_emissione.to_s(:italian_date)].join(' ') %><br />
+            <strong>Ordine n. <%= ordine.num + '/' + ordine.data_emissione.to_s(:short_year) %></strong><br />
+            <br />
+          </address>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 80%;" class="left">Descrizione</th>
+                <th style="width: 20%;" class="center">Quantità</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ddt header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="row">
+      <div class="span2 offset10 right">
+        <small>
+          <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+        </small>
+        <br />
+        <br />
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="span6">
+          <% if configatron.fatturazione.carta_intestata %>
+            <%= '<br />' * 6 %>
+          <% else %>
+            <% if dati_azienda.logo.blank? %>
+              <address>
+                <strong><%= dati_azienda.denominazione %></strong><br />
+                <%= dati_azienda.indirizzo %><br />
+                <%= [dati_azienda.cap, dati_azienda.citta].join(' ') %><br />
+                <%= ['P.Iva', dati_azienda.p_iva, 'C.F.', dati_azienda.cod_fisc].join(' ') %><br />
+              </address>
+            <% else %>
+              <p>
+                <!-- image relative to tmp -->
+                <img src="<%= '../' + logo_path %>" class="img-rounded" height="90"/>
+              </p>
+            <% end %>
+            <br />
+          <% end %>
+        </div>
+        <div class="span6">
+          <table class="table table-bordered table-condensed">
+            <thead>
+              <th class="center">DOCUMENTO DI TRASPORTO</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="center">
+                  <p>
+                    D.d.t. D.P.R.472 del 14/08/96<br />
+                    D.P.R. 696 del 21/12/1996<br />
+                  </p>
+                  <p>
+                    <strong>N. <%= documento.num %></strong> del <%= documento.data_emissione.to_s(:italian_date) %>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br />
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table class="table table-bordered table-condensed">
+            <thead>
+              <th style="width: 50%;" class="left">CESSIONARIO</th>
+              <th style="width: 50%;" class="left">DESTINAZIONE</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="width: 50%;" class="left">
+                  <%= [documento.nome_cess, "\n", documento.indirizzo_cess, "\n", documento.cap_cess, ' ', documento.citta_cess].join() %>
+                </td>
+                <td style="width: 50%;" class="left">
+                  <%= [documento.nome_dest, "\n", documento.indirizzo_dest, "\n", documento.cap_dest, ' ', documento.citta_dest].join() %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table class="table table-bordered table-condensed">
+            <thead>
+              <th style="width: 10%;" class="left">CAUSALE:</th>
+              <th style="width: 90%;" class="left"><%= documento.causale %> </th>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 10%;" class="center">Quantit&agrave;</th>
+                <th style="width: 80%;" class="left">Descrizione</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+/* Page Breaks */
+.pb_before { page-break-before:always !important; }
+.pb_after  { page-break-after:always !important; }
+.pbi_avoid { page-break-inside:avoid !important; }
+.dontsplit { page-break-inside: avoid; }
+.header_repeat {display: table-header-group;}
+
+/* Bootstrap css overvrite */
+
+address {
+  font-size: medium;
+}
+
+table#report {
+  table-layout: fixed;
+  word-wrap: break-word;
+/* importante!!
+  evita che l'ultima riga a ridosso del footer dell'ultima pagina
+  per via del margin, crei una pagina vuota */
+  margin-bottom: 0px;
+  border-radius: 0 0 4 4;
+}
+
+table#report tbody:first-child tr:first-child > td:first-child {
+  border-top-left-radius: 0px;
+}
+
+table#doc {
+  table-layout: fixed;
+  word-wrap: break-word;
+/* importante!!
+  evita che l'ultima riga a ridosso del footer dell'ultima pagina
+  per via del margin, crei una pagina vuota */
+  margin-bottom: 0px;
+  border-radius: 0 0 4 4;
+}
+
+table#doc tbody:first-child tr:first-child > td:first-child {
+  border-top-left-radius: 0px;
+}
+
+table#doc th, table#doc td {
+  border-top: 0px;
+}
+
+div.segue12 {
+  height: 12em;
+}
+
+.table th.left, .table td.left {
+  text-align: left;
+}
+
+.table th.center, .table td.center {
+  text-align: center;
+}
+
+.table th.right, .table td.right {
+  text-align: right;
+}
+
+.table-head {
+  width: 100%;
+	margin-bottom: 0px;
+  border-radius: 4 4 0 0;
+
+}
+
+.table-head thead:last-child tr:last-child > th:first-child {
+  border-bottom-left-radius: 0px;
+}
+
+dl dd.right {
+  text-align: right;
+  font-size: medium;
+}
+
+table#riepilogo {
+  font-size: medium;
+}
+
+p.center {
+  text-align: center;
+}
+
+footer.center {
+  text-align: center;
+}
+
+div.center {
+  text-align: center;
+}
+
+div.left {
+  text-align: left;
+}
+
+div.right {
+  text-align: right;
+}

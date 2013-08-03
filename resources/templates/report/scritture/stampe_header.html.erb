@@ -1,0 +1,62 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fatturazione header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span4 offset8 right">
+          <small>
+            <%= dati_azienda.denominazione %> <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <br />
+    <br />
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <% if filtro.stampa_residuo %>
+          <h4><strong><%= "Stampa Prima Nota del #{(filtro.data_storico_residuo ? filtro.data_storico_residuo.to_s(:italian_date) : Date.today.to_s(:italian_date))}" %></strong></h4>
+        <% else %>
+          <h4><strong><%= "Copia Stampa Prima Nota #{('dal ' + filtro.dal.to_s(:italian_date)) unless filtro.dal.blank?} #{(' al ' + filtro.al.to_s(:italian_date)) unless filtro.al.blank?}" %></strong></h4>
+        <% end %>
+      </div>
+      <br />
+      <div class="row-fluid">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 8%;" class="center">Data</th>
+                <th style="width: 3%;" class="center">T</th>
+                <th style="width: 41%;" class="left">Descrizione</th>
+                <th style="width: 8%;" class="right">Cassa (D)</th>
+                <th style="width: 8%;" class="right">Cassa (A)</th>
+                <th style="width: 8%;" class="right">Banca (D)</th>
+                <th style="width: 8%;" class="right">Banca (A)</th>
+                <th style="width: 8%;" class="right">F.P. (D)</th>
+                <th style="width: 8%;" class="right">F.P. (A)</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

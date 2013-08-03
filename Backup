@@ -1,0 +1,101 @@
+#http://github.com/ludicast/yaml_db
+# utilizzo
+# rake -f Backup db:data:dump --trace
+# rake -f Backup db:data:load --trace
+
+# Note di migrazione da db sqlite3 a postgresql
+# 1. commentare o disabilitare l'accesso al server remoto
+# 2. lanciare il task 'rake -f Backup db:schema:dump --trace' che crea il file db/schema.rb
+#   che mappa lo schema del db posizionato in db/development/bra.db
+# 3. lanciare il task 'rake -f Backup db:data:dump --trace' che crea il file db/data.yml
+#   che ricrea i dati in formato ridistribuibile (ruby)
+
+#   oppure 'rake -f Backup db:dump --trace' che le esegue (il punto 2 e 3) in una volta
+
+# 4. modificare il contenuto di db/schema.rb (escludere dalla modifica i nomi delle classi es. ActiveRecord)
+#   convertendo il testo in minuscolo utilizzando SciTe
+
+# 5. decommentare o abilitare l'accesso al server remoto
+
+# 6. lanciare il task 'rake -f Backup db:schema:load --trace' 
+#   che ricrea il database all'ultima versione
+# 7. lanciare il task 'rake -f Backup db:data:load --trace' 
+#   che ripristina i dati nel nuovo db
+
+#   oppure 'rake -f Backup db:load --trace' che le esegue (il punto 6 e 7) in una volta
+
+require 'script/serialization_helper.rb'
+require 'script/yaml_db.rb'
+require 'app/config/environment'
+
+task :environment do  
+#  ActiveRecord::Base.establish_connection(YAML::load(File.open('conf/database.yml')))  
+  ActiveRecord::Base.logger = Logger.new(File.open('log/migration.log', 'a'))  
+end
+
+namespace :db do
+  desc "Dump schema and data to db/schema.rb and db/data.yml"
+  task(:dump => [ "db:schema:dump", "db:data:dump" ])
+
+  desc "Load schema and data from db/schema.rb and db/data.yml"
+  task(:load => [ "db:schema:load", "db:data:load" ])
+
+  namespace :data do
+    def db_dump_data_file (extension = "yml")
+      "#{dump_dir}/data.#{extension}"
+    end
+            
+    def dump_dir(dir = "")
+      "db#{dir}"
+    end
+
+    desc "Dump contents of database to db/data.extension (defaults to yaml)"
+    task :dump => :environment do
+      format_class = ENV['class'] || "YamlDb::Helper"
+      helper = format_class.constantize
+      SerializationHelper::Base.new(helper).dump db_dump_data_file helper.extension
+    end
+
+    desc "Dump contents of database to curr_dir_name/tablename.extension (defaults to yaml)"
+    task :dump_dir => :environment do
+      format_class = ENV['class'] || "YamlDb::Helper"
+      dir = ENV['dir'] || "#{Time.now.to_s.gsub(/ /, '_')}"
+      SerializationHelper::Base.new(format_class.constantize).dump_to_dir dump_dir("/#{dir}")
+    end
+
+    desc "Load contents of db/data.extension (defaults to yaml) into database"
+    task :load => :environment do
+      format_class = ENV['class'] || "YamlDb::Helper"
+      helper = format_class.constantize
+      SerializationHelper::Base.new(helper).load (db_dump_data_file helper.extension)
+    end
+
+    desc "Load contents of db/data_dir into database"
+    task :load_dir  => :environment do
+      dir = ENV['dir'] || "base"
+      format_class = ENV['class'] || "YamlDb::Helper"
+      SerializationHelper::Base.new(format_class.constantize).load_from_dir dump_dir("/#{dir}")
+    end
+  end
+
+  namespace :schema do
+    desc "Create a db/schema.rb file that can be portably used against any DB supported by AR"
+    task :dump => :environment do
+      require 'active_record/schema_dumper'
+      File.open(ENV['SCHEMA'] || "db/schema.rb", "w") do |file|
+        ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+      end
+    end
+ 
+    desc "Load a schema.rb file into the database"
+    task :load => :environment do
+      file = ENV['SCHEMA'] || "db/schema.rb"
+      if File.exists?(file)
+        load(file)
+      else
+        abort %{#{file} doesn't exist yet. Run "rake db:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Rails.root}/config/boot.rb to limit the frameworks that will be loaded}
+      end
+    end
+  end
+
+end

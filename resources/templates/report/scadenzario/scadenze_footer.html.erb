@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Fattura</title>
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet" />
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <!--<script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.footerOnLastPage();
+      });
+    </script>-->
+  </head>
+  <body>
+    <div class="container">
+      <hr />
+      <div class="row">
+        <div class="span12">
+          <footer class="center">
+            <strong>Totale fatture:</strong> <%= self.lbl_totale_fatture.label %> <strong>Totale N.C.:</strong> <%= self.lbl_totale_nc.label %> <strong>Totale saldo:</strong> <%= self.lbl_totale_saldo.label %>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
