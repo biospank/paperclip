@@ -1,0 +1,19 @@
+--- 
+:fatturazione: 
+  :carta_intestata: false
+  :iva_per_cassa: false
+:env: development
+:attivita: 1
+:connection: 
+  :adapter: sqlite3
+  :database: db/production/bra.db
+  :mode: :local
+:pre_fattura: 
+  :intestazione: 1
+:logging_config: 
+  :format_as: :yaml
+  :level: :info
+  :filename: log/paperclip.log
+:screen: 
+  :width: 1280
+  :height: 800
