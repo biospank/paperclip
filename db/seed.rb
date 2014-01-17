@@ -1,11 +1,11 @@
 azienda = Models::Azienda.create(
-  :nome => 'Nautica Casilina S.r.l.',
-  :attivita_merc => 1 # 1: commercio, 2: servizi
+  :nome => 'TRENTA COSTRUZIONI SRL',
+  :attivita_merc => 2 # 1: commercio, 2: servizi
 )
 
 Models::DatiAzienda.create(
   :azienda => azienda,
-  :denominazione => 'Nautica Casilina S.r.l.',
+  :denominazione => 'TRENTA COSTRUZIONI SRL',
   :p_iva => '1234567890',
   :cod_fisc => '1234567890',
   :indirizzo => '',
@@ -24,7 +24,7 @@ end
   20 => ['Fatturazione', 1],
   30 => ['Scadenzario', 1],
   40 => ['Prima Nota', 1],
-  50 => ['Magazzino', 1],
+  50 => ['Magazzino', 0],
   60 => ['Configurazione', 1]
 }.each do |key, value|
   modulo = Models::Modulo.new(

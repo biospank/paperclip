@@ -3,7 +3,7 @@
   :carta_intestata: false
   :iva_per_cassa: false
 :env: development
-:attivita: 1
+:attivita: 2
 :connection: 
   :adapter: sqlite3
   :database: db/production/bra.db

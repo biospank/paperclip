@@ -8,41 +8,105 @@ require 'app/helpers/logger_helper'
 require 'app/helpers/authorization_helper'
 require 'app/models/base'
 require 'app/models/db_server'
+require 'socket'
 require 'timeout'
-require 'rinda/ring'
-require 'rinda/tuplespace'
+require 'net/http'
+require 'uri'
+#require 'rinda/ring'
+#require 'rinda/tuplespace'
 require 'app/models/postgres_db_server'
+
+
 
 module PaperclipConfig
   extend Versione
 
-  module RindaServer
-    def db_server
-      begin
-        DRb.start_service
+#  module RindaServer
+#    def db_server
+#      begin
+#        DRb.start_service
+#
+#        ring_server = Timeout::timeout(5) do
+#          Rinda::RingFinger.finger.primary
+#        end
+#
+#        service = ring_server.read([:postgres_db_service, nil, nil, nil])
+#
+#        Models::DbServer.new(service[2].attributes)
+#
+#      rescue Timeout::Error, RuntimeError
+#        return Models::PostgresDbServer.new(
+#          :adapter => 'postgresql',
+#          :encoding => 'utf-8',
+#          :database => 'rinda server',
+#          :username => 'rinda',
+#          :password => 'rinda',
+#          :host => 'rinda',
+#          :port => 0
+#        )
+#      end
+#    end
+#
+#    module_function :db_server
+#
+#  end
 
-        ring_server = Timeout::timeout(5) do
-          Rinda::RingFinger.finger.primary
+  module UDPClient
+    UDP_SERVER_PORT = 1759
+    UDP_CLIENT_PORT = 17599
+
+    def self.broadcast_to_potential_servers!()
+      s = UDPSocket.new
+      s.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+      s.send('', 0, '<broadcast>', UDP_SERVER_PORT)
+      s.close
+    end
+
+    def self.start_server_listener(time_out=3, &code)
+      Thread.fork do
+        s = UDPSocket.new
+        s.bind('0.0.0.0', UDP_CLIENT_PORT)
+
+        begin
+          body, sender = timeout(time_out) { s.recvfrom(1024) }
+#          p sender
+          server_ip = sender[3]
+          conf = Marshal.load(body)
+          code.call(conf['database']['postgresql'], server_ip)
+          s.close
+        rescue Timeout::Error
+          s.close
+          raise
         end
-
-        service = ring_server.read([:postgres_db_service, nil, nil, nil])
-
-        Models::DbServer.new(service[2].attributes)
-        
-      rescue Timeout::Error, RuntimeError
-        return Models::PostgresDbServer.new(
-          :adapter => 'postgresql',
-          :encoding => 'utf-8',
-          :database => 'rinda server',
-          :username => 'rinda',
-          :password => 'rinda',
-          :host => 'rinda',
-          :port => 0
-        )
       end
     end
 
-    module_function :db_server
+    def self.query_db_server(time_out=3)
+      db_server = nil
+
+      thread = UDPClient::start_server_listener(time_out) do |conf, server_ip|
+        db_server = Models::DbServer.new(conf.merge({:host => server_ip}))
+      end
+
+      UDPClient::broadcast_to_potential_servers!()
+
+      begin
+        thread.join
+      rescue Timeout::Error, RuntimeError
+        puts "Timeout::Error, RuntimeError"
+        db_server = Models::PostgresDbServer.new(
+          :adapter => 'postgresql',
+          :encoding => 'utf-8',
+          :database => 'udp server',
+          :username => 'udp',
+          :password => 'udp',
+          :host => 'udp',
+          :port => 0
+        )
+      end
+
+      return db_server
+    end
 
   end
 
@@ -165,6 +229,19 @@ module PaperclipConfig
     Models.autoload 'ModuloAzienda',  'app/models/modulo_azienda.rb'
     Models.autoload 'Permesso',  'app/models/permesso.rb'
 
+    Models.autoload 'Pdc',  'app/models/pdc.rb'
+    Models.autoload 'Costo',  'app/models/costo.rb'
+    Models.autoload 'Ricavo',  'app/models/ricavo.rb'
+    Models.autoload 'Attivo',  'app/models/attivo.rb'
+    Models.autoload 'Passivo',  'app/models/passivo.rb'
+    Models.autoload 'RigaFatturaPdc',  'app/models/riga_fattura_pdc.rb'
+    Models.autoload 'Norma',  'app/models/norma.rb'
+
+    Models.autoload 'Corrispettivo',  'app/models/corrispettivo.rb'
+    Models.autoload 'CorrispettivoPrimaNota',  'app/models/corrispettivo_prima_nota.rb'
+
+    Models.autoload 'CategoriaPdc',  'app/models/categoria_pdc.rb'
+
     ActiveRecord::Base.extend Models::Base::Searchable
     
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(
@@ -214,7 +291,9 @@ module PaperclipConfig
 
       # insert into db_server (id, adapter, host, port, username, password, 'database', encoding) values (1, 'postgresql', 'Fabio-thinkpad', 5432, 'postgres', 'paperclip', 'paperclip', 'utf-8')    
       if configatron.connection.mode == :remote
-        db_server = Models::DbServer.first() || PaperclipConfig::RindaServer.db_server
+#        db_server = Models::DbServer.first() || PaperclipConfig::RindaServer.db_server
+        db_server = Models::DbServer.first() || PaperclipConfig::UDPClient.query_db_server()
+
         if db_server
           
           PaperclipConfig::Db.connect_remote(db_server)

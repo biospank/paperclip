@@ -12,6 +12,7 @@ module Models
     belongs_to :fornitore, :foreign_key => 'fornitore_id'
     belongs_to :azienda
     has_many :pagamento_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'pagamenti_fatture_fornitori.id'
+    has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'righe_fattura_pdc.id'
   
     validates_presence_of :data_emissione, 
       :message => "Data inesistente o formalmente errata."

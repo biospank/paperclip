@@ -25,6 +25,7 @@ module Views
         lbl_messaggio_errore.foreground_colour = Wx::RED
         xrc.find('chce_azienda', self, :extends => ChoiceField)
         xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
         wxid_ok.set_default()
 
         Azienda.all.each do |azienda|

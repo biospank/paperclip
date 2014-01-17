@@ -9,7 +9,10 @@ module Models
     belongs_to :azienda
     belongs_to :causale, :foreign_key => 'causale_id'
     belongs_to :banca, :foreign_key => 'banca_id'
+    belongs_to :pdc_dare, :class_name => "Models::Pdc", :foreign_key => 'pdc_dare_id'
+    belongs_to :pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'pdc_avere_id'
     has_many :pagamenti_prima_nota, :class_name => "Models::PagamentoPrimaNota", :foreign_key => "prima_nota_id", :dependent => :delete_all
+    has_many :corrispettivi_prima_nota, :class_name => "Models::CorrispettivoPrimaNota", :foreign_key => "prima_nota_id", :dependent => :delete_all
     belongs_to :parent, :foreign_key => 'parent_id', :class_name => "Models::Scrittura"
     has_one :storno, :foreign_key => 'parent_id', :class_name => "Models::Scrittura"
     has_one    :pagamento_fattura_cliente, :through => :pagamenti_prima_nota
@@ -24,6 +27,20 @@ module Models
 
     validates_presence_of :descrizione, 
       :message => "Inserire la descrizione."
+
+    # pdc_dare è obbligatorio se è attivo il bilancio
+    validates_presence_of :pdc_dare,
+      :if => Proc.new { |scrittura|
+        configatron.bilancio.attivo
+      },
+      :message => "Inserire il conto in dare oppure premere F5 per la ricerca."
+
+    # pdc_avere è obbligatorio se è attivo il bilancio
+    validates_presence_of :pdc_avere,
+      :if => Proc.new { |scrittura|
+        configatron.bilancio.attivo
+      },
+      :message => "Inserire il conto in avere oppure premere F5 per la ricerca."
 
     def before_validation_on_create
       self.azienda = Azienda.current
@@ -130,6 +147,31 @@ module Models
     def post_datata?
       return (self.data_operazione and self.data_operazione > Date.today)
     end
+
+#    protected
+#
+#    def validate()
+#      if errors.empty?
+#        if configatron.bilancio.attivo
+#          # pdc_dare è obbligatorio se fuori_partita_dare è valorizzato
+#          if self.fuori_partita_dare > 0 && self.pdc_dare.nil?
+#            errors.add(:pdc_dare, "Un movimento di fuori partita in dare neccessita di un movimento pdc in dare.\nInserire il codice pdc in dare.")
+#          end
+#          # pdc_avere è obbligatorio se fuori_partita_avere è valorizzato
+#          if self.fuori_partita_avere > 0 && self.pdc_avere.nil?
+#            errors.add(:pdc_avere, "Un movimento di fuori partita in avere neccessita di un movimento pdc in avere.\nInserire il codice pdc in avere.")
+#          end
+#          # se sono valorizzati fuori_partita_dare e fuori_partita_avere,
+#          # pdc_dare e pdc_avere non possono essere due conti economici
+#          if self.fuori_partita_dare > 0 &&
+#              self.fuori_partita_avere > 0 &&
+#              self.pdc_dare && self.pdc_avere &&
+#              self.pdc_dare.conto_economico? &&
+#              self.pdc_avere.conto_economico?
+#            errors.add(:pdc_dare, "Sono stati valorizzati fuori partita dare e avere.\nIn questo caso il pdc non può essere un conto economico sia in dare che in avere. ")
+#          end
+#        end
+#      end
+#    end
   end
-    
 end

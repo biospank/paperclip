@@ -81,3 +81,54 @@ end
 calcola = CalcolaImponibileIvaFattureClienti.new
 
 calcola.execute()
+
+# calcola imponibile e iva note spese da fatturare
+# procedura scritta in data (06/10/2013)
+
+#def build_da_fatturare_report_conditions()
+#  query_str = []
+#  parametri = []
+#
+#  data_dal = Date.new(2000, 1, 1)
+#  data_al = Date.new(2013, 12, 31)
+#
+#  query_str << "nota_spese.data_emissione >= ?"
+#  parametri << data_dal
+#  query_str << "nota_spese.data_emissione <= ?"
+#  parametri << data_al
+#
+#  query_str << "nota_spese.fattura_cliente_id is null"
+#
+#  query_str << "nota_spese.azienda_id = 1"
+#
+#  {:conditions => [query_str.join(' AND '), *parametri]}.merge(
+#    {:include => [:cliente, :fattura_cliente],
+#      :order => "clienti.denominazione, nota_spese.data_emissione"}
+#  )
+#
+#end
+#
+#nss = Models::NotaSpese.find(:all, build_da_fatturare_report_conditions())
+#
+#nss.each do |ns|
+#  totale_imponibile = 0.0
+#  totale_iva = 0.0
+#
+#  ns.righe_nota_spese.each do |riga|
+#    if riga.importo_iva?
+#      totale_iva += riga.importo
+#    else
+#      riga.update_attribute(:aliquota_id, 8) if riga.aliquota_id == 7
+#      importo = (riga.qta.zero?) ? riga.importo : (riga.importo * riga.qta)
+#      totale_imponibile += importo
+#      totale_iva += ((importo * riga.aliquota.percentuale) / 100)
+#    end
+#  end
+#
+#  ns.imponibile = totale_imponibile
+#  ns.iva = totale_iva
+#  ns.importo = totale_imponibile + totale_iva
+#  ns.save!
+#
+#end
+#

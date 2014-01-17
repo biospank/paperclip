@@ -119,10 +119,6 @@ module Controllers
       FatturaFornitore.search_for(filtro.ricerca, [:num, 'fornitori.denominazione'], build_fatture_fornitori_dialog_conditions())
     end
 
-    def search_righe_fattura_cliente(fattura)
-      RigaFatturaCliente.search(:all, :conditions => ['fattura_cliente_id = ?', fattura], :include => [:aliquota], :order => 'righe_fatture_clienti.id')
-    end
-
     def build_fatture_clienti_dialog_conditions()
       query_str = []
       parametri = []
@@ -147,6 +143,244 @@ module Controllers
 #        :joins => "LEFT OUTER JOIN clienti ON clienti.id = nota_spese.cliente_id,
         :include => [:fornitore],
         :order => 'fatture_fornitori.data_emissione desc, fatture_fornitori.num desc'}
+    end
+
+    # gestione corrispettivi
+
+    def save_corrispettivi()
+      righe = righe_corrispettivi_panel.result_set_lstrep_righe_corrispettivi
+
+      corrispettivi_da_eliminare = []
+
+      righe.each do |riga|
+        case riga.instance_status
+        when Corrispettivo::ST_INSERT, Corrispettivo::ST_UPDATE
+          riga.save!
+        when Corrispettivo::ST_DELETE
+          corrispettivi_da_eliminare << riga
+        end
+      end
+
+      elimina_corrispettivi(corrispettivi_da_eliminare)
+
+      # le scritture che ho salvato devono essere immediatamente
+      # registrate in prima nota
+      # NOTA:
+      # SQLite non gestisce le sessioni sul db, quindi, se questa procedura
+      # viene spostata all'interno della transazione, non funziona.
+      corrispettivi = Corrispettivo.find(:all, :conditions => ["registrato_in_prima_nota = ? ", 0])
+      corrispettivi.each do |corrispettivo|
+        descrizione = build_descrizione_scrittura_corrispettivo(corrispettivo)
+        if scrittura = scrittura_corrispettivo(corrispettivo, descrizione)
+          relazione_scrittura_corrispettivo(scrittura, corrispettivo)
+        end
+      end
+
+      return true
+
+    end
+
+    def elimina_corrispettivi(corrispettivi_da_eliminare)
+      corrispettivi_da_eliminare.each do |corrispettivo|
+        if corrispettivo.registrato_in_prima_nota?
+            # cerco la scrittura associata al corrispettivo
+            if scrittura = corrispettivo.scrittura
+              if scrittura.congelata?
+                descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
+                storno_scrittura_corrispettivo(corrispettivo, descrizione)
+                CorrispettivoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
+              else
+                  # il destroy direttamente su scrittura non funziona
+                Models::Scrittura.find(scrittura).destroy
+              end
+            else
+              descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
+              storno_scrittura_corrispettivo(corrispettivo, descrizione)
+            end
+        end
+        corrispettivo.destroy
+      end
+
+    end
+
+    # SCRITTURA CORRISPETTIVO
+    def build_descrizione_scrittura_corrispettivo(corrispettivo)
+      "Incasso giornaliero corrispettivi del #{corrispettivo.data.to_s(:italian_date)}"
+    end
+
+    def scrittura_corrispettivo(corrispettivo, descrizione)
+      scrittura = Scrittura.new(:azienda => Azienda.current,
+                                :cassa_dare => corrispettivo.importo,
+                                :banca => nil,
+                                :descrizione => descrizione,
+                                :data_operazione => corrispettivo.data,
+                                :data_registrazione => Time.now,
+                                :esterna => 1,
+                                :congelata => 0)
+
+      scrittura.save_with_validation(false)
+      corrispettivo.update_attributes(:registrato_in_prima_nota => 1)
+
+      scrittura
+
+    end
+
+    def relazione_scrittura_corrispettivo(scrittura, corrispettivo)
+      CorrispettivoPrimaNota.create(:prima_nota_id => scrittura.id,
+                                :corrispettivo_id => corrispettivo.id)
+    end
+
+    # STORNO SCRITTURA CORRISPETTIVO
+    def build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
+      "** STORNO SCRITTURA CORRISPETTIVI del #{corrispettivo.data.to_s(:italian_date)} **"
+    end
+
+    def storno_scrittura_corrispettivo(corrispettivo, descrizione)
+      scrittura = Scrittura.new(:azienda => Azienda.current,
+                                :cassa_avere => corrispettivo.importo,
+                                :banca => nil,
+                                :descrizione => descrizione,
+                                :data_operazione => Date.today,
+                                :data_registrazione => Time.now,
+                                :esterna => 1,
+                                :congelata => 0)
+
+      scrittura.parent = corrispettivo.scrittura
+
+      scrittura.save_with_validation(false)
+      corrispettivo.update_attributes(:registrato_in_prima_nota => 1)
+
+      scrittura
+
+    end
+
+    def report_corrispettivi
+      data_matrix = []
+
+      corrispettivi = Corrispettivo.search(:all, build_corrispettivi_report_conditions())
+
+      array_group_aliquote = corrispettivi.group_by(&:aliquota_id)
+
+      if filtro.corrispettivi == 1
+        corrispettivi.group_by(&:data).each do |data, corrrispettivi_data|
+
+          dati_corrispettivi = []
+          dati_corrispettivi << data.to_s(:italian_date)
+          dati_corrispettivi << corrrispettivi_data.sum(&:importo)
+
+          array_aliquota_corrispettivi = corrrispettivi_data.group_by(&:aliquota_id)
+          array_group_aliquote.keys.sort.each do |chiave_aliquota|
+            if corrispettivi_aliquota = array_aliquota_corrispettivi[chiave_aliquota]
+              dati_corrispettivi << corrispettivi_aliquota.sum(&:importo)
+            else
+              dati_corrispettivi << '' # importo x aliquota
+            end
+          end
+
+          data_matrix << dati_corrispettivi
+
+        end
+
+        totali = ['', corrispettivi.sum(&:importo)]
+        array_group_aliquote.keys.sort.each do |chiave_aliquota|
+          totali << array_group_aliquote[chiave_aliquota].sum(&:importo)
+        end
+
+        data_matrix << totali
+
+      else
+        corrispettivi.group_by(&:data).each do |data, corrrispettivi_data|
+
+          dati_corrispettivi = []
+          dati_corrispettivi << data.to_s(:italian_date)
+          dati_corrispettivi << corrrispettivi_data.sum(&:importo)
+
+          array_aliquota_corrispettivi = corrrispettivi_data.group_by(&:aliquota_id)
+          array_group_aliquote.keys.sort.each do |chiave_aliquota|
+            if corrispettivi_aliquota = array_aliquota_corrispettivi[chiave_aliquota]
+              dati_corrispettivi << corrispettivi_aliquota.sum(&:imponibile)
+              dati_corrispettivi << corrispettivi_aliquota.sum(&:iva)
+            else
+              dati_corrispettivi << '' # imponibile
+              dati_corrispettivi << '' # iva
+            end
+          end
+
+          data_matrix << dati_corrispettivi
+
+        end
+
+        totali = ['', corrispettivi.sum(&:importo)]
+        array_group_aliquote.keys.sort.each do |chiave_aliquota|
+          totali.concat([array_group_aliquote[chiave_aliquota].sum(&:imponibile),
+            array_group_aliquote[chiave_aliquota].sum(&:iva)
+          ])
+        end
+
+        data_matrix << totali
+
+      end
+
+      [data_matrix, array_group_aliquote, corrispettivi.sum(&:importo)]
+    end
+
+    def build_corrispettivi_report_conditions()
+      query_str = []
+      parametri = []
+      
+      data_dal = get_date(:from)
+      data_al = get_date(:to)
+
+      query_str << "corrispettivi.data >= ?"
+      parametri << data_dal
+      query_str << "corrispettivi.data <= ?"
+      parametri << data_al
+        
+      if filtro.anno
+        query_str << "#{to_sql_year('data')} = ? "
+        parametri << filtro.anno
+      end
+
+      if filtro.mese
+        query_str << "#{to_sql_month('data')} = ? "
+        parametri << filtro.mese
+      end
+
+      if filtro.aliquota
+        query_str << "corrispettivi.aliquota_id = ? "
+        parametri << filtro.aliquota
+      end
+      
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:pdc_dare, :pdc_avere],
+        :order => 'corrispettivi.data'}
+    end
+    
+    def search_corrispettivi()
+      Corrispettivo.search(:all, build_corrispettivi_search_conditions())
+    end
+    
+    def build_corrispettivi_search_conditions()
+      query_str = []
+      parametri = []
+      
+      if filtro.anno
+        query_str << "#{to_sql_year('data')} = ? "
+        parametri << filtro.anno
+      end
+
+      if filtro.mese
+        query_str << "#{to_sql_month('data')} = ? "
+        parametri << filtro.mese
+      end
+
+#      if filtro.aliquota
+#        query_str << "corrispettivi.aliquota_id = ? "
+#        parametri << filtro.aliquota
+#      end
+      
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :order => 'corrispettivi.data'}
     end
 
     # gestione ddt

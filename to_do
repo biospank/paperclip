@@ -1,13 +1,19 @@
 Modifiche generiche
-- invito a completare i dati dell'azienda al primo avvio (messaggio e focus su impostazioni)
+- about in italiano
+- aliquota di base in seed.rb
+- calcolo con arrotondamento fiscale
+- export clienti e fornitori (csv)
+- funzione di ricalcolo iva nel report delle note spese da fatturare
+- invito a completare i dati dell'azienda al primo avvio (messaggio e focus su impostazioni) anche su aziende aggiunte successivamente
+- indicazione di record non salvato per editable_report_field o icona sulla toolbar (vedi metodo chenged? che richiama touched?)
 - logo della stampa cliccabile (aggiungere campo sito in dati azienda)
-- accesso al db remoto via drb
 - opzione istallazione di rete (configurazione server automatica)
 - controllo sui progressivi al salvataggio per evitare concorrenze
 - configurazione automatica servizio windows (runassvc.exe --help per creare il servizio di start automatico pserver.rb)
 - SCRIVERE I TEST
 - documentazione contestuale (riassuntiva) e separata (dettagliata)
 - scegliere le viste da caricare in base alla configurazione su db
+- capire come suddividere il file ui.xrc e caricare solo i moduli necessari
 - modificare il comportamento al cambio voce (commercio, servizi)
     sarebbe meglio che la finestra si adattasse automaticamente (layout)
 - settaggio della variabile d'ambiente (InnoSetup) durante l'istallazione per ritrovare il path in aggiornamento
@@ -21,23 +27,33 @@ Modifiche generiche
 - opzione disabilita report attivi
 - gestione taskbar
 - ottimizzare le query dei report
+- gestire gli eventi delle lookup in rete rivedere il caricamento delle lookup (load_data) scatenato durante l'inizializzazione.
+  code_hash e instance_hash potrebbero essere obsoleti se i dati vengono aggiornati in rete.
+- dopo la login visualizzare messaggio/barra attesa caricamento dati
+- modelli autoload in un file separato (autoload.rb)
 
 Wkhtmltopdf
 - ottimizzazione caricamento css (da linea di comando)
 
 Ruby 1.9
 - passare a git
+- reset delle migrazioni
 - servizio di backup automatico
 - istallazione su penna usb
+- phantomjs/node-webkit per la conversione/visualizzazione dei grafici svg in png
+
+ Utility
 - pry
 - axlsx
-- childprocess (https://github.com/jarib/childprocess)
+- childprocess (https://github.com/jarib/childprocess) ko
+- vegas trasforma in eseguible un app sinatra (http://code.quirkey.com/vegas/)
 - launchy (https://github.com/copiousfreetime/launchy)
 - queue_classic/clockwork (queuing/cron in postgresql)
-- postgres.heroku.com
+- postgres.heroku.com (ok)
+- fatture personalizzate (x-editable)
 
 Modifiche generiche
-- sulle dialog abilitare l'ordinamento
+- sulle dialog e sui report abilitare l'ordinamento (dove possibile)
 - SCRIVERE I TEST
 
 Magazzino
@@ -48,11 +64,16 @@ Magazzino
 - grafico sull'andamento del prodotto (trend)
 - in configurazione prodotti la lettura del codice a barre non ripulisce la schermata se non trova un record corrispondente.
 - stampa del corrispettivo
+- export csv (ebay amazon)
 
 MACOSX
 - porting su macosx
 - stampe e preview stampe
 - pacchetto d'istallazione per mac
+
+Linux
+https://github.com/jordansissel/fpm
+
 
 Paperclip features
 - multi piattaforma (macosx windows)

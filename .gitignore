@@ -1,8 +1,9 @@
 .svn/
 /Output/
 /pkg/
-/tmp/*
-/db/backup/*
+/tmp/*.html
+/tmp/*.pdf
+/db/backup/*.backup
 /nbproject
 /updates/
 /web/
@@ -13,8 +14,8 @@ Rakefile
 attestazione.au3
 attestazione.exe
 init.rb
-*.txt
-*.sql
+/*.txt
+/*.sql
 /paperclip.*
 /log/paperclip.log
 paperclip_server.*

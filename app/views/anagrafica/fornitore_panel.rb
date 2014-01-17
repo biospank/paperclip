@@ -2,6 +2,7 @@
 
 require 'app/views/base/base_panel'
 require 'app/views/dialog/fornitori_dialog'
+require 'app/views/dialog/pdc_dialog'
 
 module Views
   module Anagrafica
@@ -9,9 +10,26 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       
+      attr_accessor :dialog_sql_criteria # utilizzato nelle dialog
+
       def ui
 
-        model :fornitore => {:attrs => []}
+        model :fornitore => {:attrs => [:denominazione,
+                                      :no_p_iva,
+                                      :p_iva,
+                                      :cod_fisc,
+                                      :indirizzo,
+                                      :comune,
+                                      :provincia,
+                                      :cap,
+                                      :citta,
+                                      :cellulare,
+                                      :telefono,
+                                      :fax,
+                                      :e_mail,
+                                      :pdc,
+                                      :note,
+                                      :attivo]}
         controller :anagrafica
 
         logger.debug('initializing FornitorePanel...')
@@ -30,6 +48,17 @@ module Views
         xrc.find('txt_telefono', self, :extends => TextField)
         xrc.find('txt_fax', self, :extends => TextField)
         xrc.find('txt_e_mail', self, :extends => TextField)
+
+        xrc.find('lku_pdc', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_ANAGRAFICA_VIEW,
+                                :folder => Helpers::AnagraficaHelper::WXBRA_ANAGRAFICA_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc', self, :extends => TextField)
         xrc.find('txt_note', self, :extends => TextField)
         xrc.find('chk_attivo', self, :extends => CheckField)
         xrc.find('btn_variazione', self)
@@ -41,6 +70,14 @@ module Views
         
         subscribe(:evt_azienda_changed) do
           reset_panel()
+        end
+
+        subscribe(:evt_pdc_changed) do |data|
+          lku_pdc.load_data(data)
+        end
+
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([lku_pdc]) : disable_widgets([lku_pdc])
         end
 
         subscribe(:evt_new_fornitore) do
@@ -174,6 +211,40 @@ module Views
         evt.skip()
       end
 
+      # sovrascritto per agganciare il filtro sul criterio di ricerca
+      def lku_pdc_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.pdc_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_pdc.view_data = ctrl.load_pdc(dlg.selected)
+              lku_pdc_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_ANAGRAFICA_VIEW,
+                  Helpers::AnagraficaHelper::WXBRA_ANAGRAFICA_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
       def btn_nuovo_click(evt)
         logger.debug("Cliccato sul bottone nuovo!")
         reset_panel()
@@ -194,6 +265,7 @@ module Views
         else
           txt_p_iva.enable(true)
         end
+
       end
       
       def reset_fornitore_command_state()
@@ -206,6 +278,44 @@ module Views
             disable_widgets [btn_elimina]
           end
         end
+        
+        if configatron.bilancio.attivo
+          if self.fornitore.new_record?
+            lku_pdc.enable(true)
+          else
+            if lku_pdc.view_data
+              if self.fornitore.modificabile?
+                lku_pdc.enable(true)
+              else
+                lku_pdc.enable(false)
+              end
+            else
+              lku_pdc.enable(true)
+            end
+          end
+        end
+      end
+
+      def pdc_compatibile?
+        if configatron.bilancio.attivo
+          if self.fornitore.pdc && self.fornitore.pdc.ricavo?
+            res = Wx::message_box("Il conto associato non è un costo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc.activate()
+                return false
+              end
+
+          end
+        end
+
+        return true
+      end
+
+      def pdc_sql_criteria()
+        "pdc.type in ('#{Models::Pdc::COSTO}')"
       end
 
     end

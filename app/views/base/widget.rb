@@ -9,20 +9,20 @@ module Views
         def view_data=(data)
           data ? self.change_value(data.to_s) : self.change_value('')
         end
-      
+
         def view_data()
           self.value
         end
-				
+
         def activate()
           self.set_selection(-1, -1)
           self.set_focus()
-				
+
         end
 
         def TextField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
@@ -34,7 +34,7 @@ module Views
 
       module ImageLogoField
         attr_accessor :data
-        
+
         def view_data=(data)
           self.data = data
           if data
@@ -43,18 +43,18 @@ module Views
             self.set_bitmap(Wx::Bitmap.new(filename, Wx::BITMAP_TYPE_ANY))
           end
         end
-      
+
         def view_data()
           self.data
         end
-				
+
       end
 
       module LookupTextField
         include TextField
         def LookupTextField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_LOOKUP_FOCUS_FIELD_COLOR; evt.skip() }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
@@ -68,7 +68,7 @@ module Views
         def view_data=(data)
           data ? self.change_value(data.to_s) : self.change_value('')
         end
-      
+
         def view_data()
           self.value.to_i
         end
@@ -76,12 +76,12 @@ module Views
         def activate()
           self.set_selection(-1, -1)
           self.set_focus()
-				
+
         end
-				
+
         def NumericField.extended(mod)
           mod.evt_set_focus { mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
@@ -102,7 +102,7 @@ module Views
         def view_data=(data)
           data ? self.change_value(data.to_s) : self.change_value('')
         end
-      
+
         def view_data()
           self.value
         end
@@ -110,12 +110,12 @@ module Views
         def activate()
           self.set_selection(-1, -1)
           self.set_focus()
-				
+
         end
-				
+
         def TextNumericField.extended(mod)
           mod.evt_set_focus { mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
@@ -134,7 +134,7 @@ module Views
         def view_data=(data)
           data ? self.change_value(Helpers::ApplicationHelper.number_text(data)) : self.change_value('0')
         end
-      
+
         def view_data()
           self.value.to_f
         end
@@ -142,17 +142,19 @@ module Views
         def activate()
           self.set_selection(-1, -1)
           self.set_focus()
-				
+
         end
-				
+
         def DecimalField.extended(mod)
           mod.evt_set_focus { mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
           end
 
+
+          mod.tool_tip = 'Inserire il punto come separatore dei decimali'
 
           mod.instance_eval %{
 
@@ -167,26 +169,26 @@ module Views
         def view_data=(data)
           self.selection = self.find_item_data(data)
         end
-      
+
         def view_data()
           self.item_data(self.selection())
         end
-        
+
         def find_item_data(data)
           0.upto(self.count - 1) do |i|
             if self.item_data(i) == data
               return i
             end
           end
-          
+
           -1
         end
-      
+
         def activate()
           self.set_focus()
-				
+
         end
-        
+
         def load_data(data, options={:label => :descrizione})
           self.clear()
           self.instance_hash.clear()
@@ -201,7 +203,7 @@ module Views
             end
             self.instance_hash[d[:id]] = d
           end
-          
+
           unless self.empty?
             case options[:select]
             when nil
@@ -209,12 +211,14 @@ module Views
               self.select_first()
             when :last
               self.select_last()
+            when :default
+              self.select(find_item_data((options[:default][:id] rescue nil)))
             else
               self.select(options[:select])
             end
           end
         end
-				
+
         def select_first()
           self.select(0)
         end
@@ -252,7 +256,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -261,7 +265,7 @@ module Views
 
       module ChoiceBooleanField
         include ChoiceField
-        
+
         def load_data(data, options={:label => :descrizione})
           self.clear()
           self.instance_hash.clear()
@@ -275,7 +279,7 @@ module Views
               append(d[0], d[1])
             end
           end
-          
+
           unless self.empty?
             case options[:select]
             when nil
@@ -288,7 +292,7 @@ module Views
             end
           end
         end
-				
+
         def select_first()
           self.select(0)
         end
@@ -326,7 +330,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -335,7 +339,7 @@ module Views
 
       module ChoiceObjectField
         include ChoiceField
-	
+
         def load_data(data, options={:label => :descrizione})
           self.clear()
           self.instance_hash.clear()
@@ -363,7 +367,7 @@ module Views
             end
           end
         end
-				
+
         def ChoiceObjectField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
           mod.evt_kill_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR; evt.skip() }
@@ -393,7 +397,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -402,15 +406,15 @@ module Views
 
       module ChoiceStringField
         include ChoiceField
-        
+
         def view_data=(data)
           self.string_selection = data.to_s
         end
-      
+
         def view_data()
           self.string_selection()
         end
-        
+
         def load_data(data, options={})
           self.clear()
           if options[:include_blank]
@@ -421,7 +425,7 @@ module Views
           else
             self.append(data)
           end
-          
+
           unless self.empty?
             case options[:select]
             when nil
@@ -464,7 +468,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -475,30 +479,30 @@ module Views
         def view_data=(data)
           self.selection = self.find_item_data(data)
         end
-      
+
         def view_data()
           self.item_data(self.selection())
         end
-        
+
         def find_item_data(data)
           0.upto(self.count - 1) do |i|
             if self.item_data(i) == data
               return i
             end
           end
-          
+
           -1
         end
-      
+
         def activate()
           self.set_focus()
-				
+
         end
-      
+
         def match_selection()
           self.string_selection = self.get_value()
         end
-        
+
         def load_data(data, options={:label => :descrizione})
           self.clear()
           self.instance_hash.clear()
@@ -513,7 +517,7 @@ module Views
             end
             self.instance_hash[d[:id]] = d
           end
-          
+
           unless self.empty?
             case options[:select]
             when nil
@@ -526,7 +530,7 @@ module Views
             end
           end
         end
-				
+
         def select_first()
           self.select(0)
         end
@@ -543,7 +547,7 @@ module Views
           # se lo abilito programmaticamente, viene disabilitata la combinazione di tasti 'shift-tab'
           # la gestione viene reimplementata sotto
           mod.toggle_window_style(Wx::TE_PROCESS_ENTER)
-          
+
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
 
@@ -602,7 +606,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -611,7 +615,7 @@ module Views
 
       module ComboObjectField
         include ComboField
-	
+
         def load_data(data, options={:label => :descrizione})
           self.clear()
           self.instance_hash.clear()
@@ -639,7 +643,7 @@ module Views
             end
           end
         end
-				
+
         def ComboObjectField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
           mod.evt_kill_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR; evt.skip() }
@@ -648,7 +652,7 @@ module Views
           # se lo abilito programmaticamente, viene disabilitata la combinazione di tasti 'shift-tab'
           # la gestione viene reimplementata sotto
           mod.toggle_window_style(Wx::TE_PROCESS_ENTER)
-          
+
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
 
@@ -708,7 +712,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -717,15 +721,15 @@ module Views
 
       module ComboStringField
         include ComboField
-        
+
         def view_data=(data)
           self.string_selection = data.to_s
         end
-      
+
         def view_data()
           self.string_selection()
         end
-        
+
         def load_data(data, options={})
           self.clear()
           if options[:include_blank]
@@ -736,7 +740,7 @@ module Views
           else
             self.append(data)
           end
-          
+
           unless self.empty?
             case options[:select]
             when nil
@@ -758,7 +762,7 @@ module Views
           # se lo abilito programmaticamente, viene disabilitata la combinazione di tasti 'shift-tab'
           # la gestione viene reimplementata sotto
           mod.toggle_window_style(Wx::TE_PROCESS_ENTER)
-          
+
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
 
@@ -817,7 +821,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
           }
 
         end
@@ -826,26 +830,26 @@ module Views
 
       module LookupField
         attr_accessor :data
-        
+
         def view_data=(data)
           data ? self.change_value(data.send(@info[:code]).to_s) : self.change_value('')
           @info[:label].call(data) if @info[:label]
           @data = data
         end
-      
+
         def view_data()
           @data
         end
-      
+
         def activate()
           self.set_selection(-1, -1)
           self.set_focus()
-				
+
         end
 
         def LookupField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_LOOKUP_FOCUS_FIELD_COLOR; evt.skip() }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_after_change').to_sym)
             evt.skip()
@@ -868,7 +872,7 @@ module Views
             def code_hash=(obj)
               @code_hash = obj
             end
-            
+
             # accessors utility
             def instance_hash()
               @instance_hash
@@ -877,7 +881,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
             # accessors utility
             def default()
               @default
@@ -886,11 +890,11 @@ module Views
             def default=(obj)
               @default = obj
             end
-            
+
           }
 
           mod.parent.instance_eval %{
-          
+
             # enter event handler
             unless mod.parent.respond_to? '#{mod.get_name()}_enter'
               def #{mod.get_name()}_enter(evt)
@@ -900,7 +904,7 @@ module Views
             end
 
           }
-          
+
         end
 
         # :model => il modello
@@ -908,6 +912,8 @@ module Views
         # :desc => la descrizione da visualizzare
         # :dialog => la finestra di ricerca
         # :default => il default da impostare (predefinito/a o nil)
+        # :view => la view che ha richiesto la dialog (opzionale)
+        # :forder => il folder che ha richiesto la dialog (opzionale)
         def configure(info)
           @info = info
           self.parent.instance_eval %{
@@ -952,7 +958,7 @@ module Views
           }
 
         end
-        
+
         def load_data(data)
           self.code_hash.clear()
           self.instance_hash.clear()
@@ -960,24 +966,24 @@ module Views
           data.each do |d|
             self.code_hash[d.send(@info[:code])] = d
             self.instance_hash[d[:id]] = d
-            self.default = d if @info[:default].call(d)
+            self.default = d if (@info[:default].call(d) rescue false)
           end
         end
-        
+
         def set_default
-          self.view_data = self.default 
+          self.view_data = self.default
         end
 
         def match_selection(code=nil)
           self.view_data = (code ? code_hash[code] : code_hash[self.value])
         end
-        
+
         def select_all(&block)
           self.instance_hash.values.select do |item|
             block.call(item)
           end
         end
-        
+
       end
 
       # permette di chiamare due metodi diversi a socondo dell'azione
@@ -987,12 +993,12 @@ module Views
         include LookupField
         def LookupLooseField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_LOOKUP_FOCUS_FIELD_COLOR; evt.skip() }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
           end
-          
+
           mod.tool_tip = 'Premere F5 per la ricerca'
 
           mod.instance_eval %{
@@ -1010,7 +1016,7 @@ module Views
             def code_hash=(obj)
               @code_hash = obj
             end
-            
+
             # accessors utility
             def instance_hash()
               @instance_hash
@@ -1019,7 +1025,7 @@ module Views
             def instance_hash=(obj)
               @instance_hash = obj
             end
-            
+
             # accessors utility
             def default()
               @default
@@ -1028,11 +1034,11 @@ module Views
             def default=(obj)
               @default = obj
             end
-            
+
           }
 
           mod.parent.instance_eval %{
-          
+
             # enter event handler
             unless mod.parent.respond_to? '#{mod.get_name()}_enter'
               def #{mod.get_name()}_enter(evt)
@@ -1042,24 +1048,24 @@ module Views
             end
 
           }
-          
+
         end
 
       end
 
-      
+
       module ToggleLookupField
         attr_accessor :data
-        
+
         def view_data=(data)
           self.value = (data ? true : false)
           @data = data
         end
-      
+
         def view_data()
           @data
         end
-      
+
       end
 
       module CheckField
@@ -1160,11 +1166,11 @@ module Views
         def view_data=(data)
           self.value = (data.nil? || (data == false) || (data == 0)) ? false : true
         end
-      
+
         def view_data()
           (self.value ? 1 : 0)
         end
-      
+
         def NumberCheckField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
           mod.evt_kill_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR; evt.skip() }
@@ -1186,19 +1192,19 @@ module Views
       end
 
       module FkCheckField
-        
+
         attr_accessor :data
-        
+
         # data punta ad una foreign key
         def view_data=(data)
           self.value = data.nil? ? false : true
           @data = data
         end
-      
+
         def view_data()
           @data
         end
-      
+
         def FkCheckField.extended(mod)
 
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
@@ -1221,26 +1227,26 @@ module Views
       end
 
       module DateField
-        
+
         BRA_DATE_FORMAT = "%d/%m/%Y" unless const_defined? 'BRA_DATE_FORMAT'
         BRA_DATE_TEMPLATE = "--/--/----" unless const_defined? 'BRA_DATE_TEMPLATE'
         BRA_TRY_FORMATS = ['%d/%m/%Y', '%d%m%Y']  unless const_defined? 'BRA_TRY_FORMATS' #'%d/%m/%y',
         BRA_EPOCH = Date.civil(2000, 1, 1) unless const_defined? 'BRA_EPOCH'
-        
+
         def view_data=(data)
           data.blank? ? self.change_value('') : self.change_value(data.to_s(:italian_date)) #self.change_value(Date.today.to_s(:italian_date))
         end
-      
+
         def view_data()
           #self.value.to_date.to_s(:italian_date)
           try_to_parse(self.value)
         end
-				
+
         def try_to_parse(s)
           parsed = nil
 
           case s
-            
+
             # stringhe che iniziano minimo con un numero e un massimo 3
             # stringhe che iniziano con + seguito da un numero e un massimo 3
             # stringhe che iniziano con - seguito da un numero e un massimo 3
@@ -1255,7 +1261,7 @@ module Views
               rescue ArgumentError
               end
             end
-            
+
           end
 
           if parsed && (parsed.year < BRA_EPOCH.year || parsed.year > 2050)
@@ -1270,10 +1276,10 @@ module Views
           self.set_focus()
 
         end
-				
+
         def DateField.extended(mod)
           mod.evt_set_focus { |evt| mod.background_colour = Helpers::ApplicationHelper::WXBRA_FOCUS_FIELD_COLOR; evt.skip() }
-          mod.evt_kill_focus do |evt| 
+          mod.evt_kill_focus do |evt|
             mod.background_colour = Helpers::ApplicationHelper::WXBRA_FIELD_COLOR;
             mod.parent.send((mod.get_name() << '_loose_focus').to_sym) if mod.parent.respond_to?((mod.get_name() << '_loose_focus'))
             evt.skip()
@@ -1294,11 +1300,49 @@ module Views
       end
 
       module OkStdButton
-        # noop
+        def OkStdButton.extended(mod)
+
+          mod.label = 'Conferma'
+
+          # crea il gestore di evento per l'elemento selezionato
+          mod.parent.instance_eval %{
+
+            # item_deselected event handler
+            unless mod.parent.respond_to? 'btn_ok_click'
+              def btn_ok_click(evt)
+                end_modal(Wx::ID_OK)
+              end
+            end
+
+          }
+
+        end
+
       end
-      
+
+      module CancelStdButton
+        def CancelStdButton.extended(mod)
+
+          mod.label = 'Annulla'
+
+          # crea il gestore di evento per l'elemento selezionato
+          mod.parent.instance_eval %{
+
+            # item_deselected event handler
+            unless mod.parent.respond_to? 'btn_cancel_click'
+              def btn_cancel_click(evt)
+                end_modal(Wx::ID_CANCEL)
+              end
+            end
+
+          }
+
+        end
+
+      end
+
       module ReportField
-        
+
         def ReportField.extended(mod)
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
@@ -1355,7 +1399,7 @@ module Views
                   end
                 end
               end
-              
+
             else
 
               unless mod.parent.respond_to? '#{mod.get_name()}_item_activated'
@@ -1371,22 +1415,22 @@ module Views
 
         end
 
-        # riceve un array di hash che identificano 
+        # riceve un array di hash che identificano
         # le intestazioni delle colonne
         def column_info(info)
           clear_all()
           info.each_with_index do |i, idx|
-            self.insert_column(idx, 
-              i[:caption], 
+            self.insert_column(idx,
+              i[:caption],
               (i[:align] || Wx::LIST_FORMAT_LEFT),
               (i[:width] || Wx::LIST_AUTOSIZE_USEHEADER))
 #              (i[:width] || Wx::LIST_AUTOSIZE))
             #self.set_column_width(idx, i[:width] || Wx::LIST_AUTOSIZE_USEHEADER)
           end
-          
+
         end
-      
-        # riceve un array di symbol che identificano 
+
+        # riceve un array di symbol che identificano
         # i campi del modello da visualizzare
         def data_info(info)
 #          raise "Il numero di dati da visualizzare non corrisponde alle colonne" if info.size != self.column_count
@@ -1396,7 +1440,7 @@ module Views
 #          self.set_image_list(imgList, Wx::IMAGE_LIST_SMALL)
           @data_info = info
         end
-        
+
         def display(data, opts = {})
           reset()
           unless data.empty?
@@ -1427,7 +1471,7 @@ module Views
                     else
                       set_item(idx, col, Helpers::ApplicationHelper.percentage(cast_eval(model, info[:attr])))
                     end
-                  when :date                  
+                  when :date
                     if info[:if]
                       set_item(idx, col, cast_eval(model, info[:attr]).to_s(:italian_date)) if info[:if].call(model)
                     else
@@ -1448,9 +1492,9 @@ module Views
               set_item_state(0, Wx::LIST_STATE_SELECTED, Wx::LIST_STATE_SELECTED)
               set_focus()
             end
-          end          
+          end
         end
-	
+
         def display_matrix(matrix)
           reset()
           unless matrix.empty?
@@ -1477,7 +1521,7 @@ module Views
                   else
                     set_item(row, col, Helpers::ApplicationHelper.percentage(matrix_cast_eval(vector[col], info[:attr])))
                   end
-                when :date                  
+                when :date
                   if info[:if]
                     set_item(row, col, matrix_cast_eval(vector[col], info[:attr]).to_s(:italian_date)) if info[:if].call(vector[col])
                   else
@@ -1494,7 +1538,7 @@ module Views
               set_item_background_colour(row, Helpers::ApplicationHelper::WXBRA_EVEN_ROW_COLOR) if row.even? # 215, 235, 245
             end
             set_item_state(0, Wx::LIST_STATE_SELECTED, Wx::LIST_STATE_SELECTED)
-          end          
+          end
         end
 
         def display_style_matrix(matrix)
@@ -1541,7 +1585,7 @@ module Views
                     li.set_text(Helpers::ApplicationHelper.percentage(matrix_cast_eval(vector[col], info[:attr])))
                     set_item(li)
                   end
-                when :date                  
+                when :date
                   if info[:if]
 #                    li.set_text_colour(Wx::BLACK)
                     li.set_text(matrix_cast_eval(vector[col], info[:attr]).to_s(:italian_date)) if info[:if].call(vector[col])
@@ -1566,7 +1610,7 @@ module Views
               set_item_background_colour(row, Helpers::ApplicationHelper::WXBRA_EVEN_ROW_COLOR) if row.even? # 215, 235, 245
             end
             set_item_state(0, Wx::LIST_STATE_SELECTED, Wx::LIST_STATE_SELECTED)
-          end          
+          end
         end
 
         def reset()
@@ -1581,7 +1625,7 @@ module Views
             self.ensure_visible(self.item_count - 1) if self.item_count > 0
           end
         end
-        
+
         def force_selected(sym)
           case sym
           when :first
@@ -1592,7 +1636,7 @@ module Views
         end
 
         private
-        
+
         def cast_eval(model, attr)
           case attr
           when String, Symbol
@@ -1618,12 +1662,12 @@ module Views
         #~ @selected = evt.get_item().get_data()
         #~ end
         #~ end
-				
+
       end
 
       module MultiSelReportField
         include ReportField
-        
+
         def MultiSelReportField.extended(mod)
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
@@ -1701,7 +1745,7 @@ module Views
       end
 
       module EditableReportField
-        
+
         def EditableReportField.extended(mod)
           # crea il gestore di evento per l'elemento selezionato
           mod.parent.instance_eval %{
@@ -1753,7 +1797,7 @@ module Views
                   end
                 end
               end
-              
+
             else
 
               unless mod.parent.respond_to? '#{mod.get_name()}_item_activated'
@@ -1776,22 +1820,22 @@ module Views
 
         end
 
-        # riceve un array di hash che identificano 
+        # riceve un array di hash che identificano
         # le intestazioni delle colonne
         def column_info(info)
           clear_all()
           info.each_with_index do |i, idx|
-            self.insert_column(idx, 
-              i[:caption], 
+            self.insert_column(idx,
+              i[:caption],
               (i[:align] || Wx::LIST_FORMAT_LEFT),
               (i[:width] || Wx::LIST_AUTOSIZE_USEHEADER))
 #              (i[:width] || Wx::LIST_AUTOSIZE))
             #self.set_column_width(idx, i[:width] || Wx::LIST_AUTOSIZE_USEHEADER)
           end
-          
+
         end
-      
-        # riceve un array di symbol che identificano 
+
+        # riceve un array di symbol che identificano
         # i campi del modello da visualizzare
         def data_info(info)
 #          raise "Il numero di dati da visualizzare non corrisponde alle colonne" if info.size != self.column_count
@@ -1804,7 +1848,7 @@ module Views
             set_focus()
           end
         end
-        
+
         def display(data)
           reset()
           unless data.empty?
@@ -1833,7 +1877,7 @@ module Views
                     else
                       set_item(idx, col, Helpers::ApplicationHelper.percentage(cast_eval(model, info[:attr])))
                     end
-                  when :date                  
+                  when :date
                     if info[:if]
                       set_item(idx, col, cast_eval(model, info[:attr]).to_s(:italian_date)) if info[:if].call(model)
                     else
@@ -1853,9 +1897,9 @@ module Views
             end
 #            set_item_state(0, Wx::LIST_STATE_SELECTED, Wx::LIST_STATE_SELECTED)
 #            set_focus()
-          end          
+          end
         end
-	
+
         def reset()
           delete_all_items()
         end
@@ -1879,7 +1923,7 @@ module Views
         end
 
         private
-        
+
         def cast_eval(model, attr)
           case attr
           when String, Symbol
@@ -1891,7 +1935,7 @@ module Views
       end
 
       class ReportItem < Wx::ListItem
-  
+
         def initialize(data, text, image=nil)
           super()
           set_data(data)
@@ -1899,15 +1943,15 @@ module Views
           set_bold_font()
           set_image(image) unless image.nil?
         end
-  
+
         def set_bold_font()
-          self.set_font(Wx::Font.new(10, 
+          self.set_font(Wx::Font.new(10,
               Wx::FONTFAMILY_DEFAULT,
               Wx::FONTSTYLE_NORMAL,
               Wx::FONTWEIGHT_NORMAL))
         end
       end
-      
+
     end
   end
 end

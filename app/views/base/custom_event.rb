@@ -88,7 +88,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_ALIQUOTA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_aliquota_changed', 0) 
+        EVT_ALIQUOTA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_aliquota_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -105,7 +105,29 @@ module Views
         end
 
       end
-      
+
+      class NormaChangedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_NORMA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_norma_changed', 0)
+
+        def initialize(result_set)
+          # The constant id is the arg to super
+          super(EVT_NORMA_CHANGED)
+          # client_data should be used to store any information associated
+          # with the event.
+          self.client_data = { :result_set => result_set  }
+#          self.id = target.get_id
+        end
+
+        # Returns set associated with this event
+        def result_set
+          client_data[:result_set]
+        end
+
+      end
+
       class RitenutaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -176,7 +198,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_BANCA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_banca_changed', 0) 
+        EVT_BANCA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_banca_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -193,7 +215,51 @@ module Views
         end
 
       end
-      
+
+      class PdcChangedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_PDC_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_pdc_changed', 0)
+
+        def initialize(result_set)
+          # The constant id is the arg to super
+          super(EVT_PDC_CHANGED)
+          # client_data should be used to store any information associated
+          # with the event.
+          self.client_data = { :result_set => result_set  }
+#          self.id = target.get_id
+        end
+
+        # Returns set associated with this event
+        def result_set
+          client_data[:result_set]
+        end
+
+      end
+
+      class CategoriaPdcChangedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_CATEGORIA_PDC_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_categoria_pdc_changed', 0)
+
+        def initialize(result_set)
+          # The constant id is the arg to super
+          super(EVT_CATEGORIA_PDC_CHANGED)
+          # client_data should be used to store any information associated
+          # with the event.
+          self.client_data = { :result_set => result_set  }
+#          self.id = target.get_id
+        end
+
+        # Returns set associated with this event
+        def result_set
+          client_data[:result_set]
+        end
+
+      end
+
       class TipoPagamentoClienteChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -317,6 +383,27 @@ module Views
           # with the event.
           self.client_data = { :result_set => result_set  }
 #          self.id = target.get_id
+        end
+
+        # Returns set associated with this event
+        def result_set
+          client_data[:result_set]
+        end
+
+      end
+
+      class AnniContabiliCorrispettiviChangedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_ANNI_CONTABILI_CORRISPETTIVI_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_anni_contabili_corrispettivi_changed', 0)
+
+        def initialize(result_set)
+          # The constant id is the arg to super
+          super(EVT_ANNI_CONTABILI_CORRISPETTIVI_CHANGED)
+          # client_data should be used to store any information associated
+          # with the event.
+          self.client_data = { :result_set => result_set  }
         end
 
         # Returns set associated with this event

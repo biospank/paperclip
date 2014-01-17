@@ -33,6 +33,7 @@ module Controllers
         end
 
         elimina_pagamenti_fattura_cliente(fattura_cliente, pagamenti_da_eliminare)
+        salva_righe_fattura_pdc_cliente(fattura_cliente)
 
       end
 
@@ -180,6 +181,7 @@ module Controllers
         end
 
         elimina_pagamenti_fattura_fornitore(fattura_fornitore, pagamenti_da_eliminare)
+        salva_righe_fattura_pdc_fornitore(fattura_fornitore)
 
       end
 
@@ -378,7 +380,51 @@ module Controllers
     def delete_pagamento()
       pagamento.destroy
     end
-    
+
+    # GESTIONE RIGHE FATTURA PDC
+
+    def search_righe_fattura_pdc_fornitori(fattura)
+      RigaFatturaPdc.search(:all, :conditions => ["fattura_fornitore_id = ?", fattura])
+    end
+
+    def search_righe_fattura_pdc_clienti(fattura)
+      RigaFatturaPdc.search(:all, :conditions => ["fattura_cliente_id = ?", fattura])
+    end
+
+    def salva_righe_fattura_pdc_cliente(fattura)
+      unless self.righe_fattura_pdc.blank?
+        self.righe_fattura_pdc.each do |pdc|
+          case pdc.instance_status
+          when RigaFatturaPdc::ST_INSERT
+            # associo l'id della fattura cliente alla riga
+            pdc.fattura_cliente = fattura
+            pdc.save!
+          when RigaFatturaPdc::ST_UPDATE
+            pdc.save!
+          when RigaFatturaPdc::ST_DELETE
+            pdc.destroy
+          end
+        end
+      end
+    end
+
+    def salva_righe_fattura_pdc_fornitore(fattura)
+      unless self.righe_fattura_pdc.blank?
+        self.righe_fattura_pdc.each do |pdc|
+          case pdc.instance_status
+          when RigaFatturaPdc::ST_INSERT
+            # associo l'id della fattura fornitore alla riga
+            pdc.fattura_fornitore = fattura
+            pdc.save!
+          when RigaFatturaPdc::ST_UPDATE
+            pdc.save!
+          when RigaFatturaPdc::ST_DELETE
+            pdc.destroy
+          end
+        end
+      end
+    end
+
     ###### GESTIONE PAGAMENTI IN SOSPESO ######
 
     def salva_incassi_in_sospeso()

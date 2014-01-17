@@ -9,6 +9,7 @@ module Models
     set_table_name :banche
     
     belongs_to :azienda
+    belongs_to :pdc, :foreign_key => 'pdc_id'
 
     named_scope :attive, :conditions => {:attiva => 1}
     named_scope :default, :conditions => {:predefinita => 1}
@@ -26,6 +27,10 @@ module Models
     validates_uniqueness_of :codice, 
       :scope => :azienda_id,
       :message => "Codice banca gia' utilizzato."
+
+    validates_presence_of :pdc,
+      :if => Proc.new { |banca| configatron.bilancio.attivo },
+      :message => "Associare un codice pdc oppure premere F5 per la ricerca."
 
     def before_validation_on_create()
       self.azienda = Azienda.current

@@ -22,7 +22,9 @@ module Views
                                        :banca_dare,
                                        :banca_avere,
                                        :fuori_partita_dare,
-                                       :fuori_partita_avere]}
+                                       :fuori_partita_avere,
+                                       :pdc_dare,
+                                       :pdc_avere]}
         
         controller :prima_nota
 
@@ -44,6 +46,35 @@ module Views
                                 :folder => Helpers::PrimaNotaHelper::WXBRA_CAUSALI_FOLDER)
         end
 
+        xrc.find('txt_descrizione_banca', self, :extends => TextField)
+
+        xrc.find('lku_pdc_dare', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_dare.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                                :folder => Helpers::PrimaNotaHelper::WXBRA_CAUSALI_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_dare', self, :extends => TextField)
+
+        xrc.find('lku_pdc_avere', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_avere.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                                :folder => Helpers::PrimaNotaHelper::WXBRA_CAUSALI_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
+
+        subscribe(:evt_pdc_changed) do |data|
+          lku_pdc_dare.load_data(data)
+          lku_pdc_avere.load_data(data)
+        end
+
         subscribe(:evt_banca_changed) do |data|
           lku_banca.load_data(data)
         end
@@ -51,8 +82,6 @@ module Views
         subscribe(:evt_new_causale) do
           reset_panel()
         end
-
-        xrc.find('txt_descrizione_banca', self, :extends => TextField)
 
         xrc.find('chk_attiva', self, :extends => CheckField)
         xrc.find('chk_predefinita', self, :extends => CheckField)
@@ -76,6 +105,10 @@ module Views
 
         subscribe(:evt_azienda_changed) do
           reset_panel()
+        end
+
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
         end
 
         acc_table = Wx::AcceleratorTable[
@@ -268,10 +301,47 @@ module Views
                             chk_fuori_partita_dare, chk_fuori_partita_avere]
           else
             disable_widgets [btn_elimina, txt_codice, txt_descrizione, 
-                            lku_banca, txt_descrizione_agg,
+                            txt_descrizione_agg,
                             chk_cassa_dare, chk_cassa_avere,
                             chk_banca_dare, chk_banca_avere,
                             chk_fuori_partita_dare, chk_fuori_partita_avere]
+
+            if lku_banca.view_data
+              lku_banca.enable(false)
+            else
+              if causale.movimento_di_banca?
+                lku_banca.enable(true)
+              else
+                lku_banca.enable(false)
+              end
+            end
+
+          end
+        end
+
+        if configatron.bilancio.attivo
+          if self.causale.new_record?
+            lku_pdc_dare.enable(true)
+            lku_pdc_avere.enable(true)
+          else
+            if lku_pdc_dare.view_data
+              if self.causale.modificabile?
+                lku_pdc_dare.enable(true)
+              else
+                lku_pdc_dare.enable(false)
+              end
+            else
+              lku_pdc_dare.enable(true)
+            end
+            if lku_pdc_avere.view_data
+              if self.causale.modificabile?
+                lku_pdc_avere.enable(true)
+              else
+                lku_pdc_avere.enable(false)
+              end
+            else
+              lku_pdc_avere.enable(true)
+            end
           end
         end
       end

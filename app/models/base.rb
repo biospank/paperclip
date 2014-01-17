@@ -24,6 +24,15 @@ module Models
         end
       end
 
+      def to_sql_month(column)
+        case ActiveRecord::Base.connection.adapter_name().downcase.to_sym
+        when :sqlite
+          "strftime('%m', #{column})"
+        when :postgresql
+          "to_char(#{column}, 'MM')"
+        end
+      end
+
     end
 
     module Searchable

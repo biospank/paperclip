@@ -166,6 +166,22 @@ module Views
           else
             main_frame.set_status_text(auth_message)
           end
+        when :pdc
+          if can? :read, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+            set_selection(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW)
+            prima_nota_notebook_mgr.set_selection(Helpers::PrimaNotaHelper::WXBRA_PDC_FOLDER)
+            notify(:evt_new_pdc)
+          else
+            main_frame.set_status_text(auth_message)
+          end
+        when :norma
+          if can? :read, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+            set_selection(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW)
+            prima_nota_notebook_mgr.set_selection(Helpers::PrimaNotaHelper::WXBRA_PDC_FOLDER)
+            notify(:evt_new_norma)
+          else
+            main_frame.set_status_text(auth_message)
+          end
         when :prodotto
           if can? :read, Helpers::ApplicationHelper::Modulo::MAGAZZINO
             set_selection(Helpers::ApplicationHelper::WXBRA_MAGAZZINO_VIEW)
@@ -191,6 +207,18 @@ module Views
 
       evt_aliquota_changed do | evt |
         notify(:evt_aliquota_changed, evt.result_set)
+      end
+
+      evt_norma_changed do | evt |
+        notify(:evt_norma_changed, evt.result_set)
+      end
+
+      evt_pdc_changed do | evt |
+        notify(:evt_pdc_changed, evt.result_set)
+      end
+
+      evt_categoria_pdc_changed do | evt |
+        notify(:evt_categoria_pdc_changed, evt.result_set)
       end
 
       evt_ritenuta_changed do | evt | 
@@ -358,11 +386,23 @@ module Views
       # carico le aliquote
       aliquote = ctrl.search_aliquote()
       notify(:evt_aliquota_changed, aliquote)
-      
+
+      # carico i codici norma
+      codici_norma = ctrl.search_norma()
+      notify(:evt_norma_changed, codici_norma)
+
       # carico le causali
       causali = ctrl.search_causali()
       notify(:evt_causale_changed, causali)
-      
+
+      # carico il piano dei conti
+      pdc = ctrl.search_categorie_pdc()
+      notify(:evt_categoria_pdc_changed, pdc)
+
+      # carico il piano dei conti
+      pdc = ctrl.search_pdc()
+      notify(:evt_pdc_changed, pdc)
+
       # carico i tipi pagamento cliente
       tipi_pagamento_cliente = ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::CLIENTI)
       notify(:evt_tipo_pagamento_cliente_changed, tipi_pagamento_cliente)
@@ -370,7 +410,9 @@ module Views
       # carico i tipi pagamento fornitore
       tipi_pagamento_fornitore = ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::FORNITORI)
       notify(:evt_tipo_pagamento_fornitore_changed, tipi_pagamento_fornitore)
-                          
+
+      # abilito/disabilito i campi relativi al bilancio
+      notify(:evt_bilancio_attivo, configatron.bilancio.attivo)
       
     end
 
@@ -420,6 +462,13 @@ module Views
       # carico gli anni contabili dei movimenti di magazzino
       anni_contabili_movimenti = ctrl.load_anni_contabili(Models::Movimento, 'data')
       notify(:evt_anni_contabili_movimenti_changed, anni_contabili_movimenti)
+
+      # carico gli anni contabili dei corrispettivi
+      anni_contabili_corrispettivi = ctrl.load_anni_contabili(Models::Corrispettivo, 'data')
+      notify(:evt_anni_contabili_corrispettivi_changed, anni_contabili_corrispettivi)
+
+      # carico i corrispettivi del mese corrente
+      notify(:evt_load_corrispettivi)
 
       # PROGRESSIVI
       # 

@@ -4,6 +4,7 @@ require 'app/helpers/fatturazione_helper'
 require 'app/views/fatturazione/report_estratto_folder'
 require 'app/views/fatturazione/report_fatture_folder'
 require 'app/views/fatturazione/report_da_fatturare_folder'
+require 'app/views/fatturazione/report_corrispettivi_folder'
 require 'app/views/fatturazione/report_flussi_folder'
 
 module Views
@@ -22,6 +23,8 @@ module Views
         report_fatture_folder.ui()
         xrc.find('REPORT_DA_FATTURARE_FOLDER', self, :extends => Views::Fatturazione::ReportDaFatturareFolder)
         report_da_fatturare_folder.ui()
+        xrc.find('REPORT_CORRISPETTIVI_FOLDER', self, :extends => Views::Fatturazione::ReportCorrispettiviFolder)
+        report_corrispettivi_folder.ui()
         xrc.find('REPORT_FLUSSI_FOLDER', self, :extends => Views::Fatturazione::ReportFlussiFolder)
         report_flussi_folder.ui()
         
@@ -44,6 +47,8 @@ module Views
           report_fatture_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_REPORT_DA_FATTURARE_FOLDER
           report_da_fatturare_folder().init_folder()
+        when Helpers::FatturazioneHelper::WXBRA_REPORT_CORRISPETTIVI_FOLDER
+          report_corrispettivi_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_REPORT_FLUSSI_FOLDER
           report_flussi_folder().init_folder()
           

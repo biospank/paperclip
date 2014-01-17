@@ -4,16 +4,17 @@ module Helpers
   module FatturazioneHelper
     WXBRA_NOTA_SPESE_FOLDER = 0
     WXBRA_FATTURA_FOLDER = 1
-    WXBRA_DDT_FOLDER = 2
-    WXBRA_IMPOSTAZIONI_FOLDER = 3
-    WXBRA_REPORT_FOLDER = 4
+    WXBRA_CORRISPETTIVI_FOLDER = 2
+    WXBRA_DDT_FOLDER = 3
+    WXBRA_IMPOSTAZIONI_FOLDER = 4
+    WXBRA_REPORT_FOLDER = 5
     
     # subfolder
     WXBRA_REPORT_ESTRATTO_FOLDER = 0
-#    WXBRA_REPORT_PARTITARIO_FOLDER = 1
     WXBRA_REPORT_FATTURE_FOLDER = 1
     WXBRA_REPORT_DA_FATTURARE_FOLDER = 2
-    WXBRA_REPORT_FLUSSI_FOLDER = 3
+    WXBRA_REPORT_CORRISPETTIVI_FOLDER = 3
+    WXBRA_REPORT_FLUSSI_FOLDER = 4
 
     # Modelli Fattura
     FatturaCommercioTemplatePath = "resources/models/fattura/commercio.odt"
@@ -66,6 +67,10 @@ module Helpers
     FattureHeaderTemplatePath = "resources/templates/report/fatturazione/fatture_header.html.erb"
     FattureBodyTemplatePath = "resources/templates/report/fatturazione/fatture_body.html.erb"
     FattureFooterTemplatePath = "resources/templates/report/fatturazione/fatture_footer.html.erb"
+
+    CorrispettiviHeaderTemplatePath = "resources/templates/report/fatturazione/corrispettivi_header.html.erb"
+    CorrispettiviBodyTemplatePath = "resources/templates/report/fatturazione/corrispettivi_body.html.erb"
+    CorrispettiviFooterTemplatePath = "resources/templates/report/fatturazione/corrispettivi_footer.html.erb"
 
     FlussiHeaderTemplatePath = "resources/templates/report/fatturazione/flussi_header.html.erb"
     FlussiBodyTemplatePath = "resources/templates/report/fatturazione/flussi_body.html.erb"

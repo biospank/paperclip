@@ -9,6 +9,7 @@ module Models
     set_table_name :clienti
     
     belongs_to :azienda
+    belongs_to :pdc, :foreign_key => 'pdc_id'
     
     has_many :ddt, :as => :cliente
     
@@ -45,7 +46,6 @@ module Models
       :scope => :azienda_id,
       :message => "Il codice fiscale inserito e' gia' utilizzato"
     
-      
     def before_validation_on_create
       self.azienda = Azienda.current
       (self.cod_fisc ||= '').upcase!

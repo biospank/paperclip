@@ -4,7 +4,8 @@ module Helpers
   module PrimaNotaHelper
     WXBRA_SCRITTURE_FOLDER = 0
     WXBRA_CAUSALI_FOLDER = 1
-    WXBRA_REPORT_FOLDER = 2
+    WXBRA_PDC_FOLDER = 2
+    WXBRA_REPORT_FOLDER = 3
     
     # subfolder
     WXBRA_REPORT_STAMPE_FOLDER = 0

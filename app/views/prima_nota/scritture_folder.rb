@@ -4,6 +4,7 @@ require 'app/controllers/prima_nota_controller'
 require 'app/helpers/prima_nota_helper'
 require 'app/views/dialog/causali_dialog'
 require 'app/views/dialog/banche_dialog'
+require 'app/views/dialog/pdc_dialog'
 
 module Views
   module PrimaNota
@@ -14,7 +15,8 @@ module Views
       WX_ID_F2 = Wx::ID_ANY
       
       # riferimento della scrittura selezionata in lista
-      attr_accessor :scrittura_ref
+      attr_accessor :scrittura_ref,
+        :dialog_sql_criteria # utilizzato nelle dialog
 
       def ui()
         
@@ -27,7 +29,9 @@ module Views
                                           :banca_dare,
                                           :banca_avere,
                                           :fuori_partita_dare,
-                                          :fuori_partita_avere]},
+                                          :fuori_partita_avere,
+                                          :pdc_dare,
+                                          :pdc_avere]},
               :filtro => {:attrs => [:anno, :dal, :al]}
         
         controller :prima_nota
@@ -68,6 +72,37 @@ module Views
         end
 
         xrc.find('txt_descrizione_banca', self, :extends => TextField)
+
+        xrc.find('lku_pdc_dare', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_dare.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                                :folder => Helpers::PrimaNotaHelper::WXBRA_SCRITTURE_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_dare', self, :extends => TextField)
+
+        xrc.find('lku_pdc_avere', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_avere.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                                :folder => Helpers::PrimaNotaHelper::WXBRA_SCRITTURE_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
+
+        subscribe(:evt_pdc_changed) do |data|
+          lku_pdc_dare.load_data(data)
+          lku_pdc_avere.load_data(data)
+        end
+
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
+        end
 
         xrc.find('txt_descrizione', self, :extends => TextField) do |field|
           field.evt_char { |evt| txt_descrizione_keypress(evt) }
@@ -156,6 +191,8 @@ module Views
 
         map_text_enter(self, {'lku_causale' => 'on_riga_text_enter',
                               'lku_banca' => 'on_riga_text_enter',
+                              'lku_pdc_dare' => 'on_riga_text_enter',
+                              'lku_pdc_avere' => 'on_riga_text_enter',
                               'txt_data_operazione' => 'on_riga_text_enter', 
                               'txt_cassa_dare' => 'on_riga_text_enter', 
                               'txt_cassa_avere' => 'on_riga_text_enter', 
@@ -233,6 +270,7 @@ module Views
               activate_field(txt_cassa_dare, txt_cassa_avere,
                txt_banca_dare, txt_banca_avere,
                txt_fuori_partita_dare, txt_fuori_partita_avere,
+               lku_pdc_dare, lku_pdc_avere,
                btn_salva)
             end
           else
@@ -256,11 +294,13 @@ module Views
                 activate_field(txt_cassa_avere,
                  txt_banca_dare, txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               else
                 activate_field(txt_cassa_avere,
                  txt_banca_dare, txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               end
             end
@@ -285,10 +325,12 @@ module Views
                 copy_field(txt_cassa_avere.view_data)
                 activate_field(txt_banca_dare, txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               else
                 activate_field(txt_banca_dare, txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               end
             end
@@ -313,10 +355,12 @@ module Views
                 copy_field(txt_banca_dare.view_data)
                 activate_field(txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               else
                 activate_field(txt_banca_avere,
                  txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               end
             end
@@ -340,9 +384,11 @@ module Views
               if scrittura.causale
                 copy_field(txt_banca_avere.view_data)
                 activate_field(txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               else
                 activate_field(txt_fuori_partita_dare, txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               end
             end
@@ -367,9 +413,11 @@ module Views
               if scrittura.causale
                 copy_field(txt_fuori_partita_dare.view_data)
                 activate_field(txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               else
                 activate_field(txt_fuori_partita_avere,
+                 lku_pdc_dare, lku_pdc_avere,
                  btn_salva)
               end
             end
@@ -393,8 +441,11 @@ module Views
             else
               if scrittura.causale
                 copy_field(txt_fuori_partita_avere.view_data)
+                activate_field(lku_pdc_dare, lku_pdc_avere,
+                 btn_salva)
               else
-                evt.skip()
+                activate_field(lku_pdc_dare, lku_pdc_avere,
+                 btn_salva)
               end
             end
           else
@@ -406,8 +457,97 @@ module Views
 
       end
 
+      def lku_pdc_dare_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_TAB
+            if evt.shift_down()
+              activate_field(txt_fuori_partita_avere, txt_fuori_partita_dare,
+                             txt_banca_avere, txt_banca_dare,
+                             txt_cassa_avere, txt_cassa_dare,
+                             txt_descrizione)
+            else
+              activate_field(lku_pdc_avere,
+               btn_salva)
+            end
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.dare_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_pdc_dare.view_data = ctrl.load_pdc(dlg.selected)
+              lku_pdc_dare_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                  Helpers::PrimaNotaHelper::WXBRA_SCRITTURE_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
+      def lku_pdc_avere_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_TAB
+            if evt.shift_down()
+              activate_field(lku_pdc_dare, txt_fuori_partita_avere,
+                             txt_fuori_partita_dare, txt_banca_avere, txt_banca_dare,
+                             txt_cassa_avere, txt_cassa_dare,
+                             txt_descrizione)
+            else
+              evt.skip()
+            end
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.avere_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
+              lku_pdc_avere_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                  Helpers::PrimaNotaHelper::WXBRA_SCRITTURE_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
       def on_riga_text_enter(evt)
         begin
+          lku_causale.match_selection()
+          lku_banca.match_selection()
+          lku_pdc_dare.match_selection()
+          lku_pdc_avere.match_selection()
           btn_salva_click(evt)
         rescue Exception => e
           log_error(self, e)
@@ -428,6 +568,10 @@ module Views
         begin
           causale = lku_causale.match_selection()
           txt_descrizione.view_data = causale.descrizione_agg if causale
+          if configatron.bilancio.attivo
+            lku_pdc_dare.view_data = causale.pdc_dare
+            lku_pdc_avere.view_data = causale.pdc_avere
+          end
           collega_banca_alla causale
           transfer_scrittura_from_view()
           update_riga_ui()
@@ -441,6 +585,10 @@ module Views
         begin
           if causale = lku_causale.match_selection()
             txt_descrizione.view_data = causale.descrizione_agg
+            if configatron.bilancio.attivo
+              lku_pdc_dare.view_data = causale.pdc_dare
+              lku_pdc_avere.view_data = causale.pdc_avere
+            end
             if lku_banca.view_data.nil?
               collega_banca_alla causale
             end
@@ -729,6 +877,31 @@ module Views
       end
       
       def scrittura_compatibile?
+
+        if configatron.bilancio.attivo
+          if self.scrittura.pdc_dare && self.scrittura.pdc_dare.ricavo?
+            res = Wx::message_box("Il conto in dare non è un costo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_dare.activate()
+                return false
+              end
+          end
+
+          if self.scrittura.pdc_avere && self.scrittura.pdc_avere.costo?
+            res = Wx::message_box("Il conto in avere non è un ricavo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_avere.activate()
+                return false
+              end
+          end
+        end
+
         if(!self.scrittura.causale_compatibile?)
           Wx::message_box("La causale non e' compatibile con la banca.",
             'Info',
@@ -775,6 +948,7 @@ module Views
           enable_widgets [txt_data_operazione, lku_causale,
                           lku_banca, txt_descrizione,
                           btn_salva, btn_nuova]
+          enable_widgets([lku_pdc_dare, lku_pdc_avere]) if configatron.bilancio.attivo
           disable_widgets [btn_elimina]
           toggle_fields()
         else
@@ -785,6 +959,7 @@ module Views
                             txt_banca_dare, txt_banca_avere, 
                             txt_fuori_partita_dare, txt_fuori_partita_avere,
                             btn_salva, btn_elimina]
+            disable_widgets [lku_pdc_dare, lku_pdc_avere]
             enable_widgets [btn_nuova]
           else
             if self.scrittura.congelata?
@@ -794,11 +969,13 @@ module Views
                               txt_banca_dare, txt_banca_avere, 
                               txt_fuori_partita_dare, txt_fuori_partita_avere,
                               btn_salva]
+              disable_widgets [lku_pdc_dare, lku_pdc_avere]
               enable_widgets [btn_elimina, btn_nuova]
             else
               enable_widgets [txt_data_operazione, lku_causale,
                               lku_banca, txt_descrizione,
                               btn_salva, btn_elimina, btn_nuova]
+              enable_widgets([lku_pdc_dare, lku_pdc_avere]) if configatron.bilancio.attivo
               toggle_fields()
             end
           end
@@ -888,7 +1065,14 @@ module Views
           lku_banca.view_data = nil
         end
       end
-      
+
+      def dare_sql_criteria()
+        "pdc.type in ('#{Models::Pdc::ATTIVO}', '#{Models::Pdc::PASSIVO}', '#{Models::Pdc::COSTO}')"
+      end
+
+      def avere_sql_criteria()
+        "pdc.type in ('#{Models::Pdc::ATTIVO}', '#{Models::Pdc::PASSIVO}', '#{Models::Pdc::RICAVO}')"
+      end
     end
   end
 end

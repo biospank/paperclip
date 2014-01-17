@@ -28,7 +28,8 @@ module Views
         xrc.find('btn_ricerca', self)
         btn_ricerca.set_default()
         xrc.find('lstrep_fatture_clienti', self, :extends => ReportField)
-        xrc.find('wxID_OK', self)
+        xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
         
         # lista clienti
         

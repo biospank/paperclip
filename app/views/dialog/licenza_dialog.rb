@@ -23,6 +23,7 @@ module Views
         xrc.find('lbl_messaggio_errore', self)
         lbl_messaggio_errore.foreground_colour = Wx::RED
         xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
         wxid_ok.set_default()
 
         map_events(self)

@@ -27,7 +27,8 @@ module Views
         lstrep_storico_residui.column_info([{:caption => 'Data stampa definitivo', :width => 300}])
         lstrep_storico_residui.data_info([{:attr => :data_residuo, :format => :date}])
 
-        xrc.find('wxID_OK', self)
+        xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
         
         # carico gli anni contabili
         chce_anno.load_data(ctrl.load_anni_contabili(Scrittura, 'data_residuo'), 

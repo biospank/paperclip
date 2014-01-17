@@ -3,6 +3,7 @@
 require 'app/helpers/fatturazione_helper'
 require 'app/views/fatturazione/nota_spese_folder'
 require 'app/views/fatturazione/fattura_folder'
+require 'app/views/fatturazione/corrispettivi_folder'
 require 'app/views/fatturazione/ddt_folder'
 require 'app/views/fatturazione/impostazioni_folder'
 require 'app/views/fatturazione/report_folder'
@@ -19,6 +20,8 @@ module Views
         nota_spese_folder.ui()
         xrc.find('FATTURA_FOLDER', self, :extends => Views::Fatturazione::FatturaFolder)
         fattura_folder.ui()
+        xrc.find('CORRISPETTIVI_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviFolder)
+        corrispettivi_folder.ui()
         xrc.find('DDT_FOLDER', self, :extends => Views::Fatturazione::DdtFolder)
         ddt_folder.ui()
         xrc.find('IMPOSTAZIONI_FOLDER', self, :extends => Views::Fatturazione::ImpostazioniFolder)
@@ -49,6 +52,8 @@ module Views
           fattura_folder().refresh()
         when Helpers::FatturazioneHelper::WXBRA_DDT_FOLDER
           ddt_folder().init_folder()
+        when Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER
+          corrispettivi_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_IMPOSTAZIONI_FOLDER
           impostazioni_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_REPORT_FOLDER

@@ -15,7 +15,8 @@ module Views
 
         # user interface
         xrc.find('lstrep_incassi', self, :extends => ReportField)
-        xrc.find('wxID_OK', self)
+        xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
         
         # lista incassi fatture clienti
         

@@ -11,6 +11,17 @@ module Models
                   :attive, # indica tutte le occorrenze che hanno attiva = 1
                   :dettagliata, # viene usata nel report anagrafica per la stampa dettagliata
                   :anno, # viene usato nelle dialog
+                  :mese, # corrispettivi
+                  :giorno, # corrispettivi
+                  :aliquota, # corrispettivi
+                  :descrizione_aliquota, # corrispettivi
+                  :pdc_dare, # corrispettivi
+                  :descrizione_pdc_dare, # corrispettivi
+                  :pdc_avere, # corrispettivi
+                  :descrizione_pdc_avere, # corrispettivi
+                  :descrizione_pdc, # corrispettivi
+                  :tutti, #corrispettivi dialog
+                  :corrispettivi, # viene utilizzato nel report dei corrispettivi
                   :cliente, # viene usato nelle dialog
                   :fornitore, # viene usato nelle dialog
                   :sql_criteria, # viene usato per condizioni aggiuntive alla query di ricerca nelle dialog

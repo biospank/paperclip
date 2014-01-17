@@ -2,6 +2,7 @@
 
 require 'app/views/base/base_panel'
 require 'app/views/dialog/clienti_dialog'
+require 'app/views/dialog/righe_fattura_pdc_clienti_dialog'
 require 'app/views/dialog/fatture_clienti_dialog'
 require 'app/views/dialog/tipi_pagamento_dialog'
 require 'app/views/dialog/banche_dialog'
@@ -13,8 +14,9 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       
-      attr_accessor :dialog_sql_criteria # utilizzato nelle dialog
-      
+      attr_accessor :dialog_sql_criteria, # utilizzato nelle dialog
+                    :righe_fattura_pdc
+                    
       def ui(container=nil)
         
         model :cliente => {:attrs => [:denominazione, :p_iva]},
@@ -41,6 +43,7 @@ module Views
         xrc.find('txt_importo', self, :extends => DecimalField) do |field|
           field.evt_char { |evt| txt_importo_keypress(evt) }
         end
+        xrc.find('btn_pdc', self)
         xrc.find('chk_nota_di_credito', self, :extends => CheckField)
 
         xrc.find('btn_cliente', self)
@@ -52,6 +55,8 @@ module Views
         xrc.find('btn_indietro', self)
 
         map_events(self)
+
+        map_text_enter(self, {'txt_importo' => 'on_importo_enter'})
 
         xrc.find('INCASSI_FATTURA_CLIENTE_PANEL', container, 
           :extends => Views::Scadenzario::IncassiFatturaClientePanel, 
@@ -100,6 +105,10 @@ module Views
 
         end
         
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([btn_pdc]) : disable_widgets([btn_pdc])
+        end
+
         subscribe(:evt_azienda_changed) do
           reset_panel()
         end
@@ -123,6 +132,8 @@ module Views
         begin
           reset_cliente()
           reset_fattura_cliente()
+
+          self.righe_fattura_pdc = nil
           
           # imposto la data di oggi
           txt_data_emissione.view_data = Date.today
@@ -185,6 +196,79 @@ module Views
         incassi_fattura_cliente_panel.riepilogo_fattura()
       end
       
+      def on_importo_enter(evt)
+        begin
+          if configatron.bilancio.attivo
+            transfer_fattura_cliente_from_view()
+            incassi_fattura_cliente_panel.riepilogo_fattura()
+            btn_pdc_click(evt)
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+        evt.skip()
+      end
+
+      def btn_pdc_click(evt)
+        begin
+          Wx::BusyCursor.busy() do
+            if cliente? && importo?
+              # se viene da fatturazione
+              if self.fattura_cliente.da_fatturazione?
+                self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
+                self.righe_fattura_pdc = crea_righe_pdc_da_fatturazione() if self.righe_fattura_pdc.empty?
+              else
+                self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
+              end
+
+              rf_pdc_dlg = Views::Dialog::RigheFatturaPdcClientiDialog.new(self, (self.righe_fattura_pdc || []).dup)
+              rf_pdc_dlg.center_on_screen(Wx::BOTH)
+
+              answer = rf_pdc_dlg.show_modal()
+              
+              if answer == Wx::ID_OK
+                self.righe_fattura_pdc = rf_pdc_dlg.result_set_lstrep_righe_fattura_pdc
+                incassi_fattura_cliente_panel.txt_importo.activate()
+              elsif answer == rf_pdc_dlg.lku_aliquota.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:aliquota,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              elsif answer == rf_pdc_dlg.lku_norma.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:norma,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              elsif answer == rf_pdc_dlg.lku_pdc.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:pdc,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              end
+
+              rf_pdc_dlg.destroy()
+            end
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+        evt.skip()
+      end
+
       def btn_cliente_click(evt)
         begin
           Wx::BusyCursor.busy() do
@@ -210,7 +294,7 @@ module Views
         rescue Exception => e
           log_error(self, e)
         end
-        
+
         evt.skip()
       end
 
@@ -223,6 +307,7 @@ module Views
             fatture_clienti_dlg = Views::Dialog::FattureClientiDialog.new(self)
             fatture_clienti_dlg.center_on_screen(Wx::BOTH)
             if fatture_clienti_dlg.show_modal() == Wx::ID_OK
+              reset_panel()
               self.fattura_cliente = ctrl.load_fattura_cliente(fatture_clienti_dlg.selected)
               self.cliente = self.fattura_cliente.cliente
               transfer_cliente_to_view()
@@ -272,6 +357,7 @@ module Views
             fatture_clienti_dlg = Views::Dialog::FattureClientiDialog.new(self)
             fatture_clienti_dlg.center_on_screen(Wx::BOTH)
             if fatture_clienti_dlg.show_modal() == Wx::ID_OK
+              reset_panel()
               self.fattura_cliente = ctrl.load_fattura_cliente(fatture_clienti_dlg.selected)
               self.cliente = self.fattura_cliente.cliente
               transfer_cliente_to_view()
@@ -315,7 +401,7 @@ module Views
             Wx::BusyCursor.busy() do
               if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
                 transfer_fattura_cliente_from_view()
-                if cliente?
+                if cliente? && pdc_compilato? && pdc_compatibile?
                   if self.fattura_cliente.valid?
                     ctrl.save_fattura_cliente()
 
@@ -453,12 +539,63 @@ module Views
           Wx::message_box('Selezionare un cliente',
             'Info',
             Wx::OK | Wx::ICON_INFORMATION, self)
-            
+
           btn_cliente.set_focus()
           return false
         else
           return true
         end
+
+      end
+
+      def importo?
+        if self.fattura_cliente.importo.blank? || self.fattura_cliente.importo == 0
+          Wx::message_box("Inserire l'importo",
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          txt_importo.activate()
+          return false
+        else
+          return true
+        end
+
+      end
+
+      def pdc_compilato?
+        if configatron.bilancio.attivo && self.righe_fattura_pdc.blank?
+          Wx::message_box("Dettaglio Iva incompleto.",
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          btn_pdc.set_focus()
+          return false
+        else
+          return true
+        end
+
+      end
+
+      def pdc_compatibile?
+        totale_righe = 0.0
+        if configatron.bilancio.attivo
+
+          self.righe_fattura_pdc.each do |riga|
+            if riga.valid_record?
+              totale_righe += (riga.imponibile + riga.iva)
+            end
+          end
+
+          if Helpers::ApplicationHelper.real(totale_righe) != Helpers::ApplicationHelper.real(self.fattura_cliente.importo)
+              Wx::message_box("Il dettaglio iva non corrisponde al totale della fattura.",
+                'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+            btn_pdc.set_focus()
+            return false
+          end
+        end
+
+        return true
 
       end
 
@@ -469,7 +606,58 @@ module Views
       def scadenzario_sql_criteria
         "da_scadenzario = 1 and (da_fatturazione = 0 or da_fatturazione = 1)"
       end
-      
+
+      def riepilogo_importi_iva(righe_fattura)
+
+        riepilogo_importi = {}
+        importi_solo_iva = 0.0
+        ritenuta = 0.0
+
+        righe_fattura.each do |riga|
+          if riga.importo_iva?
+            importi_solo_iva += riga.importo
+          else
+            importo = (riepilogo_importi[riga.aliquota] || 0.0)
+            if configatron.attivita == Models::Azienda::ATTIVITA[:commercio]
+              riepilogo_importi[riga.aliquota] = (importo + ((riga.qta.zero?) ? riga.importo : (riga.importo * riga.qta)))
+            else
+              riepilogo_importi[riga.aliquota] = (importo + riga.importo)
+            end
+          end
+        end
+
+        [riepilogo_importi, importi_solo_iva, ritenuta]
+      end
+
+      def crea_righe_pdc_da_fatturazione()
+        righe_fattura_pdc = []
+        # ricerco le righe della fattura (FatturaClienteFatturazione)
+        righe_fattura = search_righe_fattura_cliente(self.fattura_cliente)
+        importi_iva, importo_solo_iva, ritenuta = *riepilogo_importi_iva(righe_fattura)
+        # per ogni riga imponibile creo una riga pdc
+        importi_iva.each_pair do |aliquota, imponibile_iva|
+          righe_fattura_pdc << Models::RigaFatturaPdc.new(
+            :aliquota => aliquota,
+            :imponibile => imponibile_iva,
+            :iva => ((imponibile_iva * aliquota.percentuale) / 100),
+            :pdc => self.cliente.pdc
+          )
+        end
+        # per importi solo iva creo un'altra riga pdc
+        if importo_solo_iva > 0
+          righe_fattura_pdc << Models::RigaFatturaPdc.new(
+            :iva => importo_solo_iva
+          )
+        end
+        # per la ritenuta creo un'altra riga pdc con importo negativo
+        if ritenuta > 0
+          righe_fattura_pdc << Models::RigaFatturaPdc.new(
+            :imponibile => (ritenuta * -1)
+          )
+        end
+
+        righe_fattura_pdc
+      end
     end
   end
 end

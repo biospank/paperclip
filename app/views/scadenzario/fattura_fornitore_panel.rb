@@ -2,6 +2,7 @@
 
 require 'app/views/base/base_panel'
 require 'app/views/dialog/fornitori_dialog'
+require 'app/views/dialog/righe_fattura_pdc_fornitori_dialog'
 require 'app/views/dialog/fatture_fornitori_dialog'
 require 'app/views/dialog/tipi_pagamento_dialog'
 require 'app/views/dialog/banche_dialog'
@@ -13,8 +14,9 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       
-      attr_accessor :dialog_sql_criteria # utilizzato nelle dialog
-      
+      attr_accessor :dialog_sql_criteria, # utilizzato nelle dialog
+                    :righe_fattura_pdc
+                    
       def ui(container=nil)
         
         model :fornitore => {:attrs => [:denominazione, :p_iva]},
@@ -40,6 +42,7 @@ module Views
         xrc.find('txt_importo', self, :extends => DecimalField) do |field|
           field.evt_char { |evt| txt_importo_keypress(evt) }
         end
+        xrc.find('btn_pdc', self)
         xrc.find('chk_nota_di_credito', self, :extends => CheckField)
 
         xrc.find('btn_fornitore', self)
@@ -50,6 +53,8 @@ module Views
         xrc.find('btn_indietro', self)
 
         map_events(self)
+
+        map_text_enter(self, {'txt_importo' => 'on_importo_enter'})
 
         xrc.find('PAGAMENTI_FATTURA_FORNITORE_PANEL', container, 
           :extends => Views::Scadenzario::PagamentiFatturaFornitorePanel, 
@@ -98,6 +103,10 @@ module Views
 
         end
 
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([btn_pdc]) : disable_widgets([btn_pdc])
+        end
+
         subscribe(:evt_azienda_changed) do
           reset_panel()
         end
@@ -122,6 +131,8 @@ module Views
           reset_fornitore()
           reset_fattura_fornitore()
           
+          self.righe_fattura_pdc = nil
+
           # imposto la data di oggi
           txt_data_emissione.view_data = Date.today
 
@@ -183,6 +194,70 @@ module Views
         pagamenti_fattura_fornitore_panel.riepilogo_fattura()
       end
       
+      def on_importo_enter(evt)
+        begin
+          if configatron.bilancio.attivo
+            transfer_fattura_fornitore_from_view()
+            pagamenti_fattura_fornitore_panel.riepilogo_fattura()
+            btn_pdc_click(evt)
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+        evt.skip()
+      end
+
+      def btn_pdc_click(evt)
+        begin
+          Wx::BusyCursor.busy() do
+            if fornitore? && importo?
+              self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_fornitori(self.fattura_fornitore) unless self.fattura_fornitore.new_record?
+              rf_pdc_dlg = Views::Dialog::RigheFatturaPdcFornitoriDialog.new(self, (self.righe_fattura_pdc || []).dup)
+              rf_pdc_dlg.center_on_screen(Wx::BOTH)
+              answer = rf_pdc_dlg.show_modal()
+              if answer == Wx::ID_OK
+                self.righe_fattura_pdc = rf_pdc_dlg.result_set_lstrep_righe_fattura_pdc
+                pagamenti_fattura_fornitore_panel.txt_importo.activate()
+              elsif answer == rf_pdc_dlg.lku_aliquota.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:aliquota,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              elsif answer == rf_pdc_dlg.lku_norma.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:norma,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              elsif answer == rf_pdc_dlg.lku_pdc.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:pdc,
+                  [
+                    Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                    Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER
+                  ]
+                )
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              end
+
+              rf_pdc_dlg.destroy()
+            end
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+        evt.skip()
+      end
+
       def btn_fornitore_click(evt)
         begin
           Wx::BusyCursor.busy() do
@@ -221,6 +296,7 @@ module Views
             fatture_fornitori_dlg = Views::Dialog::FattureFornitoriDialog.new(self)
             fatture_fornitori_dlg.center_on_screen(Wx::BOTH)
             if fatture_fornitori_dlg.show_modal() == Wx::ID_OK
+              reset_panel()
               self.fattura_fornitore = ctrl.load_fattura_fornitore(fatture_fornitori_dlg.selected)
               self.fornitore = self.fattura_fornitore.fornitore
               transfer_fornitore_to_view()
@@ -258,7 +334,7 @@ module Views
             Wx::BusyCursor.busy() do
               if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
                 transfer_fattura_fornitore_from_view()
-                if fornitore?
+                if fornitore? && pdc_compilato? && pdc_compatibile?
                   if self.fattura_fornitore.valid?
                     ctrl.save_fattura_fornitore()
 
@@ -396,12 +472,63 @@ module Views
           Wx::message_box('Selezionare un fornitore',
             'Info',
             Wx::OK | Wx::ICON_INFORMATION, self)
-            
+
           btn_fornitore.set_focus()
           return false
         else
           return true
         end
+
+      end
+
+      def importo?
+        if self.fattura_fornitore.importo.blank? || self.fattura_fornitore.importo == 0
+          Wx::message_box("Inserire l'importo",
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          txt_importo.activate()
+          return false
+        else
+          return true
+        end
+
+      end
+
+      def pdc_compilato?
+        if configatron.bilancio.attivo && self.righe_fattura_pdc.blank?
+          Wx::message_box("Dettaglio Iva incompleto.",
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          btn_pdc.set_focus()
+          return false
+        else
+          return true
+        end
+
+      end
+
+      def pdc_compatibile?
+        totale_righe = 0.0
+        if configatron.bilancio.attivo
+
+          self.righe_fattura_pdc.each do |riga|
+            if riga.valid_record?
+              totale_righe += (riga.imponibile + riga.iva)
+            end
+          end
+
+          if Helpers::ApplicationHelper.real(totale_righe) != Helpers::ApplicationHelper.real(self.fattura_fornitore.importo)
+              Wx::message_box("Il dettaglio iva non corrisponde al totale della fattura.",
+                'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+            btn_pdc.set_focus()
+            return false
+          end
+        end
+
+        return true
 
       end
 

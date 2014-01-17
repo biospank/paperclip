@@ -53,7 +53,22 @@ module Helpers
 
     # logo di default
     WXBRA_DEFAULT_LOGO = "./resources/images/blank_logo.png"
-    
+
+    MESI = [
+      {:id => '01', :descrizione => 'Gennaio'},
+      {:id => '02', :descrizione => 'Febbraio'},
+      {:id => '03', :descrizione => 'Marzo'},
+      {:id => '04', :descrizione => 'Aprile'},
+      {:id => '05', :descrizione => 'Maggio'},
+      {:id => '06', :descrizione => 'Giugno'},
+      {:id => '07', :descrizione => 'Luglio'},
+      {:id => '08', :descrizione => 'Agosto'},
+      {:id => '09', :descrizione => 'Settembre'},
+      {:id => '10', :descrizione => 'Ottobre'},
+      {:id => '11', :descrizione => 'Novembre'},
+      {:id => '12', :descrizione => 'Dicembre'}
+    ]
+
     # formattazione dei campi
 
     module_function

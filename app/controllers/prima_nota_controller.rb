@@ -88,15 +88,15 @@ module Controllers
     end
 
     # gestione causali
-    
+
     def load_causale(id)
       Causale.find(id)
     end
-    
+
     def load_causale_by_codice(codice)
       Causale.find_by_codice(codice)
     end
-    
+
     def save_causale()
       causale.save
     end
@@ -106,21 +106,115 @@ module Controllers
     end
 
     def search_for_causali()
-      Causale.search_for(filtro.ricerca, 
-        [:codice, :descrizione], 
+      Causale.search_for(filtro.ricerca,
+        [:codice, :descrizione],
         build_causali_dialog_conditions())
     end
 
     def build_causali_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
        :order => 'codice'}
     end
-    
+
+    # gestione pdc
+
+    def load_pdc_by_codice(codice)
+      Pdc.find_by_codice(codice)
+    end
+
+    def save_pdc()
+      pdc.save
+    end
+
+    def delete_pdc()
+      pdc.destroy
+    end
+
+    def search_for_pdc()
+      Pdc.search_for(filtro.ricerca,
+        [:codice, :descrizione],
+        build_pdc_dialog_conditions())
+    end
+
+    def build_pdc_dialog_conditions()
+      query_str = []
+      parametri = []
+
+      filtro.build_conditions(query_str, parametri) if filtro
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+       :order => 'codice'}
+    end
+
+    # gestione categoria pdc
+
+    def load_categoria_pdc_by_codice(codice)
+      CategoriaPdc.find_by_codice(codice)
+    end
+
+    def save_categoria_pdc()
+      categoria_pdc.save
+    end
+
+    def delete_categoria_pdc()
+      categoria_pdc.destroy
+    end
+
+    def search_for_categorie_pdc()
+      CategoriaPdc.search_for(filtro.ricerca,
+        [:codice, :descrizione],
+        build_categorie_pdc_dialog_conditions())
+    end
+
+    def build_categorie_pdc_dialog_conditions()
+      query_str = []
+      parametri = []
+
+      filtro.build_conditions(query_str, parametri) if filtro
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+       :order => 'codice'}
+    end
+
+    # gestione aliquote
+
+    def save_norma()
+      norma.save
+    end
+
+    def delete_norma()
+      norma.destroy
+    end
+
+    def load_norma(id)
+      Norma.find(id)
+    end
+
+    def load_norma_by_codice(codice)
+      Norma.find_by_codice(codice)
+    end
+
+    def search_for_norma()
+      Norma.search_for(filtro.ricerca,
+        [:codice, :percentuale, :descrizione],
+        build_norma_dialog_conditions())
+    end
+
+    def build_norma_dialog_conditions()
+      query_str = []
+      parametri = []
+
+      filtro.build_conditions(query_str, parametri) if filtro
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+       :order => 'codice'}
+    end
+
     # gestione storico residui
     
     def search_storico_residui()

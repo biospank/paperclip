@@ -236,6 +236,8 @@ module Views
       
       def on_riga_text_enter(evt)
         begin
+          lku_tipo_pagamento.match_selection()
+          lku_banca.match_selection()
           if(lstrep_incassi_fattura.get_selected_item_count() > 0)
             btn_modifica_click(evt)
           else

@@ -112,7 +112,8 @@ module Views
         xrc.find('btn_modifica', self)
         xrc.find('btn_elimina', self)
         xrc.find('btn_nuovo', self)
-        xrc.find('wxID_OK', self)
+        xrc.find('wxID_OK', self, :extends => OkStdButton)
+        xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
 
         map_events(self)
 

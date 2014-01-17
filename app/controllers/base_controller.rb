@@ -30,7 +30,16 @@ module Controllers
         "to_char(#{column}, 'YYYY')"
       end
     end
-    
+
+    def to_sql_month(column)
+      case ActiveRecord::Base.connection.adapter_name().downcase.to_sym
+      when :sqlite
+        "strftime('%m', #{column})"
+      when :postgresql
+        "to_char(#{column}, 'MM')"
+      end
+    end
+
     def get_date(which)
       case which
       when :from
@@ -56,20 +65,6 @@ module Controllers
       end
     end
 
-    # accessor
-    # da eliminare
-    #def waiting=(bool)
-    #  @@waiting = bool
-    #end
-    
-    # da eliminare
-    #def waiting()
-    #  @@waiting
-    #end
-    
-    # da eliminare
-    #alias waiting? waiting
-    
     def load_azienda(id)
       Azienda.find(id, :include => [:dati_azienda])
     end
@@ -121,7 +116,19 @@ module Controllers
     def load_aliquota(id)
       Aliquota.find(id)
     end
-    
+
+    def load_norma(id)
+      Norma.find(id)
+    end
+
+    def load_pdc(id)
+      Pdc.find(id)
+    end
+
+    def load_categoria_pdc(id)
+      CategoriaPdc.find(id)
+    end
+
     def load_aliquota_by_codice(codice)
       Aliquota.find_by_codice(codice)
     end
@@ -157,6 +164,22 @@ module Controllers
 
     def search_aliquote()
       Aliquota.search(:all, :order => 'codice')
+    end
+
+    def search_norma()
+      Norma.search(:all, :order => 'codice')
+    end
+
+    def search_righe_fattura_cliente(fattura)
+      RigaFatturaCliente.search(:all, :conditions => ['fattura_cliente_id = ?', fattura], :include => [:aliquota], :order => 'righe_fatture_clienti.id')
+    end
+
+    def search_pdc()
+      Pdc.search(:all, :order => 'codice')
+    end
+
+    def search_categorie_pdc()
+      CategoriaPdc.search(:all, :order => 'codice')
     end
 
     def search_clienti()

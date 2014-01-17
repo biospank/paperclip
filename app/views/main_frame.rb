@@ -82,7 +82,7 @@ module Views
 
       evt_config_changed do | evt |
         write_config()
-        set_status_text("Connesso al server #{evt.host}")
+        set_status_text("Connesso al server #{evt.host}") if evt.host
       end
 
    end
@@ -122,6 +122,11 @@ module Views
         @menu_bar.find_item(@mnu_avviso_parcella).check()
       end
       
+      mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio')).get_sub_menu()
+        @mnu_bilancio_attivo = mnu_bilancio.find_item('Attivo')
+        configatron.bilancio.set_default(:attivo, false)
+        @menu_bar.find_item(@mnu_bilancio_attivo).check() if configatron.bilancio.attivo
+
       @mnu_licenza = menu_bar.find_menu_item('Registra', 'Licenza')
 
       @mnu_versione = menu_bar.find_menu_item('Info', 'Versione')
@@ -130,7 +135,7 @@ module Views
     
     def login(exit_main=true, old_azienda=nil)
       login_dlg = Views::Dialog::LoginDialog.new(self)
-      #login_dlg.center_on_screen(Wx::BOTH)
+      login_dlg.center_on_screen(Wx::BOTH)
       answer = login_dlg.show_modal()
       login_dlg.destroy()
       if answer == Wx::ID_CANCEL
@@ -307,6 +312,19 @@ module Views
       end
     end
     
+    def mnu_bilancio_attivo_click(evt)
+      begin
+        Wx::BusyCursor.busy() do
+          configatron.bilancio.attivo = evt.checked?
+          write_config()
+          listbook_mgr.reset_folders()
+          notify(:evt_bilancio_attivo, evt.checked?)
+        end
+      rescue Exception => e
+        log_error(self, e)
+      end
+    end
+
     def mnu_licenza_click(evt)
       begin
         licenza_dlg = Views::Dialog::LicenzaDialog.new(self)
