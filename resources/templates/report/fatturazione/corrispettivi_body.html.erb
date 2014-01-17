@@ -1,0 +1,70 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <table id="report" class="table table-striped table-bordered table-condensed">
+            <tbody>
+              <% self.result_set_lstrep_corrispettivi.each do |riga| %>
+                <tr>
+                  <td style="width: 15%;" class="center"><div class="dontsplit"><%= riga[0] %></div></td>
+                  <td style="width: 15%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[1]) %></div></td>
+                  <% if filtro.corrispettivi == 1 %>
+                    <% if aliquote.size == 1 %>
+                      <td style="width: 70%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[2]) %></div></td>
+                    <% end %>
+                    <% if aliquote.size == 2 %>
+                      <% 1.upto(aliquote.size) do |idx| %>
+                        <% col = (1 + idx) %>
+                        <td style="width: 35%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col]) %></div></td>
+                      <% end %>
+                    <% end %>
+                    <% if aliquote.size == 3 %>
+                      <% 1.upto(aliquote.size) do |idx| %>
+                        <% col = (1 + idx) %>
+                        <td style="width: 23%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col]) %></div></td>
+                      <% end %>
+                    <% end %>
+                    <% if aliquote.size > 3 %>
+                        <th style="width: 70%;" class="right"></th>
+                    <% end %>
+                  <% else %>
+                    <% if aliquote.size == 1 %>
+                      <td style="width: 35%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[2]) %></div></td>
+                      <td style="width: 35%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[3]) %></div></td>
+                    <% end %>
+                    <% if aliquote.size == 2 %>
+                      <% 1.upto(aliquote.size) do |idx| %>
+                        <% col = (2 * idx) %>
+                        <td style="width: 20%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col]) %></div></td>
+                        <td style="width: 15%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col + 1]) %></div></td>
+                      <% end %>
+                    <% end %>
+                    <% if aliquote.size == 3 %>
+                      <% 1.upto(aliquote.size) do |idx| %>
+                        <% col = (2 * idx) %>
+                        <td style="width: 13%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col]) %></div></td>
+                        <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(riga[col + 1]) %></div></td>
+                      <% end %>
+                    <% end %>
+                    <% if aliquote.size > 3 %>
+                        <th style="width: 70%;" class="right"></th>
+                    <% end %>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

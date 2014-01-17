@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Corrispettivi</title>
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet" />
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <!--<script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.footerOnLastPage();
+      });
+    </script>-->
+  </head>
+  <body>
+    <div class="container">
+      <hr />
+      <div class="row">
+        <div class="span12">
+          <footer class="center">
+            <% if filtro.corrispettivi == 1 %>
+              <strong>Totale corrispettivi:</strong> <%= self.lbl_totale_corrispettivi.label %> <%= aliquote.map {|aliquota| "<strong>Totale corrispettivi (#{Helpers::ApplicationHelper.percentage(aliquota.percentuale)}):</strong> #{Helpers::ApplicationHelper.currency(self.hash_aliquote_corrispettivi[aliquota.id].sum(&:importo))}"}.join(" -- ")  %>
+            <% else %>
+              <strong>Totale corrispettivi:</strong> <%= self.lbl_totale_corrispettivi.label %> <%= aliquote.map {|aliquota| "<strong>Totale imponibile (#{Helpers::ApplicationHelper.percentage(aliquota.percentuale)}):</strong> #{Helpers::ApplicationHelper.currency(self.hash_aliquote_corrispettivi[aliquota.id].sum(&:imponibile))} - <strong>Totale iva (#{Helpers::ApplicationHelper.percentage(aliquota.percentuale)}):</strong> #{Helpers::ApplicationHelper.currency(self.hash_aliquote_corrispettivi[aliquota.id].sum(&:iva))}"}.join(" -- ")  %>
+            <% end %>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

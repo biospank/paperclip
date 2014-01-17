@@ -1,0 +1,10 @@
+---
+database:
+  postgresql:
+    adapter: postgresql
+    encoding: utf-8
+    database: paperclip
+    username: postgres
+    password: postgres
+    port: 5432
+
