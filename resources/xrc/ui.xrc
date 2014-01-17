@@ -1110,7 +1110,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Fatturazione</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="FATTURAZIONE_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -6330,7 +6330,7 @@
 																								</object>
 																							</object>
 																							<object class="sizeritem">
-																								<option>0</option>
+																								<option>1</option>
 																								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
 																								<border>3</border>
 																								<object class="wxChoice" name="chce_aliquota">
@@ -6652,7 +6652,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Clienti</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="SCADENZARIO_CLIENTI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -8882,7 +8882,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -11511,7 +11511,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Prima Nota</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="PRIMA_NOTA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -12732,7 +12732,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Piano dei conti</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="PDC_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -13284,7 +13284,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
