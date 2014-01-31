@@ -1,19 +1,84 @@
 --- 
-:fatturazione: 
-  :carta_intestata: false
-  :iva_per_cassa: false
+:pre_fattura: &id001 !ruby/object:Configatron::Store 
+  _protected: []
+
+  _store: 
+    :intestazione: 1
 :env: development
-:attivita: 2
-:connection: 
-  :adapter: sqlite3
-  :database: db/production/bra.db
-  :mode: :local
-:pre_fattura: 
-  :intestazione: 1
-:logging_config: 
-  :format_as: :yaml
-  :level: :info
-  :filename: log/paperclip.log
-:screen: 
-  :width: 1280
-  :height: 800
+:bilancio: &id007 !ruby/object:Configatron::Store 
+  _name: :bilancio
+  _parent: &id006 !ruby/object:Configatron::Store 
+    _name: 
+    _parent: 
+    _protected: []
+
+    _store: 
+      :pre_fattura: *id001
+      :bilancio: *id007
+      :env: development
+      :connection: &id002 !ruby/object:Configatron::Store 
+        _protected: []
+
+        _store: 
+          :mode: :local
+          :adapter: sqlite3
+          :database: db/production/bra.db
+      :logging_config: &id003 !ruby/object:Configatron::Store 
+        _protected: []
+
+        _store: 
+          :format_as: :yaml
+          :level: :info
+          :filename: log/paperclip.log
+      :screen: &id004 !ruby/object:Configatron::Store 
+        _name: :screen
+        _parent: !ruby/object:Configatron::Store 
+          _name: 
+          _parent: 
+          _protected: []
+
+          _store: 
+            :pre_fattura: *id001
+            :env: development
+            :connection: *id002
+            :logging_config: *id003
+            :screen: *id004
+            :fatturazione: &id005 !ruby/object:Configatron::Store 
+              _protected: []
+
+              _store: 
+                :iva_per_cassa: false
+                :carta_intestata: false
+            :attivita: 2
+        _protected: []
+
+        _store: 
+          :width: 1280
+          :height: 800
+      :fatturazione: *id005
+      :corrispettivi: &id008 !ruby/object:Configatron::Store 
+        _name: :corrispettivi
+        _parent: *id006
+        _protected: []
+
+        _store: 
+          :default_pdc_dare: 4
+          :default_pdc_avere: 1
+      :attivita: 2
+  _protected: []
+
+  _store: 
+    :attivo: false
+    :attivo?: !ruby/object:Configatron::Store 
+      _name: :attivo?
+      _parent: *id007
+      _protected: []
+
+      _store: {}
+
+:logging_config: *id003
+:connection: *id002
+:screen: *id004
+:fatturazione: *id005
+:corrispettivi: *id008
+:attivita: 1

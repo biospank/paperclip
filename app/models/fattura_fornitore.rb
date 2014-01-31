@@ -14,8 +14,12 @@ module Models
     has_many :pagamento_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'pagamenti_fatture_fornitori.id'
     has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'righe_fattura_pdc.id'
   
-    validates_presence_of :data_emissione, 
-      :message => "Data inesistente o formalmente errata."
+    validates_presence_of :data_emissione,
+      :message => "Data emissione inesistente o formalmente errata."
+
+    validates_presence_of :data_registrazione,
+      :if => Proc.new { |fattura| configatron.bilancio.attivo },
+      :message => "Data registrazione inesistente o formalmente errata."
 
     validates_presence_of :num, 
       :message => "Inserire il numero di fattura o nota di credito."

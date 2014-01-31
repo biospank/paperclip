@@ -71,6 +71,11 @@ module Views
       evt_listbook_page_changing(self)    { |evt| listbook_page_changing(evt) }
       evt_listbook_page_changed(self)    { |evt| listbook_page_changed(evt) }
 
+      evt_azienda_updated do | evt |
+        Models::Azienda.current.dati_azienda.reload
+        notify(:evt_azienda_updated)
+      end
+
       evt_cliente_changed do | evt |
         notify(:evt_cliente_changed, evt.result_set)
       end

@@ -606,6 +606,19 @@ module Views
         end
       end
 
+      class AziendaUpdatedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_AZIENDA_UPDATED = Wx::EvtHandler.register_class(self, nil, 'evt_azienda_updated', 0)
+
+        def initialize()
+          # The constant id is the arg to super
+          super(EVT_AZIENDA_UPDATED)
+        end
+
+      end
+
       class ConfigChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'

@@ -69,6 +69,52 @@ module Helpers
       {:id => '12', :descrizione => 'Dicembre'}
     ]
 
+    module Liquidazione
+      MENSILE = 1
+      TRIMESTRALE = 2
+
+      PERIODO = [
+        {:id => MENSILE, :descrizione => 'Mensile'},
+        {:id => TRIMESTRALE, :descrizione => 'Trimestrale'}
+      ]
+
+      RANGE_TO_TRIMESTRE = {
+        1..3 => 1,
+        4..6 => 2,
+        7..9 => 3,
+        10..12 => 4
+      }
+
+      RANGE_TO_POSITION = {
+        1..3 => 0,
+        4..6 => 1,
+        7..9 => 2,
+        10..12 => 3
+      }
+
+      TRIMESTRE_TO_RANGE = {
+        1 => 1..3,
+        2 => 4..6,
+        3 => 7..9,
+        4 => 10..12
+      }
+
+      PERIODO_TRIMESTRE = [
+        {:id => 1, :descrizione => '1° trimestre (Gennaio - Marzo)'},
+        {:id => 2, :descrizione => '2° trimestre (Aprile - Giugno)'},
+        {:id => 3, :descrizione => '3° trimestre (Luglio - Settembre)'},
+        {:id => 4, :descrizione => '4° trimestre (Ottobre - Dicembre)'}
+      ]
+
+      NUMERO_TRIMESTRE = {
+        1 => '1° trimestre (Gennaio - Marzo)',
+        2 => '2° trimestre (Aprile - Giugno)',
+        3 => '3° trimestre (Luglio - Settembre)',
+        4 => '4° trimestre (Ottobre - Dicembre)'
+      }
+
+    end
+
     # formattazione dei campi
 
     module_function

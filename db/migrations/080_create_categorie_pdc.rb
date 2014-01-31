@@ -9,6 +9,7 @@ class CreateCategoriePdc < ActiveRecord::Migration
     end
 
     add_column :pdc, :categoria_pdc_id, :integer
+    add_column :dati_azienda, :liquidazione_iva, :integer, :limit => 1, :null => false, :default => 1
 
     execute "CREATE INDEX CATEGORIE_PDC_CODICE_IDX ON categorie_pdc (codice)"
     execute "CREATE INDEX PDC_CODICE_IDX ON pdc (codice)"
@@ -19,6 +20,7 @@ class CreateCategoriePdc < ActiveRecord::Migration
   def self.down
     drop_table :categorie_pdc
     remove_column :pdc, :categoria_pdc_id
-    execute "DROP INDEX PDC_CODICE_IDX ON pdc (codice)"
+    remove_column :dati_azienda, :liquidazione_iva
+    execute "DROP INDEX PDC_CODICE_IDX"
   end
 end

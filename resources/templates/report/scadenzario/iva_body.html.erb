@@ -1,0 +1,72 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div id="totali">
+        <div class="well well-small">
+          <div class="row">
+            <div class="span11">
+              <table class="table table-condensed" id="riepilogo">
+                <thead>
+                  <tr>
+                    <th style="width: 50%" class="left"></th>
+                    <th style="width: 25%" class="right"><strong>DEBITI</strong></th>
+                    <th style="width: 25%" class="right"><strong>CREDITI</strong></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>IVA ESIGIBILE PER IL PERIODO:</strong></td>
+                    <td style="width: 25%" class="right"><strong><%= Helpers::ApplicationHelper.currency(self.iva_debito) %></strong></td>
+                    <td style="width: 25%" class="right"></td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>IVA CHE SI DETRAE PER IL PERIODO:</strong></td>
+                    <td style="width: 25%" class="right"></td>
+                    <td style="width: 25%" class="right"><strong><%= Helpers::ApplicationHelper.currency(self.iva_credito) %></strong></td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>IVA A DEBITO/CREDITO PER IL PERIODO:</strong></td>
+                    <td style="width: 25%" class="right"><strong><%= self.diff_iva_debito.zero? ? '' : Helpers::ApplicationHelper.currency(self.diff_iva_debito) %></strong></td>
+                    <td style="width: 25%" class="right"><strong><%= self.diff_iva_credito.zero? ? '' : Helpers::ApplicationHelper.currency(self.diff_iva_credito) %></strong></td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>DEBITO/CREDITO PERIODO PRECEDENTE:</strong></td>
+                    <% if((!self.iva_debito_periodo_precedente.zero?) && (self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE)) %>
+                      <td style="width: 25%" class="right"><strong><%= Helpers::ApplicationHelper.currency(self.iva_debito_periodo_precedente) %></strong></td>
+                    <% else %>
+                      <td style="width: 25%" class="right"></td>
+                    <% end %>
+                    <td style="width: 25%" class="right"><strong><%= self.iva_credito_periodo_precedente.zero? ? '' : Helpers::ApplicationHelper.currency(self.iva_credito_periodo_precedente) %></strong></td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>INTERESSI DOVUTI LIQUIDAZIONI TRIMESTRALI:</strong></td>
+                    <td style="width: 25%" class="right"></td>
+                    <td style="width: 25%" class="right"></td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%" class="left"><strong>IMPORTO DA VERSARE (O DA TRASFERIRE):</strong></td>
+                    <% if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito)) %>
+                      <td style="width: 25%" class="right"><strong><%= Helpers::ApplicationHelper.currency(self.totale_iva_debito - self.totale_iva_credito) %></strong></td>
+                      <td style="width: 25%" class="right"></td>
+                    <% else %>
+                      <td style="width: 25%" class="right"></td>
+                      <td style="width: 25%" class="right"><strong><%= Helpers::ApplicationHelper.currency(self.totale_iva_credito - self.totale_iva_debito) %></strong></td>
+                    <% end %>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

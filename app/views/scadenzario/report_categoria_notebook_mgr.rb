@@ -3,6 +3,7 @@
 require 'app/helpers/scadenzario_helper'
 require 'app/views/scadenzario/report_clienti_folder'
 require 'app/views/scadenzario/report_fornitori_folder'
+require 'app/views/scadenzario/report_liquidazione_iva_folder'
 
 module Views
   module Scadenzario
@@ -18,6 +19,8 @@ module Views
         report_scadenzario_clienti_folder.ui()
         xrc.find('REPORT_SCADENZARIO_FORNITORI_FOLDER', self, :extends => Views::Scadenzario::ReportFornitoriFolder)
         report_scadenzario_fornitori_folder.ui()
+        xrc.find('REPORT_LIQUIDAZIONE_IVA_FOLDER', self, :extends => Views::Scadenzario::ReportLiquidazioneIvaFolder)
+        report_liquidazione_iva_folder.ui()
         
       end
 
@@ -33,6 +36,8 @@ module Views
           report_scadenzario_clienti_folder().init_folder()
         when Helpers::ScadenzarioHelper::WXBRA_REPORT_SCADENZARIO_FORNITORI_FOLDER
           report_scadenzario_fornitori_folder().init_folder()
+        when Helpers::ScadenzarioHelper::WXBRA_REPORT_LIQUIDAZIONE_IVA_FOLDER
+          report_liquidazione_iva_folder().init_folder()
           
         end
         evt.skip()

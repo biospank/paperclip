@@ -36,6 +36,7 @@ module Views
                                 :label => lambda {|aliquota| self.txt_descrizione_aliquota.view_data = (aliquota ? aliquota.descrizione : nil)},
                                 :model => :aliquota,
                                 :dialog => :aliquote_dialog,
+                                :default => lambda {|aliquota| aliquota.predefinita?},
                                 :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
                                 :folder => Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER)
         end
@@ -417,6 +418,7 @@ module Views
       end
 
       def init_gestione_riga()
+        lku_aliquota.set_default()
         lku_pdc.view_data = self.owner.fornitore.pdc
         transfer_riga_fattura_pdc_from_view
         calcola_scorporo_residuo()

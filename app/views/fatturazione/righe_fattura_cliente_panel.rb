@@ -66,8 +66,8 @@ module Views
         lstrep_iva_ritenute.column_info([{:caption => 'Aliquota', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Imponibile', :width => width, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Iva', :width => width, :align => Wx::LIST_FORMAT_RIGHT},
-            {:caption => 'Ritenuta', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
-          ])
+            {:caption => 'Ritenuta', :width => 80, :align => Wx::LIST_FORMAT_RIGHT}])
+        
         lstrep_iva_ritenute.data_info([{:attr => :aliquota, :format => :percentage},
             {:attr => :imponibile, :format => :currency},
             {:attr => :iva, :format => :currency},

@@ -80,11 +80,11 @@ module Controllers
     end
     
     def load_prodotto_by_codice(codice)
-      Prodotto.find_by_codice(codice)
+      Prodotto.find_by_codice(codice, :conditions => ["azienda_id = ?", Azienda.current])
     end
     
     def load_prodotto_by_bar_code(barcode)
-      Prodotto.find_by_bar_code(barcode)
+      Prodotto.find_by_bar_code(barcode, :conditions => ["azienda_id = ?", Azienda.current])
     end
     
     def save_prodotto()
@@ -253,6 +253,9 @@ module Controllers
 
       data_dal = get_date(:from)
       data_al = get_date(:to)
+
+      query_str << "prodotti.azienda_id = ?"
+      parametri << Azienda.current
 
       if (filtro.prodotto)
         query_str << "prodotti.id = ?"

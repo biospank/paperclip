@@ -1,0 +1,60 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Vendite header</title>
+
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.numbered();
+        //page.headerRepeat();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span4 offset8 right">
+          <small>
+            <%= dati_azienda.denominazione %> <span>pag. </span><span id="page"></span>/<span id="page-count"></span>
+          </small>
+        </div>
+      </div>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <p class="center">
+            <strong><%= ["REGISTRO DELLE FATTURE DI VENDITA DEL PERIODO", "#{(dati_azienda.liquidazione_iva == Helpers::ApplicationHelper::Liquidazione::MENSILE) ? filtro.periodo : Helpers::ApplicationHelper::Liquidazione::NUMERO_TRIMESTRE[filtro.periodo]}/#{filtro.anno}"].join(' ') %></strong><br /><br />
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <table id="head" class="table table-head table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th style="width: 15%;" class="left">Cliente</th>
+                <th style="width: 8%;" class="center">Fattura</th>
+                <th style="width: 12%;" class="center">Data</th>
+                <th style="width: 13%;" class="right">Importo</th>
+                <th style="width: 14%;" class="left">Aliquota</th>
+                <th style="width: 14%;" class="left">Norma</th>
+                <th style="width: 12%;" class="right">Imponibile</th>
+                <th style="width: 12%;" class="right">Iva</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

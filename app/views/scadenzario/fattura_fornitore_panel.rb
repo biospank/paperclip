@@ -21,7 +21,8 @@ module Views
         
         model :fornitore => {:attrs => [:denominazione, :p_iva]},
           :fattura_fornitore => {:attrs => [:num, 
-                                            :data_emissione, 
+                                            :data_emissione,
+                                            :data_registrazione,
                                             :importo,
                                             :nota_di_credito]}
         
@@ -38,6 +39,9 @@ module Views
         end
         xrc.find('txt_data_emissione', self, :extends => DateField) do |field|
           field.move_after_in_tab_order(txt_num)
+        end
+        xrc.find('txt_data_registrazione', self, :extends => DateField) do |field|
+          field.move_after_in_tab_order(txt_data_emissione)
         end
         xrc.find('txt_importo', self, :extends => DecimalField) do |field|
           field.evt_char { |evt| txt_importo_keypress(evt) }
@@ -62,6 +66,10 @@ module Views
 
         pagamenti_fattura_fornitore_panel.ui()
 
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([txt_data_registrazione]) : disable_widgets([txt_data_registrazione])
+        end
+
         subscribe(:evt_dettaglio_pagamento) do |pagamento|
           self.fattura_fornitore = pagamento.fattura_fornitore
           self.fornitore = self.fattura_fornitore.fornitore
@@ -76,6 +84,8 @@ module Views
             txt_importo,
             chk_nota_di_credito
           ]
+
+          disable_widgets [txt_data_registrazione] if configatron.bilancio.attivo
 
           reset_fattura_fornitore_command_state()
           pagamenti_fattura_fornitore_panel.txt_importo.activate()
@@ -98,6 +108,8 @@ module Views
             chk_nota_di_credito
           ]
 
+          disable_widgets [txt_data_registrazione] if configatron.bilancio.attivo
+
           reset_fattura_fornitore_command_state()
           pagamenti_fattura_fornitore_panel.txt_importo.activate()
 
@@ -117,6 +129,8 @@ module Views
       def init_panel()
         # imposto la data di oggi
         txt_data_emissione.view_data = Date.today if txt_data_emissione.view_data.blank?
+
+        txt_data_registrazione.view_data = Date.today if configatron.bilancio.attivo && txt_data_registrazione.view_data.blank?
 
         reset_fattura_fornitore_command_state()
 
@@ -142,6 +156,11 @@ module Views
             txt_importo,
             chk_nota_di_credito
           ]
+
+          if configatron.bilancio.attivo
+            enable_widgets [txt_data_registrazione]
+            txt_data_registrazione.view_data = Date.today
+          end
 
           reset_fattura_fornitore_command_state()
 
@@ -176,7 +195,7 @@ module Views
           case evt.get_key_code
           when Wx::K_TAB
             if evt.shift_down()
-              txt_data_emissione.activate()
+              configatron.bilancio.attivo ? txt_data_registrazione.activate() : txt_data_emissione.activate()
             else
               pagamenti_fattura_fornitore_panel.txt_importo.activate()
             end
@@ -311,6 +330,8 @@ module Views
                 chk_nota_di_credito
               ]
 
+              disable_widgets [txt_data_registrazione] if configatron.bilancio.attivo
+              
               reset_fattura_fornitore_command_state()
               pagamenti_fattura_fornitore_panel.txt_importo.activate()
 

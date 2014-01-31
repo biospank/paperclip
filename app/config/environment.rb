@@ -93,7 +93,6 @@ module PaperclipConfig
       begin
         thread.join
       rescue Timeout::Error, RuntimeError
-        puts "Timeout::Error, RuntimeError"
         db_server = Models::PostgresDbServer.new(
           :adapter => 'postgresql',
           :encoding => 'utf-8',
@@ -241,6 +240,9 @@ module PaperclipConfig
     Models.autoload 'CorrispettivoPrimaNota',  'app/models/corrispettivo_prima_nota.rb'
 
     Models.autoload 'CategoriaPdc',  'app/models/categoria_pdc.rb'
+
+    Models.autoload 'SaldoIvaMensile',  'app/models/saldo_iva_mensile.rb'
+    Models.autoload 'SaldoIvaTrimestrale',  'app/models/saldo_iva_trimestrale.rb'
 
     ActiveRecord::Base.extend Models::Base::Searchable
     

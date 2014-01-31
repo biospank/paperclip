@@ -33,6 +33,11 @@ table#doc {
   per via del margin, crei una pagina vuota */
   margin-bottom: 0px;
   border-radius: 0 0 4 4;
+/* importante!!
+  evita che l'ultima riga di ogni pagina non abbia margine sufficiente
+  per il salto pagina, creando una riga con descrizione vuota
+  Serve solo per le tabelle che non hanno il separatore verticale delle celle*/
+  -webkit-border-vertical-spacing: 1px;
 }
 
 table#doc tbody:first-child tr:first-child > td:first-child {

@@ -13,6 +13,7 @@ module Models
                   :anno, # viene usato nelle dialog
                   :mese, # corrispettivi
                   :giorno, # corrispettivi
+                  :periodo, # usato nei repord delle liquidazioni iva
                   :aliquota, # corrispettivi
                   :descrizione_aliquota, # corrispettivi
                   :pdc_dare, # corrispettivi

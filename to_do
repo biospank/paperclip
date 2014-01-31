@@ -1,4 +1,8 @@
 Modifiche generiche
+- calcolo iva riga_fattra_pdc a volte non quadra
+- tasto aggiorna (sulla toolbar) cliccabile solo per gestione in rete. (aggiorna i dati dal server)
+- spostare tutte le impostazioni nel modulo configurazione
+- verifica load_by_codice che includa anche l'azienda
 - about in italiano
 - aliquota di base in seed.rb
 - calcolo con arrotondamento fiscale

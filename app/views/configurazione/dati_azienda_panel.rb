@@ -22,6 +22,11 @@ module Views
         xrc.find('txt_indirizzo', self, :extends => TextField)
         xrc.find('txt_cap', self, :extends => TextField)
         xrc.find('txt_citta', self, :extends => TextField)
+        xrc.find('chce_liquidazione_iva', self, :extends => ChoiceField) do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Liquidazione::PERIODO,
+            :label => :descrizione,
+            :select => :first)
+        end
         xrc.find('txt_cap_soc', self, :extends => DecimalField)
         xrc.find('txt_reg_imprese', self, :extends => TextField)
         xrc.find('txt_num_reg_imprese', self, :extends => TextNumericField)
@@ -40,6 +45,10 @@ module Views
         
         subscribe(:evt_azienda_changed) do
           reset_panel()
+        end
+
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([chce_liquidazione_iva]) : disable_widgets([chce_liquidazione_iva])
         end
 
         acc_table = Wx::AcceleratorTable[
@@ -68,6 +77,9 @@ module Views
               if self.dati_azienda.valid?
                 Wx::BusyCursor.busy() do
                   ctrl.save_dati_azienda()
+                  evt_upd = Views::Base::CustomEvent::AziendaUpdatedEvent.new()
+                  # This sends the event for processing by listeners
+                  process_event(evt_upd)
                 end
                 Wx::message_box('Salvataggio avvenuto correttamente.',
                   'Info',

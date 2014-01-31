@@ -419,6 +419,7 @@ module Views
       end
       
       def init_gestione_riga()
+        lku_aliquota.set_default()
         lku_pdc.view_data = self.owner.cliente.pdc
         transfer_riga_fattura_pdc_from_view
         calcola_scorporo_residuo()

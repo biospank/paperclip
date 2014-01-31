@@ -9,6 +9,7 @@ module Helpers
 
     WXBRA_REPORT_SCADENZARIO_CLIENTI_FOLDER = 0
     WXBRA_REPORT_SCADENZARIO_FORNITORI_FOLDER = 1
+    WXBRA_REPORT_LIQUIDAZIONE_IVA_FOLDER = 2
 
     WXBRA_ESTRATTO_REPORT_CLIENTI_FOLDER = 0
     WXBRA_PARTITARIO_REPORT_CLIENTI_FOLDER = 1
@@ -19,6 +20,11 @@ module Helpers
     WXBRA_PARTITARIO_REPORT_FORNITORI_FOLDER = 1
     WXBRA_SALDI_REPORT_FORNITORI_FOLDER = 2
     WXBRA_SCADENZE_REPORT_FORNITORI_FOLDER = 3
+
+    WXBRA_IVA_REPORT_FOLDER = 0
+    WXBRA_ACQUITI_REPORT_FOLDER = 1
+    WXBRA_VENDITE_REPORT_FOLDER = 2
+    WXBRA_CORRISPETTIVI_REPORT_FOLDER = 3
 
     # Modelli Report
     EstrattoClientiTemplatePath = "resources/models/report/scadenzario/estratto_clienti.odt"
@@ -48,8 +54,300 @@ module Helpers
     ScadenzeFooterTemplatePath = 'resources/templates/report/scadenzario/scadenze_footer.html.erb'
     ScadenzeBodyTemplatePath = 'resources/templates/report/scadenzario/scadenze_body.html.erb'
 
+    IvaHeaderTemplatePath = 'resources/templates/report/scadenzario/iva_header.html.erb'
+    IvaBodyTemplatePath = 'resources/templates/report/scadenzario/iva_body.html.erb'
+
+    AcquistiHeaderTemplatePath = 'resources/templates/report/scadenzario/acquisti_header.html.erb'
+    AcquistiFooterTemplatePath = 'resources/templates/report/scadenzario/acquisti_footer.html.erb'
+    AcquistiBodyTemplatePath = 'resources/templates/report/scadenzario/acquisti_body.html.erb'
+
+    VenditeHeaderTemplatePath = 'resources/templates/report/scadenzario/vendite_header.html.erb'
+    VenditeFooterTemplatePath = 'resources/templates/report/scadenzario/vendite_footer.html.erb'
+    VenditeBodyTemplatePath = 'resources/templates/report/scadenzario/vendite_body.html.erb'
+
+    CorrispettiviHeaderTemplatePath = 'resources/templates/report/scadenzario/corrispettivi_header.html.erb'
+    CorrispettiviFooterTemplatePath = 'resources/templates/report/scadenzario/corrispettivi_footer.html.erb'
+    CorrispettiviBodyTemplatePath = 'resources/templates/report/scadenzario/corrispettivi_body.html.erb'
+
     module Report
       include Models
+
+      # gestione report acquisti
+      def report_acquisti(filtro)
+        data_matrix = []
+        riepilogo_iva_data_matrix = []
+
+        acquisti = RigaFatturaPdc.search(:all, build_acquisti_report_conditions(filtro))
+
+        acquisti.group_by(&:fattura_fornitore_id).each do |fattura_id, dati_acquisti|
+          dati_fattura_acquisti = []
+          fattura = dati_acquisti.first.fattura_fornitore
+          dati_fattura_acquisti << fattura.fornitore.denominazione
+          dati_fattura_acquisti << fattura.num
+          dati_fattura_acquisti << fattura.data_emissione.to_s(:italian_short_date)
+          dati_fattura_acquisti << fattura.importo
+          dati_fattura_acquisti.concat ['', '', '', '', '']
+
+          data_matrix << dati_fattura_acquisti
+
+          dati_acquisti.each do |acquisto|
+            dati_iva_acquisti = ['', '', '', '']
+            dati_iva_acquisti << acquisto.aliquota.descrizione
+            dati_iva_acquisti << acquisto.imponibile
+            dati_iva_acquisti << acquisto.iva
+            if norma = acquisto.norma
+              dati_iva_acquisti << (acquisto.iva - acquisto.detrazione)
+              dati_iva_acquisti << norma.descrizione
+            else
+              dati_iva_acquisti << ''
+              dati_iva_acquisti << ''
+            end
+            
+            data_matrix << dati_iva_acquisti
+          end
+
+        end
+
+        acquisti.group_by(&:aliquota_id).each do |aliquota_id, riepilogo_iva|
+
+          aliquota = riepilogo_iva.first.aliquota
+
+          arr_riepilogo_norma = []
+
+          riepilogo_iva.group_by(&:norma_id).each do |norma_id, riepilogo_norma|
+            if norma = riepilogo_norma.first.norma
+              riepilogo_iva_acquisti = []
+              riepilogo_iva_acquisti << aliquota.descrizione
+              riepilogo_iva_acquisti << norma.descrizione
+              riepilogo_iva_acquisti << riepilogo_norma.sum(&:imponibile)
+              riepilogo_iva_acquisti << riepilogo_norma.sum(&:iva)
+              riepilogo_iva_acquisti << (riepilogo_norma.sum(&:iva) - riepilogo_norma.sum(&:detrazione)) # iva detraibile
+              riepilogo_iva_acquisti << riepilogo_norma.sum(&:detrazione) # iva indetraibile
+
+              riepilogo_iva_data_matrix << riepilogo_iva_acquisti
+
+              arr_riepilogo_norma.concat riepilogo_norma
+            end
+          end
+
+          residuo_riepilogo_iva = (riepilogo_iva - arr_riepilogo_norma)
+
+          unless residuo_riepilogo_iva.empty?
+            riepilogo_iva_acquisti = []
+            riepilogo_iva_acquisti << aliquota.descrizione
+            riepilogo_iva_acquisti << '' # descrizione norma
+            riepilogo_iva_acquisti << residuo_riepilogo_iva.sum(&:imponibile)
+            riepilogo_iva_acquisti << residuo_riepilogo_iva.sum(&:iva)
+            riepilogo_iva_acquisti << residuo_riepilogo_iva.sum(&:iva) # iva detraibile
+            riepilogo_iva_acquisti << '' # iva indetraibile
+
+            riepilogo_iva_data_matrix << riepilogo_iva_acquisti
+          end
+        end
+
+        self.totale_imponibile = acquisti.sum(&:imponibile)
+        self.totale_iva = acquisti.sum(&:iva)
+        detrazioni = acquisti.sum {|acquisto| acquisto.detrazione || 0.0}
+        self.totale_iva_detraibile = (acquisti.sum(&:iva) - detrazioni)
+        self.totale_iva_indetraibile = detrazioni
+
+        [data_matrix, riepilogo_iva_data_matrix]
+
+      end
+
+      def build_acquisti_report_conditions(filtro)
+        query_str = []
+        parametri = []
+
+        query_str << "#{to_sql_year('fatture_fornitori.data_registrazione')} = ? "
+        parametri << filtro.anno
+
+        if Azienda.current.dati_azienda.liquidazione_iva == Helpers::ApplicationHelper::Liquidazione::MENSILE
+          query_str << "#{to_sql_month('fatture_fornitori.data_registrazione')} = ? "
+          parametri << filtro.periodo
+
+        else
+          range = Helpers::ApplicationHelper::Liquidazione::TRIMESTRE_TO_RANGE[filtro.periodo]
+
+          query_str << "#{to_sql_month('(fatture_fornitori.data_registrazione')} >= ? "
+          parametri << ("%02d" % range.first)
+
+          query_str << "#{to_sql_month('fatture_fornitori.data_registrazione')} <= ?) "
+          parametri << ("%02d" % range.last)
+        end
+
+        query_str << "fatture_fornitori.azienda_id = ?"
+        parametri << Azienda.current
+
+        {:conditions => [query_str.join(' AND '), *parametri],
+          :include => [{:fattura_fornitore => [:fornitore]}, :aliquota, :norma]
+        }
+      end
+
+      # gestione report vendite
+      def report_vendite(filtro)
+        data_matrix = []
+        riepilogo_iva_data_matrix = []
+
+        vendite = RigaFatturaPdc.search(:all, build_vendite_report_conditions(filtro))
+
+        vendite.group_by(&:fattura_cliente_id).each do |fattura_id, dati_vendite|
+          dati_fattura_vendite = []
+          fattura = dati_vendite.first.fattura_cliente
+          dati_fattura_vendite << fattura.cliente.denominazione
+          dati_fattura_vendite << fattura.num
+          dati_fattura_vendite << fattura.data_emissione.to_s(:italian_date)
+          dati_fattura_vendite << fattura.importo
+          dati_fattura_vendite.concat ['', '', '', '', '']
+
+          data_matrix << dati_fattura_vendite
+
+          dati_vendite.each do |vendita|
+            dati_iva_vendite = ['', '', '', '']
+            dati_iva_vendite << vendita.aliquota.descrizione
+            dati_iva_vendite << (vendita.norma ? vendita.norma.descrizione : '')
+            dati_iva_vendite << vendita.imponibile
+            dati_iva_vendite << vendita.iva
+
+            data_matrix << dati_iva_vendite
+          end
+
+        end
+
+        vendite.group_by(&:aliquota_id).each do |aliquota_id, riepilogo_iva|
+
+          aliquota = riepilogo_iva.first.aliquota
+
+          arr_riepilogo_norma = []
+
+          riepilogo_iva.group_by(&:norma_id).each do |norma_id, riepilogo_norma|
+            if norma = riepilogo_norma.first.norma
+              riepilogo_iva_vendite = []
+              riepilogo_iva_vendite << aliquota.descrizione
+              riepilogo_iva_vendite << norma.descrizione
+              riepilogo_iva_vendite << riepilogo_norma.sum(&:imponibile)
+              riepilogo_iva_vendite << riepilogo_norma.sum(&:iva)
+
+              riepilogo_iva_data_matrix << riepilogo_iva_vendite
+
+              arr_riepilogo_norma.concat riepilogo_norma
+            end
+          end
+
+          residuo_riepilogo_iva = (riepilogo_iva - arr_riepilogo_norma)
+
+          unless residuo_riepilogo_iva.empty?
+            riepilogo_iva_vendite = []
+            riepilogo_iva_vendite << aliquota.descrizione
+            riepilogo_iva_vendite << '' # descrizione norma
+            riepilogo_iva_vendite << residuo_riepilogo_iva.sum(&:imponibile)
+            riepilogo_iva_vendite << residuo_riepilogo_iva.sum(&:iva)
+
+            riepilogo_iva_data_matrix << riepilogo_iva_vendite
+          end
+        end
+
+        self.totale_imponibile = vendite.sum(&:imponibile)
+        self.totale_iva = vendite.sum(&:iva)
+
+        [data_matrix, riepilogo_iva_data_matrix]
+
+      end
+
+      def build_vendite_report_conditions(filtro)
+        query_str = []
+        parametri = []
+
+        query_str << "#{to_sql_year('fatture_clienti.data_emissione')} = ? "
+        parametri << filtro.anno
+
+        if Azienda.current.dati_azienda.liquidazione_iva == Helpers::ApplicationHelper::Liquidazione::MENSILE
+          query_str << "#{to_sql_month('fatture_clienti.data_emissione')} = ? "
+          parametri << filtro.periodo
+
+        else
+          range = Helpers::ApplicationHelper::Liquidazione::TRIMESTRE_TO_RANGE[filtro.periodo]
+
+          query_str << "#{to_sql_month('(fatture_clienti.data_emissione')} >= ? "
+          parametri << ("%02d" % range.first)
+
+          query_str << "#{to_sql_month('fatture_clienti.data_emissione')} <= ?) "
+          parametri << ("%02d" % range.last)
+        end
+
+        query_str << "fatture_clienti.azienda_id = ?"
+        parametri << Azienda.current
+
+        {:conditions => [query_str.join(' AND '), *parametri],
+          :include => [{:fattura_cliente => [:cliente]}, :aliquota, :norma]
+        }
+      end
+
+      # gestione report corrispettivi
+      def report_corrispettivi(filtro)
+        data_matrix = []
+        riepilogo_iva_data_matrix = []
+
+        corrispettivi = Corrispettivo.search(:all, build_corrispettivi_report_conditions(filtro))
+
+
+        corrispettivi.each do |corrispettivo|
+          dati_iva_corrispettivi = []
+          dati_iva_corrispettivi << corrispettivo.data.to_s(:italian_date)
+          dati_iva_corrispettivi << corrispettivo.importo
+          dati_iva_corrispettivi << corrispettivo.aliquota.descrizione
+          dati_iva_corrispettivi << corrispettivo.imponibile
+          dati_iva_corrispettivi << corrispettivo.iva
+
+          data_matrix << dati_iva_corrispettivi
+        end
+
+        corrispettivi.group_by(&:aliquota_id).each do |aliquota_id, riepilogo_iva|
+          riepilogo_iva_corrispettivi = []
+
+          aliquota = riepilogo_iva.first.aliquota
+
+          riepilogo_iva_corrispettivi << aliquota.descrizione
+          riepilogo_iva_corrispettivi << riepilogo_iva.sum(&:imponibile)
+          riepilogo_iva_corrispettivi << riepilogo_iva.sum(&:iva)
+
+          riepilogo_iva_data_matrix << riepilogo_iva_corrispettivi
+        end
+
+        self.totale_imponibile = corrispettivi.sum(&:imponibile)
+        self.totale_iva = corrispettivi.sum(&:iva)
+
+        [data_matrix, riepilogo_iva_data_matrix]
+
+      end
+
+      def build_corrispettivi_report_conditions(filtro)
+        query_str = []
+        parametri = []
+
+        query_str << "#{to_sql_year('corrispettivi.data')} = ? "
+        parametri << filtro.anno
+
+        if Azienda.current.dati_azienda.liquidazione_iva == Helpers::ApplicationHelper::Liquidazione::MENSILE
+          query_str << "#{to_sql_month('corrispettivi.data')} = ? "
+          parametri << filtro.periodo
+
+        else
+          range = Helpers::ApplicationHelper::Liquidazione::TRIMESTRE_TO_RANGE[filtro.periodo]
+
+          query_str << "#{to_sql_month('(corrispettivi.data')} >= ? "
+          parametri << ("%02d" % range.first)
+
+          query_str << "#{to_sql_month('corrispettivi.data')} <= ?) "
+          parametri << ("%02d" % range.last)
+        end
+
+        {:conditions => [query_str.join(' AND '), *parametri],
+          :include => [:aliquota],
+          :order => "corrispettivi.data"
+        }
+      end
+
       # GESTIONE REPORT CLIENTI
       #
       # gestione report estratto
