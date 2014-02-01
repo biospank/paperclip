@@ -10248,7 +10248,7 @@
 																					<style>wxNB_FIXEDWIDTH</style>
 																					<object class="notebookpage">
 																						<label>Estratto</label>
-																						<selected>0</selected>
+																						<selected>1</selected>
 																						<object class="wxPanel" name="REPORT_ESTRATTO_FORNITORI_FOLDER">
 																							<style>wxTAB_TRAVERSAL</style>
 																							<object class="wxBoxSizer">
@@ -10630,7 +10630,7 @@
 																					</object>
 																					<object class="notebookpage">
 																						<label>Partitario</label>
-																						<selected>1</selected>
+																						<selected>0</selected>
 																						<object class="wxPanel" name="REPORT_PARTITARIO_FORNITORI_FOLDER">
 																							<style>wxTAB_TRAVERSAL</style>
 																							<object class="wxBoxSizer">
@@ -11651,7 +11651,7 @@
 																							<style>wxNB_FIXEDWIDTH</style>
 																							<object class="notebookpage">
 																								<label>Riepilogo Iva</label>
-																								<selected>0</selected>
+																								<selected>1</selected>
 																								<object class="wxPanel" name="REPORT_IVA_FOLDER">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxBoxSizer">
@@ -12246,7 +12246,7 @@
 																							</object>
 																							<object class="notebookpage">
 																								<label>Corrispettivi</label>
-																								<selected>1</selected>
+																								<selected>0</selected>
 																								<object class="wxPanel" name="REPORT_CORRISPETTIVI_FOLDER">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxBoxSizer">
