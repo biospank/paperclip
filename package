@@ -108,11 +108,12 @@ module Paperclip
       FileUtils.cp 'db/development/bra.db', 'db/production/bra.db'
     end
 
-    desc "migrate", "Migrate the database through scripts in db/migrations. Target specific version with VERSION=x"
+    desc "migrate", "Migrate the database through scripts in db/migrations. Target specific version with --version 50"
+    method_option :version, :type => :string, :default => nil, :aliases => '-v', :banner => "50"
     method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
     def migrate
       load_environment! if options.load_env?
-      ActiveRecord::Migrator.migrate('db/migrations', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
+      ActiveRecord::Migrator.migrate('db/migrations', options.version? ? options.version.to_i : nil )
     end
 
     desc "dump", "Dump local/remote db"
