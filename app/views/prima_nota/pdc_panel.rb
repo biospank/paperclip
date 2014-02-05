@@ -15,7 +15,6 @@ module Views
         model :pdc => {:attrs => [:categoria_pdc,
                                    :codice,
                                    :descrizione,
-                                   :type,
                                    :attivo]}
         
         controller :prima_nota
@@ -39,15 +38,6 @@ module Views
           field.evt_char { |evt| txt_codice_keypress(evt) }
         end
         xrc.find('txt_descrizione', self, :extends => TextField)
-
-        xrc.find('chce_type', self, :extends => ChoiceStringField) do |field|
-          field.load_data([Models::Pdc::COSTO,
-                           Models::Pdc::RICAVO,
-                           Models::Pdc::ATTIVO,
-                           Models::Pdc::PASSIVO],
-              :label => :label,
-              :include_blank => {:label => ''})
-        end
 
         xrc.find('chk_attivo', self, :extends => CheckField)
 
@@ -242,12 +232,12 @@ module Views
       def reset_pdc_command_state()
         if pdc.new_record?
           disable_widgets [btn_elimina]
-          enable_widgets [lku_categoria_pdc, txt_codice, txt_descrizione, chce_type]
+          enable_widgets [lku_categoria_pdc, txt_codice, txt_descrizione]
         else
           if pdc.modificabile?
-            enable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione, chce_type]
+            enable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione]
           else
-            disable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione, chce_type]
+            disable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione]
           end
         end
       end

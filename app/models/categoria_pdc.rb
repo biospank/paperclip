@@ -5,6 +5,23 @@ module Models
     include Helpers::BusinessClassHelper
     include Base::Model
 
+    # conto economico
+    COSTO = 'Costo'
+    RICAVO = 'Ricavo'
+    # stato patrimoniale
+    ATTIVO = 'Attivo'
+    PASSIVO = 'Passivo'
+
+# tabella riassuntiva
+#
+#   | DARE    | AVERE   |
+#    -------------------
+#   | ATTIVO  | PASSIVO | (STATO PATRIMONIALE)
+#    -------------------
+#   | COSTI   | RICAVI  | (CONTO ECONOMICO)
+#    -------------------
+#
+
     set_table_name :categorie_pdc
 
     validates_presence_of :codice,
@@ -13,8 +30,15 @@ module Models
     validates_presence_of :descrizione,
       :message => "Inserire la descrizione"
 
+    validates_presence_of :type,
+      :message => "Inserire la tipologia"
+
     validates_uniqueness_of :codice,
       :message => "Codice catagoria gia' utilizzato."
+
+    def label()
+      self.class.name.split('::').last
+    end
 
     def modificabile?
       num = 0
@@ -24,5 +48,24 @@ module Models
       num == 0
     end
 
+    def conto_economico?
+      self.type == COSTO || self.type == RICAVO
+    end
+
+    # stato patrimoniale
+    def conto_patrimoniale?
+      self.type == ATTIVO || self.type == PASSIVO
+    end
+
+    def costo?()
+      self.type == ATTIVO || self.type == COSTO
+    end
+
+    def ricavo?()
+      self.type == PASSIVO || self.type == RICAVO
+    end
+
+    alias_method :attivo?, :costo?
+    alias_method :passivo?, :ricavo?
   end
 end

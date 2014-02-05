@@ -80,7 +80,7 @@ module Views
             {:caption => 'Norma', :width => 150, :align => Wx::LIST_FORMAT_LEFT},
             {:caption => 'Imponibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Iva', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
-            {:caption => 'Detrazione', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+            {:caption => 'Iva indetraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Conto', :width => 150, :align => Wx::LIST_FORMAT_LEFT}
           ])
           list.data_info([{:attr => lambda {|pagamento| (pagamento.aliquota ? pagamento.aliquota.descrizione : '')}},
@@ -238,7 +238,9 @@ module Views
         begin
           if aliquota = lku_aliquota.view_data
             if imponibile = txt_imponibile.view_data
-              txt_iva.view_data = ((imponibile * aliquota.percentuale) / 100)
+              if Helpers::ApplicationHelper.real(imponibile) != Helpers::ApplicationHelper.real(self.riga_fattura_pdc.imponibile)
+                txt_iva.view_data = ((imponibile * aliquota.percentuale) / 100)
+              end
 #            else
 #              calcola_scorporo_residuo()
             end
@@ -248,7 +250,6 @@ module Views
         end
       end
 
-      # sovrascritto per il controllo sui costi
       def lku_pdc_keypress(evt)
         begin
           case evt.get_key_code
@@ -506,6 +507,8 @@ module Views
         end
         if lku_norma.view_data
           self.riga_fattura_pdc.calcola_detrazione()
+        else
+          self.riga_fattura_pdc.detrazione = nil
         end
       end
 
@@ -528,7 +531,7 @@ module Views
       end
 
       def ricavo_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::RICAVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::RICAVO}')"
       end
     end
   end

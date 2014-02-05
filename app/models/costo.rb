@@ -2,7 +2,7 @@
 
 # conto economico
 module Models
-  class Costo < Pdc
+  class Costo < CategoriaPdc
 
   end
 end

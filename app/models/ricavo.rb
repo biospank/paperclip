@@ -2,7 +2,7 @@
 
 # conto economico
 module Models
-  class Ricavo < Pdc
+  class Ricavo < CategoriaPdc
 
   end
 end

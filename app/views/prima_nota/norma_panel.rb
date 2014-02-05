@@ -116,7 +116,7 @@ module Views
         begin
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+              if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
                 transfer_norma_from_view()
                 if self.norma.valid?
                   ctrl.save_norma()
@@ -158,7 +158,7 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+            if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
               res = Wx::message_box("Confermi l'eliminazione?",
                 'Domanda',
                   Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)

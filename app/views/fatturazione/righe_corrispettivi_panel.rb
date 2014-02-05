@@ -460,11 +460,11 @@ module Views
       end
 
       def dare_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::ATTIVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}')"
       end
 
       def avere_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::RICAVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::RICAVO}')"
       end
 
     end

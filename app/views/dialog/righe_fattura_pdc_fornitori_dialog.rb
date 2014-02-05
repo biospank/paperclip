@@ -237,7 +237,9 @@ module Views
         begin
           if aliquota = lku_aliquota.view_data
             if imponibile = txt_imponibile.view_data
-              txt_iva.view_data = ((imponibile * aliquota.percentuale) / 100)
+              if Helpers::ApplicationHelper.real(imponibile) != Helpers::ApplicationHelper.real(self.riga_fattura_pdc.imponibile)
+                txt_iva.view_data = ((imponibile * aliquota.percentuale) / 100)
+              end
 #            else
 #              calcola_scorporo_residuo()
             end
@@ -506,6 +508,8 @@ module Views
         end
         if lku_norma.view_data
           self.riga_fattura_pdc.calcola_detrazione()
+        else
+          self.riga_fattura_pdc.detrazione = nil
         end
       end
 
@@ -528,7 +532,7 @@ module Views
       end
 
       def costo_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::COSTO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::COSTO}')"
       end
     end
   end

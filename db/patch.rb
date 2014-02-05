@@ -1,8 +1,6 @@
-#FileUtils.mkdir_p 'db/production'
-#FileUtils.cp '../db/production/bra.db', 'db/production/bra.db
 
 # porting to ruby 1.9
-#FileUtils.mkdir_p "src/conf"
+#FileUtils.mkdir_p 'src/conf'
 #code =<<-eo_code
 #configatron.attivita = #{configatron.attivita}
 #configatron.logging_config.level = :#{configatron.connection.level}

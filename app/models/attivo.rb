@@ -2,7 +2,7 @@
 
 # stato patrimoniale
 module Models
-  class Attivo < Pdc
+  class Attivo < CategoriaPdc
 
   end
 end

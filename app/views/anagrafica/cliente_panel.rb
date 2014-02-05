@@ -317,7 +317,7 @@ module Views
       end
 
       def pdc_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::RICAVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::RICAVO}')"
       end
 
     end

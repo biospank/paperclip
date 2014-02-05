@@ -35,9 +35,11 @@ module Views
         # lista costi/ricavi
         
         lstrep_categorie_pdc.column_info([{:caption => 'Codice', :width => 80},
-                                      {:caption => 'Descrizione', :width => 200}])
+                                      {:caption => 'Descrizione', :width => 200},
+                                      {:caption => 'Tipo', :width => 100}])
         lstrep_categorie_pdc.data_info([{:attr => :codice},
-                                   {:attr => :descrizione}])
+                                   {:attr => :descrizione},
+                                   {:attr => :label}])
 
         map_events(self)
         

@@ -137,7 +137,7 @@ module Controllers
 
     def search_for_pdc()
       Pdc.search_for(filtro.ricerca,
-        [:codice, :descrizione],
+        ['pdc.codice', 'pdc.descrizione'],
         build_pdc_dialog_conditions())
     end
 
@@ -148,7 +148,8 @@ module Controllers
       filtro.build_conditions(query_str, parametri) if filtro
 
       {:conditions => [query_str.join(' AND '), *parametri],
-       :order => 'codice'}
+        :include => :categoria_pdc,
+       :order => 'pdc.codice'}
     end
 
     # gestione categoria pdc
@@ -181,8 +182,17 @@ module Controllers
        :order => 'codice'}
     end
 
-    # gestione aliquote
+    # gestione interesse
 
+    def save_interessi_liquidazione_trimestrale()
+      interesse.save
+    end
+
+    def load_interessi_liquidazione_trimestrale()
+      InteressiLiquidazioneTrimestrale.find(:first)
+    end
+
+    # gestione norma
     def save_norma()
       norma.save
     end

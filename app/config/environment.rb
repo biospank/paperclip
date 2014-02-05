@@ -244,6 +244,8 @@ module PaperclipConfig
     Models.autoload 'SaldoIvaMensile',  'app/models/saldo_iva_mensile.rb'
     Models.autoload 'SaldoIvaTrimestrale',  'app/models/saldo_iva_trimestrale.rb'
 
+    Models.autoload 'InteressiLiquidazioneTrimestrale',  'app/models/interessi_liquidazione_trimestrale.rb'
+
     ActiveRecord::Base.extend Models::Base::Searchable
     
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(

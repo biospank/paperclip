@@ -1067,11 +1067,11 @@ module Views
       end
 
       def dare_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::ATTIVO}', '#{Models::Pdc::PASSIVO}', '#{Models::Pdc::COSTO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}', '#{Models::CategoriaPdc::COSTO}')"
       end
 
       def avere_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::ATTIVO}', '#{Models::Pdc::PASSIVO}', '#{Models::Pdc::RICAVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}', '#{Models::CategoriaPdc::RICAVO}')"
       end
     end
   end

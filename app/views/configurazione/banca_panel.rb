@@ -340,7 +340,7 @@ module Views
       end
 
       def pdc_sql_criteria()
-        "pdc.type in ('#{Models::Pdc::ATTIVO}', '#{Models::Pdc::PASSIVO}')"
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}')"
       end
     end
   end

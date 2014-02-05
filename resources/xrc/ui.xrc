@@ -2097,7 +2097,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Fattura</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="FATTURA_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -4910,7 +4910,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -6639,7 +6639,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Scadenzario</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="SCADENZARIO_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -12379,7 +12379,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Prima Nota</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="PRIMA_NOTA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -12392,7 +12392,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Scritture</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="SCRITTURE_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -13600,7 +13600,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Piano dei conti</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="PDC_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -13672,6 +13672,24 @@
 																								<object class="wxTextCtrl" name="txt_descrizione">
 																									<value></value>
 																									<maxlength>95</maxlength>
+																								</object>
+																							</object>
+																							<object class="sizeritem">
+																								<option>0</option>
+																								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																								<border>3</border>
+																								<object class="wxStaticText" name="wxID_STATIC3411">
+																									<label>Tipo:</label>
+																								</object>
+																							</object>
+																							<object class="sizeritem">
+																								<option>0</option>
+																								<flag>wxALL</flag>
+																								<border>3</border>
+																								<object class="wxChoice" name="chce_type">
+																									<size>100,-1</size>
+																									<selection>0</selection>
+																									<content />
 																								</object>
 																							</object>
 																							<object class="sizeritem">
@@ -13860,24 +13878,6 @@
 																							</object>
 																							<object class="sizeritem">
 																								<option>0</option>
-																								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC3411">
-																									<label>Tipo:</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxChoice" name="chce_type">
-																									<size>100,-1</size>
-																									<selection>0</selection>
-																									<content />
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
 																								<flag>wxALL</flag>
 																								<border>3</border>
 																								<object class="wxStaticText" name="m_staticText27111">
@@ -14039,7 +14039,7 @@
 																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
 																						<border>3</border>
 																						<object class="wxStaticText" name="m_staticText609">
-																							<label>(Iva detraibile)</label>
+																							<label>(Iva indetraibile)</label>
 																						</object>
 																					</object>
 																				</object>
@@ -14139,6 +14139,74 @@
 																				<object class="wxButton" name="btn_nuova">
 																					<size>100,-1</size>
 																					<label>Nuova</label>
+																					<default>0</default>
+																				</object>
+																			</object>
+																		</object>
+																	</object>
+																</object>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL|wxEXPAND</flag>
+															<border>3</border>
+															<object class="wxPanel" name="INTERESSI_PANEL">
+																<style>wxTAB_TRAVERSAL</style>
+																<object class="wxStaticBoxSizer">
+																	<orient>wxHORIZONTAL</orient>
+																	<label>Interessi liquidazione trimestrale</label>
+																	<object class="sizeritem">
+																		<option>0</option>
+																		<flag>wxALL</flag>
+																		<border>3</border>
+																		<object class="wxFlexGridSizer">
+																			<rows>2</rows>
+																			<cols>2</cols>
+																			<vgap>0</vgap>
+																			<hgap>0</hgap>
+																			<growablecols>1</growablecols>
+																			<growablerows></growablerows>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="wxID_STATIC2721">
+																					<label>Percentuale:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																				<border>3</border>
+																				<object class="wxTextCtrl" name="txt_percentuale">
+																					<style>wxTE_RIGHT</style>
+																					<size>40,-1</size>
+																					<value></value>
+																					<maxlength>3</maxlength>
+																				</object>
+																			</object>
+																		</object>
+																	</object>
+																	<object class="spacer">
+																		<option>1</option>
+																		<flag>wxEXPAND|wxALL</flag>
+																		<border>3</border>
+																		<size>5,5</size>
+																	</object>
+																	<object class="sizeritem">
+																		<option>0</option>
+																		<flag>wxEXPAND|wxALL</flag>
+																		<border>3</border>
+																		<object class="wxBoxSizer">
+																			<orient>wxVERTICAL</orient>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																				<border>3</border>
+																				<object class="wxButton" name="btn_salva">
+																					<size>100,-1</size>
+																					<label>Salva</label>
 																					<default>0</default>
 																				</object>
 																			</object>
@@ -14947,7 +15015,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -16202,7 +16270,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -18430,7 +18498,7 @@
 	<object class="wxDialog" name="CATEGORIE_PDC_DLG">
 		<style>wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL</style>
 		<exstyle>wxWS_EX_BLOCK_EVENTS</exstyle>
-		<size>400,300</size>
+		<size>450,300</size>
 		<title>Ricerca Categoria Conto</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
@@ -20953,7 +21021,7 @@
 										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
 										<border>3</border>
 										<object class="wxStaticText" name="wxID_STATIC10611">
-											<label>Detrazione:</label>
+											<label>Iva indetraibile:</label>
 										</object>
 									</object>
 									<object class="sizeritem">
@@ -20962,7 +21030,7 @@
 										<border>3</border>
 										<object class="wxTextCtrl" name="txt_detrazione">
 											<style>wxTE_PROCESS_ENTER|wxTE_RIGHT</style>
-											<size>60,-1</size>
+											<size>80,-1</size>
 											<enabled>0</enabled>
 											<value></value>
 											<maxlength>0</maxlength>

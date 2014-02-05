@@ -42,7 +42,7 @@ module Views
                                       {:caption => 'Tipo', :width => 100}])
         lstrep_pdc.data_info([{:attr => :codice},
                                    {:attr => :descrizione},
-                                   {:attr => :type}])
+                                   {:attr => lambda {|pdc| pdc.categoria_pdc.label}}])
 
         map_events(self)
         
