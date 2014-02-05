@@ -125,14 +125,12 @@ module Views
             self.iva_credito_periodo_precedente = 0.0
           end
 
-          ##### DA AGGIUNGERE IL CALCOLO DEGLI INTERESSI TRIMESTRALI #####
           unless self.diff_iva_debito.zero?
             percentuale_interessi_trimestrali = Models::InteressiLiquidazioneTrimestrale.first
             self.interessi_trimestrali = ((self.diff_iva_debito * percentuale_interessi_trimestrali.percentuale) / 100)
             self.lbl_interessi_trimestrali.label = Helpers::ApplicationHelper.currency(self.interessi_trimestrali)
             self.totale_iva_debito = self.diff_iva_debito + self.interessi_trimestrali
           end
-
           
           self.totale_iva_debito = (self.totale_iva_debito + self.iva_debito_periodo_precedente) if self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE
           self.totale_iva_credito = (self.diff_iva_credito + self.iva_credito_periodo_precedente)

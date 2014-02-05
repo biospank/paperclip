@@ -13,7 +13,7 @@
         <div class="well well-small">
           <div class="row">
             <div class="span11">
-              <table class="table table-condensed" id="riepilogo">
+              <table class="table" id="riepilogo">
                 <thead>
                   <tr>
                     <th style="width: 50%" class="left"></th>
@@ -48,7 +48,7 @@
                   </tr>
                   <tr>
                     <td style="width: 50%" class="left"><strong>INTERESSI DOVUTI LIQUIDAZIONI TRIMESTRALI:</strong></td>
-                    <td style="width: 25%" class="right"></td>
+                    <td style="width: 25%" class="right"><strong><%= self.interessi_trimestrali.zero? ? '' : Helpers::ApplicationHelper.currency(self.interessi_trimestrali) %></strong></td>
                     <td style="width: 25%" class="right"></td>
                   </tr>
                   <tr>
