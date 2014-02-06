@@ -36,6 +36,7 @@ module Views
                                 :label => lambda {|aliquota| self.txt_descrizione_aliquota.view_data = (aliquota ? aliquota.descrizione : nil)},
                                 :model => :aliquota,
                                 :dialog => :aliquote_dialog,
+                                :allow_new => false,
                                 :default => lambda {|aliquota| aliquota.predefinita?},
                                 :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
                                 :folder => Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER)
@@ -51,6 +52,7 @@ module Views
                                 :label => lambda {|pdc| self.txt_descrizione_pdc.view_data = (pdc ? pdc.descrizione : nil)},
                                 :model => :pdc,
                                 :dialog => :pdc_dialog,
+                                :allow_new => false,
                                 :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
                                 :folder => Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER
                               )
@@ -68,6 +70,7 @@ module Views
                                 :label => lambda {|norma| self.txt_descrizione_norma.view_data = (norma ? norma.descrizione : nil)},
                                 :model => :norma,
                                 :dialog => :norma_dialog,
+                                :allow_new => false,
                                 :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
                                 :folder => Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER)
         end
@@ -331,7 +334,7 @@ module Views
                 lku_aliquota.activate()
               end
             else
-              Wx::message_box(self.maxi_pagamento.error_msg,
+              Wx::message_box(self.riga_fattura_pdc.error_msg,
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
 

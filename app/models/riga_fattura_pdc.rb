@@ -14,9 +14,6 @@ module Models
 
     validates_presence_of :aliquota,
       :message => "Associare un codice aliquota."
-    validates_presence_of :norma,
-      :if => Proc.new { |riga_pdc| !riga_pdc.aliquota.nil? && riga_pdc.aliquota.percentuale.zero? },
-      :message => "L'aliquota inserita è pari a zero: Inserire un codice norma."
     validates_presence_of :imponibile,
       :message => "Inserire l'imponibile."
     validates_presence_of :pdc,

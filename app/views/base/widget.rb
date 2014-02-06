@@ -865,6 +865,10 @@ module Views
             instance_variable_set(:@default, nil)
 
             # accessors utility
+            def conf()
+              @info
+            end
+
             def code_hash()
               @code_hash
             end
@@ -1009,6 +1013,10 @@ module Views
             instance_variable_set(:@default, nil)
 
             # accessors utility
+            def conf()
+              @info
+            end
+
             def code_hash()
               @code_hash
             end

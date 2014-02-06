@@ -24,7 +24,12 @@ module Views
         txt_ricerca.activate()
         xrc.find('btn_ricerca', self)
         btn_ricerca.set_default()
-        xrc.find('btn_nuova', self)
+        xrc.find('btn_nuova', self) do |btn|
+          allow_new = parent.lku_norma.conf[:allow_new]
+          if allow_new.blank? || allow_new == false
+            btn.hide() unless parent.lku_norma.conf[:allow_new]
+          end
+        end
         xrc.find('lstrep_norma', self, :extends => ReportField)
         xrc.find('wxID_OK', self, :extends => OkStdButton)
         xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
