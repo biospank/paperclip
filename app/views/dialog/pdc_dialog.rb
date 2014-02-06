@@ -9,7 +9,7 @@ module Views
       
       attr_accessor :owner
 
-      def initialize(parent, attivi = true)
+      def initialize(parent, attivi = true, allow_new = true)
         super()
         
         self.owner = parent
@@ -30,10 +30,7 @@ module Views
         xrc.find('btn_ricerca', self)
         btn_ricerca.set_default()
         xrc.find('btn_nuovo', self) do |btn|
-          allow_new = parent.lku_norma.conf[:allow_new]
-          if allow_new.blank? || allow_new == false
-            btn.hide() unless parent.lku_pdc.conf[:allow_new]
-          end
+          btn.hide() unless allow_new
         end
         xrc.find('lstrep_pdc', self, :extends => ReportField)
         xrc.find('chk_tutti', self, :extends => CheckField)

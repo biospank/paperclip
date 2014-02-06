@@ -193,6 +193,30 @@ module Views
 
       end
 
+      # sovrascritto per nascondere il pulsante nuovo nella dialog
+      def lku_aliquota_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            dlg = Views::Dialog::AliquoteDialog.new(self, true, false)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_aliquota.view_data = ctrl.load_aliquota(dlg.selected)
+              lku_aliquota_after_change()
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
       def lku_aliquota_after_change()
         begin
           lku_aliquota.match_selection()
@@ -213,6 +237,30 @@ module Views
         rescue Exception => e
           log_error(self, e)
         end
+      end
+
+      # sovrascritto per nascondere il pulsante nuovo nella dialog
+      def lku_norma_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            dlg = Views::Dialog::NormaDialog.new(self, true, false)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_norma.view_data = ctrl.load_norma(dlg.selected)
+              lku_norma_after_change()
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
       end
 
       def lku_norma_after_change()
@@ -253,26 +301,19 @@ module Views
         end
       end
 
+      # sovrascritto per nascondere il pulsante nuovo nella dialog
+      # e passare un criterio di ricerca diverso
       def lku_pdc_keypress(evt)
         begin
           case evt.get_key_code
           when Wx::K_F5
             self.dialog_sql_criteria = self.ricavo_sql_criteria()
-            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg = Views::Dialog::PdcDialog.new(self, true, false)
             dlg.center_on_screen(Wx::BOTH)
             answer = dlg.show_modal()
             if answer == Wx::ID_OK
               lku_pdc.view_data = ctrl.load_pdc(dlg.selected)
               lku_pdc_after_change()
-            elsif(answer == dlg.btn_nuovo.get_id)
-              evt_new = Views::Base::CustomEvent::NewEvent.new(
-                :pdc,
-                [
-                  Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
-                  Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER
-                ]
-              )
-              process_event(evt_new)
             end
 
             dlg.destroy()

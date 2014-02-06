@@ -7,7 +7,7 @@ module Views
       include Helpers::MVCHelper
       include Models
       
-      def initialize(parent, attive = true)
+      def initialize(parent, attive = true, allow_new = true)
         super()
         
         model :filtro => {:attrs => []}
@@ -25,10 +25,7 @@ module Views
         xrc.find('btn_ricerca', self)
         btn_ricerca.set_default()
         xrc.find('btn_nuova', self) do |btn|
-          allow_new = parent.lku_norma.conf[:allow_new]
-          if allow_new.blank? || allow_new == false
-            btn.hide() unless parent.lku_norma.conf[:allow_new]
-          end
+          btn.hide() unless allow_new
         end
         xrc.find('lstrep_norma', self, :extends => ReportField)
         xrc.find('wxID_OK', self, :extends => OkStdButton)
