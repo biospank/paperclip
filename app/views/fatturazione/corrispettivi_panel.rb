@@ -129,6 +129,19 @@ module Views
           righe_corrispettivi_panel.riepilogo_corrispettivi()
           righe_corrispettivi_panel.init_panel()
         end
+
+        subscribe(:evt_dettaglio_corrispettivo) do |corrispettivo|
+          reset_panel()
+          chce_anno.view_data = corrispettivo.data.year
+          chce_mese.view_data = ("%02d" % corrispettivo.data.month)
+          logger.debug("mese corrispettivo #{corrispettivo.data.month}")
+          transfer_filtro_from_view()
+          corrispettivi = ctrl.search_corrispettivi()
+          righe_corrispettivi_panel.display_righe_corrispettivi(corrispettivi)
+          righe_corrispettivi_panel.riepilogo_corrispettivi()
+          righe_corrispettivi_panel.init_panel()
+        end
+
       end
 
       # viene chiamato al cambio folder

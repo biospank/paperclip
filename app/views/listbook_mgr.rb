@@ -180,9 +180,9 @@ module Views
             main_frame.set_status_text(auth_message)
           end
         when :norma
-          if can? :read, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
-            set_selection(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW)
-            prima_nota_notebook_mgr.set_selection(Helpers::PrimaNotaHelper::WXBRA_PDC_FOLDER)
+          if can? :read, Helpers::ApplicationHelper::Modulo::SCADENZARIO
+            set_selection(Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW)
+            scadenzario_notebook_mgr.set_selection(Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER)
             notify(:evt_new_norma)
           else
             main_frame.set_status_text(auth_message)
@@ -331,7 +331,18 @@ module Views
         end
       end
 
-      evt_dettaglio_fattura_scadenzario do | evt | 
+      evt_dettaglio_corrispettivo do | evt |
+        begin
+          corrispettivo = evt.corrispettivo
+          set_selection(Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW)
+          fatturazione_notebook_mgr.set_selection(Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER)
+          notify(:evt_dettaglio_corrispettivo, corrispettivo)
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
+      evt_dettaglio_fattura_scadenzario do | evt |
         begin
           fattura = evt.fattura
           if fattura.is_a? Models::FatturaClienteScadenzario

@@ -11,7 +11,7 @@ module Views
         super()
         
         model :filtro => {:attrs => []}
-        controller :prima_nota
+        controller :scadenzario
 
         filtro.attive = attive
 

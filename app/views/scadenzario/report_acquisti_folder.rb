@@ -61,6 +61,8 @@ module Views
         xrc.find('lbl_totale_iva_detraibile', self)
         xrc.find('lbl_totale_iva_indetraibile', self)
 
+        map_events(self)
+
       end
 
       def init_folder()
@@ -145,6 +147,25 @@ module Views
           )
         rescue Exception => e
           log_error(self, e)
+        end
+      end
+
+      def lstrep_acquisti_item_activated(evt)
+        if ident = evt.get_item().get_data()
+          begin
+            fattura = ctrl.load_fattura_fornitore(ident[:id])
+          rescue ActiveRecord::RecordNotFound
+            Wx::message_box('Fattura eliminata: aggiornare il report.',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+
+            return
+          end
+
+          # lancio l'evento per la richiesta di dettaglio fattura
+          evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaScadenzarioEvent.new(fattura)
+          # This sends the event for processing by listeners
+          process_event(evt_dettaglio_fattura)
         end
       end
 

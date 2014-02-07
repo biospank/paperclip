@@ -1,7 +1,6 @@
 # encoding: utf-8
 
-require 'app/views/scadenzario/incasso_panel'
-require 'app/views/scadenzario/pagamento_panel'
+require 'app/views/scadenzario/impostazioni_notebook_mgr'
 
 module Views
   module Scadenzario
@@ -9,18 +8,15 @@ module Views
       include Views::Base::Folder
       
       def ui
-        logger.debug('initializing Scadenzario ImopstazioniPanel...')
+        logger.debug('initializing Scadenzario ImpostazioniFolder...')
         xrc = Helpers::WxHelper::Xrc.instance()
-        xrc.find('INCASSO_PANEL', self, :extends => Views::Scadenzario::IncassoPanel)
-        incasso_panel.ui()
-        xrc.find('PAGAMENTO_PANEL', self, :extends => Views::Scadenzario::PagamentoPanel)
-        pagamento_panel.ui()
+        xrc.find('IMPOSTAZIONI_NOTEBOOK_MGR', self, :extends => Views::Scadenzario::ImpostazioniNotebookMgr)
+        impostazioni_notebook_mgr.ui()
 
       end
 
       def init_folder()
-        incasso_panel.init_panel()
-        pagamento_panel.init_panel()
+        impostazioni_notebook_mgr.init_folder()
       end
       
     end

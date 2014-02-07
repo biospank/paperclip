@@ -5,6 +5,50 @@ module Controllers
     include Controllers::BaseController
     include Helpers::ScadenzarioHelper::Report
     
+
+    # gestione interesse
+
+    def save_interessi_liquidazione_trimestrale()
+      interesse.save
+    end
+
+    def load_interessi_liquidazione_trimestrale()
+      InteressiLiquidazioneTrimestrale.find(:first)
+    end
+
+    # gestione norma
+    def save_norma()
+      norma.save
+    end
+
+    def delete_norma()
+      norma.destroy
+    end
+
+    def load_norma(id)
+      Norma.find(id)
+    end
+
+    def load_norma_by_codice(codice)
+      Norma.find_by_codice(codice)
+    end
+
+    def search_for_norma()
+      Norma.search_for(filtro.ricerca,
+        [:codice, :percentuale, :descrizione],
+        build_norma_dialog_conditions())
+    end
+
+    def build_norma_dialog_conditions()
+      query_str = []
+      parametri = []
+
+      filtro.build_conditions(query_str, parametri) if filtro
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+       :order => 'codice'}
+    end
+
     # gestione fattura cliente
 
     def load_fattura_cliente(id)

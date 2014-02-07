@@ -45,6 +45,8 @@ module Views
         xrc.find('lbl_totale_imponibile', self)
         xrc.find('lbl_totale_iva', self)
 
+        map_events(self)
+
       end
 
       def init_folder()
@@ -127,6 +129,25 @@ module Views
           )
         rescue Exception => e
           log_error(self, e)
+        end
+      end
+
+      def lstrep_corrispettivi_item_activated(evt)
+        if ident = evt.get_item().get_data()
+          begin
+            corrispettivo = ctrl.load_corrispettivo(ident[:id])
+          rescue ActiveRecord::RecordNotFound
+            Wx::message_box('Corrispettivo eliminato: aggiornare il report.',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+
+            return
+          end
+
+          # lancio l'evento per la richiesta di dettaglio corrispettivo
+          evt_dettaglio_corrispettivo = Views::Base::CustomEvent::DettaglioCorrispettivoEvent.new(corrispettivo)
+          # This sends the event for processing by listeners
+          process_event(evt_dettaglio_corrispettivo)
         end
       end
 

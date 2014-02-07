@@ -43,8 +43,6 @@ module Views
 
         map_events(self)
 
-        reset_totali()
-
       # accelerator table
         acc_table = Wx::AcceleratorTable[
           [ Wx::ACCEL_NORMAL, Wx::K_F5, btn_calcola.get_id ],
@@ -73,7 +71,6 @@ module Views
       
       def reset_folder()
         report_liquidazioni_notebook_mgr.reset_folder
-        reset_totali()
       end
 
       # Gestione eventi
@@ -105,7 +102,6 @@ module Views
       def btn_calcola_click(evt)
         begin
           Wx::BusyCursor.busy() do
-            reset_totali()
             transfer_filtro_from_view()
             report_liquidazioni_notebook_mgr.ricerca(filtro)
             transfer_filtro_to_view()
@@ -155,12 +151,6 @@ module Views
 
       end
 
-      private
-
-      def reset_totali()
-#        self.totale_saldi = 0.0
-#        self.lbl_totale_saldi.label = ''
-      end
     end
   end
 end

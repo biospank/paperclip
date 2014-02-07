@@ -512,11 +512,30 @@ module Views
         end
       end
       
+      class DettaglioCorrispettivoEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_DETTAGLIO_CORRISPETTIVO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_corrispettivo', 0)
+
+        def initialize(corrispettivo)
+          # The constant id is the arg to super
+          super(EVT_DETTAGLIO_CORRISPETTIVO)
+          self.client_data = { :corrispettivo => corrispettivo }
+
+        end
+
+        # Returns data associated with this event
+        def corrispettivo
+          client_data[:corrispettivo]
+        end
+      end
+
       class DettaglioFatturaScadenzarioEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_FATTURA_SCADENZARIO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_scadenzario', 0) 
+        EVT_DETTAGLIO_FATTURA_SCADENZARIO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_scadenzario', 0)
 
         def initialize(fattura)
           # The constant id is the arg to super
@@ -530,7 +549,7 @@ module Views
           client_data[:fattura]
         end
       end
-      
+
       class DettaglioFatturaFatturazioneEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'

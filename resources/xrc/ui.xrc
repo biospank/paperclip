@@ -6639,7 +6639,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Scadenzario</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="SCADENZARIO_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -7986,454 +7986,960 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
 														<orient>wxVERTICAL</orient>
 														<object class="sizeritem">
-															<option>0</option>
-															<flag>wxEXPAND|wxALL</flag>
-															<border>3</border>
-															<object class="wxPanel" name="INCASSO_PANEL">
-																<style>wxTAB_TRAVERSAL</style>
-																<object class="wxStaticBoxSizer">
-																	<orient>wxVERTICAL</orient>
-																	<label>Modalità Incasso</label>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
+															<option>1</option>
+															<flag>wxEXPAND | wxALL</flag>
+															<border>5</border>
+															<object class="wxNotebook" name="IMPOSTAZIONI_NOTEBOOK_MGR">
+																<style>wxNB_FIXEDWIDTH</style>
+																<object class="notebookpage">
+																	<label>Incassi/Pagamenti</label>
+																	<selected>0</selected>
+																	<object class="wxPanel" name="INCASSI_PAGAMENTI_FOLDER">
+																		<style>wxTAB_TRAVERSAL</style>
 																		<object class="wxBoxSizer">
-																			<orient>wxHORIZONTAL</orient>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxFlexGridSizer">
-																					<rows>2</rows>
-																					<cols>2</cols>
-																					<vgap>0</vgap>
-																					<hgap>0</hgap>
-																					<growablecols>1</growablecols>
-																					<growablerows></growablerows>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText323">
-																							<label>Codice:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_codice">
-																							<style>wxWANTS_CHARS</style>
-																							<size>40,-1</size>
-																							<value></value>
-																							<maxlength>0</maxlength>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="wxID_STATIC33">
-																							<label>Descrizione:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_descrizione">
-																							<value></value>
-																							<maxlength>0</maxlength>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>5</border>
-																						<object class="wxStaticText" name="m_staticText430">
-																							<label>Banca:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxEXPAND</flag>
-																						<border>3</border>
-																						<object class="wxBoxSizer">
-																							<orient>wxHORIZONTAL</orient>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="lku_banca">
-																									<size>40,-1</size>
-																									<tooltip>Premere F3 per la ricerca</tooltip>
-																									<value></value>
-																									<maxlength>3</maxlength>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>1</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="txt_descrizione_banca">
-																									<enabled>0</enabled>
-																									<value></value>
-																									<maxlength>0</maxlength>
-																								</object>
-																							</object>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText2691">
-																							<label>Attivo:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxCheckBox" name="chk_attivo">
-																							<label></label>
-																							<checked>1</checked>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText270">
-																							<label>Predefinito:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxCheckBox" name="chk_predefinito">
-																							<label></label>
-																							<checked>0</checked>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
+																			<orient>wxVERTICAL</orient>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
+																				<flag>wxEXPAND | wxALL</flag>
 																				<border>3</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxVERTICAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_variazione">
-																							<size>100,-1</size>
-																							<label>Variazione</label>
-																							<default>0</default>
+																				<object class="wxPanel" name="INCASSO_PANEL">
+																					<style>wxTAB_TRAVERSAL</style>
+																					<object class="wxStaticBoxSizer">
+																						<orient>wxVERTICAL</orient>
+																						<label>Modalità Incasso</label>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxHORIZONTAL</orient>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxFlexGridSizer">
+																										<rows>2</rows>
+																										<cols>2</cols>
+																										<vgap>0</vgap>
+																										<hgap>0</hgap>
+																										<growablecols>1</growablecols>
+																										<growablerows></growablerows>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText323">
+																												<label>Codice:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_codice">
+																												<style>wxWANTS_CHARS</style>
+																												<size>40,-1</size>
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="wxID_STATIC33">
+																												<label>Descrizione:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_descrizione">
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>5</border>
+																											<object class="wxStaticText" name="m_staticText430">
+																												<label>Banca:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxBoxSizer">
+																												<orient>wxHORIZONTAL</orient>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxTextCtrl" name="lku_banca">
+																														<size>40,-1</size>
+																														<tooltip>Premere F3 per la ricerca</tooltip>
+																														<value></value>
+																														<maxlength>3</maxlength>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>1</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxTextCtrl" name="txt_descrizione_banca">
+																														<enabled>0</enabled>
+																														<value></value>
+																														<maxlength>0</maxlength>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText2691">
+																												<label>Attivo:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxEXPAND</flag>
+																											<border>5</border>
+																											<object class="wxBoxSizer">
+																												<orient>wxHORIZONTAL</orient>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_attivo">
+																														<label></label>
+																														<checked>1</checked>
+																													</object>
+																												</object>
+																												<object class="spacer">
+																													<option>0</option>
+																													<flag>wxEXPAND|wxLEFT</flag>
+																													<border>20</border>
+																													<size>0,0</size>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="m_staticText270">
+																														<label>Predefinito:</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_predefinito">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_variazione">
+																												<size>100,-1</size>
+																												<label>Variazione</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="spacer">
+																									<option>1</option>
+																									<flag>wxEXPAND|wxALL</flag>
+																									<border>3</border>
+																									<size>5,5</size>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_salva">
+																												<size>100,-1</size>
+																												<label>Salva</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_elimina">
+																												<size>100,-1</size>
+																												<label>Elimina</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_nuovo">
+																												<size>100,-1</size>
+																												<label>Nuovo</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxHORIZONTAL</orient>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticBoxSizer">
+																										<orient>wxHORIZONTAL</orient>
+																										<label>Opzioni fattura</label>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxGridSizer">
+																												<rows>4</rows>
+																												<cols>3</cols>
+																												<vgap>0</vgap>
+																												<hgap>0</hgap>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC35">
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC108">
+																														<label>Dare</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC115">
+																														<label>Avere</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC116">
+																														<label>Cassa</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_cassa_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_cassa_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC117">
+																														<label>Banca</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_banca_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_banca_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC118">
+																														<label>Fuori partita</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_fuori_partita_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_fuori_partita_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticBoxSizer">
+																										<orient>wxHORIZONTAL</orient>
+																										<label>Opzioni nota di credito</label>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxGridSizer">
+																												<rows>4</rows>
+																												<cols>3</cols>
+																												<vgap>0</vgap>
+																												<hgap>0</hgap>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC119">
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC120">
+																														<label>Dare</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC121">
+																														<label>Avere</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC122">
+																														<label>Cassa</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_cassa_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_cassa_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC123">
+																														<label>Banca</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_banca_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_banca_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC124">
+																														<label>Fuori partita</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_fuori_partita_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_fuori_partita_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																							</object>
 																						</object>
 																					</object>
 																				</object>
 																			</object>
 																			<object class="spacer">
-																				<option>1</option>
-																				<flag>wxEXPAND|wxALL</flag>
+																				<option>0</option>
+																				<flag></flag>
 																				<border>3</border>
-																				<size>5,5</size>
+																				<size>5,10</size>
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
+																				<flag>wxEXPAND | wxALL</flag>
 																				<border>3</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxVERTICAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_salva">
-																							<size>100,-1</size>
-																							<label>Salva</label>
-																							<default>0</default>
+																				<object class="wxPanel" name="PAGAMENTO_PANEL">
+																					<style>wxTAB_TRAVERSAL</style>
+																					<object class="wxStaticBoxSizer">
+																						<orient>wxVERTICAL</orient>
+																						<label>Modalità Pagamento</label>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxHORIZONTAL</orient>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxFlexGridSizer">
+																										<rows>2</rows>
+																										<cols>2</cols>
+																										<vgap>0</vgap>
+																										<hgap>0</hgap>
+																										<growablecols>1</growablecols>
+																										<growablerows></growablerows>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText3232">
+																												<label>Codice:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_codice">
+																												<style>wxWANTS_CHARS</style>
+																												<size>40,-1</size>
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="wxID_STATIC331">
+																												<label>Descrizione:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_descrizione">
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText431">
+																												<label>Banca:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxBoxSizer">
+																												<orient>wxHORIZONTAL</orient>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxTextCtrl" name="lku_banca">
+																														<size>40,-1</size>
+																														<tooltip>Premere F3 per la ricerca</tooltip>
+																														<value></value>
+																														<maxlength>3</maxlength>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>1</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxTextCtrl" name="txt_descrizione_banca">
+																														<enabled>0</enabled>
+																														<value></value>
+																														<maxlength>0</maxlength>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText26911">
+																												<label>Attivo:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxEXPAND</flag>
+																											<border>5</border>
+																											<object class="wxBoxSizer">
+																												<orient>wxHORIZONTAL</orient>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_attivo">
+																														<label></label>
+																														<checked>1</checked>
+																													</object>
+																												</object>
+																												<object class="spacer">
+																													<option>0</option>
+																													<flag>wxEXPAND|wxLEFT</flag>
+																													<border>20</border>
+																													<size>0,0</size>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="m_staticText2702">
+																														<label>Predefinito:</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_predefinito">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_variazione">
+																												<size>100,-1</size>
+																												<label>Variazione</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="spacer">
+																									<option>1</option>
+																									<flag>wxEXPAND|wxALL</flag>
+																									<border>3</border>
+																									<size>5,5</size>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_salva">
+																												<size>100,-1</size>
+																												<label>Salva</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_elimina">
+																												<size>100,-1</size>
+																												<label>Elimina</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxButton" name="btn_nuovo">
+																												<size>100,-1</size>
+																												<label>Nuovo</label>
+																												<default>0</default>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																							</object>
 																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_elimina">
-																							<size>100,-1</size>
-																							<label>Elimina</label>
-																							<default>0</default>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_nuovo">
-																							<size>100,-1</size>
-																							<label>Nuovo</label>
-																							<default>0</default>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<object class="wxBoxSizer">
-																			<orient>wxHORIZONTAL</orient>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
-																					<label>Opzioni fattura</label>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxGridSizer">
-																							<rows>4</rows>
-																							<cols>3</cols>
-																							<vgap>0</vgap>
-																							<hgap>0</hgap>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC35">
-																									<label></label>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxHORIZONTAL</orient>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticBoxSizer">
+																										<orient>wxHORIZONTAL</orient>
+																										<label>Opzioni fattura</label>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxGridSizer">
+																												<rows>4</rows>
+																												<cols>3</cols>
+																												<vgap>0</vgap>
+																												<hgap>0</hgap>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC351">
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1081">
+																														<label>Dare</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1151">
+																														<label>Avere</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1161">
+																														<label>Cassa</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_cassa_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_cassa_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1171">
+																														<label>Banca</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_banca_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_banca_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1181">
+																														<label>Fuori partita</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_fuori_partita_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_fuori_partita_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
 																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC108">
-																									<label>Dare</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC115">
-																									<label>Avere</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC116">
-																									<label>Cassa</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_cassa_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_cassa_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC117">
-																									<label>Banca</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_banca_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_banca_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC118">
-																									<label>Fuori partita</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_fuori_partita_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_fuori_partita_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
-																					<label>Opzioni nota di credito</label>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxGridSizer">
-																							<rows>4</rows>
-																							<cols>3</cols>
-																							<vgap>0</vgap>
-																							<hgap>0</hgap>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC119">
-																									<label></label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC120">
-																									<label>Dare</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC121">
-																									<label>Avere</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC122">
-																									<label>Cassa</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_cassa_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_cassa_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC123">
-																									<label>Banca</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_banca_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_banca_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC124">
-																									<label>Fuori partita</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_fuori_partita_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_fuori_partita_avere">
-																									<label></label>
-																									<checked>0</checked>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticBoxSizer">
+																										<orient>wxHORIZONTAL</orient>
+																										<label>Opzioni nota di credito</label>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxGridSizer">
+																												<rows>4</rows>
+																												<cols>3</cols>
+																												<vgap>0</vgap>
+																												<hgap>0</hgap>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1191">
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1201">
+																														<label>Dare</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1211">
+																														<label>Avere</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1221">
+																														<label>Cassa</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_cassa_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_cassa_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1231">
+																														<label>Banca</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_banca_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_banca_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="wxID_STATIC1241">
+																														<label>Fuori partita</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_fuori_partita_dare">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																													<border>3</border>
+																													<object class="wxCheckBox" name="chk_nc_fuori_partita_avere">
+																														<label></label>
+																														<checked>0</checked>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																									</object>
 																								</object>
 																							</object>
 																						</object>
@@ -8443,457 +8949,258 @@
 																		</object>
 																	</object>
 																</object>
-															</object>
-														</object>
-														<object class="spacer">
-															<option>0</option>
-															<flag></flag>
-															<border>3</border>
-															<size>5,10</size>
-														</object>
-														<object class="sizeritem">
-															<option>0</option>
-															<flag>wxEXPAND|wxALL</flag>
-															<border>5</border>
-															<object class="wxPanel" name="PAGAMENTO_PANEL">
-																<style>wxTAB_TRAVERSAL</style>
-																<object class="wxStaticBoxSizer">
-																	<orient>wxVERTICAL</orient>
-																	<label>Modalità Pagamento</label>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
+																<object class="notebookpage">
+																	<label>Norma/Liquidazioni</label>
+																	<selected>1</selected>
+																	<object class="wxPanel" name="NORMA_LIQUIDAZIONI_FOLDER">
+																		<style>wxTAB_TRAVERSAL</style>
 																		<object class="wxBoxSizer">
-																			<orient>wxHORIZONTAL</orient>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxFlexGridSizer">
-																					<rows>2</rows>
-																					<cols>2</cols>
-																					<vgap>0</vgap>
-																					<hgap>0</hgap>
-																					<growablecols>1</growablecols>
-																					<growablerows></growablerows>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText3232">
-																							<label>Codice:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_codice">
-																							<style>wxWANTS_CHARS</style>
-																							<size>40,-1</size>
-																							<value></value>
-																							<maxlength>0</maxlength>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="wxID_STATIC331">
-																							<label>Descrizione:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_descrizione">
-																							<value></value>
-																							<maxlength>0</maxlength>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText431">
-																							<label>Banca:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxEXPAND</flag>
-																						<border>3</border>
-																						<object class="wxBoxSizer">
-																							<orient>wxHORIZONTAL</orient>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="lku_banca">
-																									<size>40,-1</size>
-																									<tooltip>Premere F3 per la ricerca</tooltip>
-																									<value></value>
-																									<maxlength>3</maxlength>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>1</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="txt_descrizione_banca">
-																									<enabled>0</enabled>
-																									<value></value>
-																									<maxlength>0</maxlength>
-																								</object>
-																							</object>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText26911">
-																							<label>Attivo:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxCheckBox" name="chk_attivo">
-																							<label></label>
-																							<checked>1</checked>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText2701">
-																							<label>Predefinito:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL</flag>
-																						<border>3</border>
-																						<object class="wxCheckBox" name="chk_predefinito">
-																							<label></label>
-																							<checked>0</checked>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
+																			<orient>wxVERTICAL</orient>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
+																				<flag>wxEXPAND | wxALL</flag>
 																				<border>3</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxVERTICAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_variazione">
-																							<size>100,-1</size>
-																							<label>Variazione</label>
-																							<default>0</default>
+																				<object class="wxPanel" name="NORMA_PANEL">
+																					<style>wxTAB_TRAVERSAL</style>
+																					<object class="wxStaticBoxSizer">
+																						<orient>wxHORIZONTAL</orient>
+																						<label>Gestione codici norma</label>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxALL</flag>
+																							<border>3</border>
+																							<object class="wxFlexGridSizer">
+																								<rows>2</rows>
+																								<cols>2</cols>
+																								<vgap>0</vgap>
+																								<hgap>0</hgap>
+																								<growablecols>1</growablecols>
+																								<growablerows></growablerows>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC2621">
+																										<label>Codice:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_codice">
+																										<style>wxWANTS_CHARS</style>
+																										<size>60,-1</size>
+																										<value></value>
+																										<maxlength>5</maxlength>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC2722">
+																										<label>Percentuale:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxHORIZONTAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_percentuale">
+																												<style>wxTE_RIGHT</style>
+																												<size>40,-1</size>
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText6091">
+																												<label>(Iva indetraibile)</label>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="m_staticText23721">
+																										<label>Attiva:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																									<border>3</border>
+																									<object class="wxCheckBox" name="chk_attiva">
+																										<label></label>
+																										<checked>1</checked>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_TOP|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC6921">
+																										<label>Descrizione:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_descrizione">
+																										<style>wxTE_MULTILINE</style>
+																										<size>250,60</size>
+																										<value></value>
+																										<maxlength>0</maxlength>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxButton" name="btn_variazione">
+																										<size>100,-1</size>
+																										<label>Variazione</label>
+																										<default>0</default>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="spacer">
+																							<option>1</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<size>5,5</size>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxButton" name="btn_salva">
+																										<size>100,-1</size>
+																										<label>Salva</label>
+																										<default>0</default>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxButton" name="btn_elimina">
+																										<size>100,-1</size>
+																										<label>Elimina</label>
+																										<default>0</default>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxButton" name="btn_nuova">
+																										<size>100,-1</size>
+																										<label>Nuova</label>
+																										<default>0</default>
+																									</object>
+																								</object>
+																							</object>
 																						</object>
 																					</object>
 																				</object>
 																			</object>
 																			<object class="spacer">
-																				<option>1</option>
-																				<flag>wxEXPAND|wxALL</flag>
+																				<option>0</option>
+																				<flag>wxTOP|wxBOTTOM</flag>
 																				<border>3</border>
-																				<size>5,5</size>
+																				<size>0,0</size>
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxALIGN_TOP|wxALL</flag>
+																				<flag>wxEXPAND | wxALL</flag>
 																				<border>3</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxVERTICAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_salva">
-																							<size>100,-1</size>
-																							<label>Salva</label>
-																							<default>0</default>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_elimina">
-																							<size>100,-1</size>
-																							<label>Elimina</label>
-																							<default>0</default>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxButton" name="btn_nuovo">
-																							<size>100,-1</size>
-																							<label>Nuovo</label>
-																							<default>0</default>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<object class="wxBoxSizer">
-																			<orient>wxHORIZONTAL</orient>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
-																					<label>Opzioni fattura</label>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxGridSizer">
-																							<rows>4</rows>
-																							<cols>3</cols>
-																							<vgap>0</vgap>
-																							<hgap>0</hgap>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC351">
-																									<label></label>
+																				<object class="wxPanel" name="INTERESSI_PANEL">
+																					<style>wxTAB_TRAVERSAL</style>
+																					<object class="wxStaticBoxSizer">
+																						<orient>wxHORIZONTAL</orient>
+																						<label>Interessi liquidazione trimestrale</label>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxALL</flag>
+																							<border>3</border>
+																							<object class="wxFlexGridSizer">
+																								<rows>2</rows>
+																								<cols>2</cols>
+																								<vgap>0</vgap>
+																								<hgap>0</hgap>
+																								<growablecols>1</growablecols>
+																								<growablerows></growablerows>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC27211">
+																										<label>Percentuale:</label>
+																									</object>
 																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1081">
-																									<label>Dare</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1151">
-																									<label>Avere</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1161">
-																									<label>Cassa</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_cassa_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_cassa_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1171">
-																									<label>Banca</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_banca_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_banca_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1181">
-																									<label>Fuori partita</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_fuori_partita_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_fuori_partita_avere">
-																									<label></label>
-																									<checked>0</checked>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_percentuale">
+																										<style>wxTE_RIGHT</style>
+																										<size>40,-1</size>
+																										<value></value>
+																										<maxlength>4</maxlength>
+																									</object>
 																								</object>
 																							</object>
 																						</object>
-																					</object>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
-																					<label>Opzioni nota di credito</label>
-																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxGridSizer">
-																							<rows>4</rows>
-																							<cols>3</cols>
-																							<vgap>0</vgap>
-																							<hgap>0</hgap>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1191">
-																									<label></label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1201">
-																									<label>Dare</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1211">
-																									<label>Avere</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1221">
-																									<label>Cassa</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_cassa_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_cassa_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1231">
-																									<label>Banca</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_banca_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_banca_avere">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxStaticText" name="wxID_STATIC1241">
-																									<label>Fuori partita</label>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_fuori_partita_dare">
-																									<label></label>
-																									<checked>0</checked>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																								<border>3</border>
-																								<object class="wxCheckBox" name="chk_nc_fuori_partita_avere">
-																									<label></label>
-																									<checked>0</checked>
+																						<object class="spacer">
+																							<option>1</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<size>5,5</size>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxButton" name="btn_salva">
+																										<size>100,-1</size>
+																										<label>Salva</label>
+																										<default>0</default>
+																									</object>
 																								</object>
 																							</object>
 																						</object>
@@ -8910,7 +9217,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -12379,7 +12686,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Prima Nota</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="PRIMA_NOTA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -13969,251 +14276,6 @@
 															<flag>wxEXPAND</flag>
 															<border>3</border>
 															<size>0,0</size>
-														</object>
-														<object class="sizeritem">
-															<option>0</option>
-															<flag>wxEXPAND | wxALL</flag>
-															<border>3</border>
-															<object class="wxPanel" name="NORMA_PANEL">
-																<style>wxTAB_TRAVERSAL</style>
-																<object class="wxStaticBoxSizer">
-																	<orient>wxHORIZONTAL</orient>
-																	<label>Gestione codici norma</label>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxALL</flag>
-																		<border>3</border>
-																		<object class="wxFlexGridSizer">
-																			<rows>2</rows>
-																			<cols>2</cols>
-																			<vgap>0</vgap>
-																			<hgap>0</hgap>
-																			<growablecols>1</growablecols>
-																			<growablerows></growablerows>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticText" name="wxID_STATIC262">
-																					<label>Codice:</label>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxTextCtrl" name="txt_codice">
-																					<style>wxWANTS_CHARS</style>
-																					<size>60,-1</size>
-																					<value></value>
-																					<maxlength>5</maxlength>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticText" name="wxID_STATIC272">
-																					<label>Percentuale:</label>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>1</option>
-																				<flag>wxEXPAND</flag>
-																				<border>3</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_percentuale">
-																							<style>wxTE_RIGHT</style>
-																							<size>40,-1</size>
-																							<value></value>
-																							<maxlength>0</maxlength>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="m_staticText609">
-																							<label>(Iva indetraibile)</label>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticText" name="m_staticText2372">
-																					<label>Attiva:</label>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																				<border>3</border>
-																				<object class="wxCheckBox" name="chk_attiva">
-																					<label></label>
-																					<checked>1</checked>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_TOP|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticText" name="wxID_STATIC692">
-																					<label>Descrizione:</label>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
-																				<border>3</border>
-																				<object class="wxTextCtrl" name="txt_descrizione">
-																					<style>wxTE_MULTILINE</style>
-																					<size>250,60</size>
-																					<value></value>
-																					<maxlength>0</maxlength>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<object class="wxBoxSizer">
-																			<orient>wxVERTICAL</orient>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxButton" name="btn_variazione">
-																					<size>100,-1</size>
-																					<label>Variazione</label>
-																					<default>0</default>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																	<object class="spacer">
-																		<option>1</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<size>5,5</size>
-																	</object>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<object class="wxBoxSizer">
-																			<orient>wxVERTICAL</orient>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxButton" name="btn_salva">
-																					<size>100,-1</size>
-																					<label>Salva</label>
-																					<default>0</default>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxButton" name="btn_elimina">
-																					<size>100,-1</size>
-																					<label>Elimina</label>
-																					<default>0</default>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxButton" name="btn_nuova">
-																					<size>100,-1</size>
-																					<label>Nuova</label>
-																					<default>0</default>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																</object>
-															</object>
-														</object>
-														<object class="sizeritem">
-															<option>0</option>
-															<flag>wxALL|wxEXPAND</flag>
-															<border>3</border>
-															<object class="wxPanel" name="INTERESSI_PANEL">
-																<style>wxTAB_TRAVERSAL</style>
-																<object class="wxStaticBoxSizer">
-																	<orient>wxHORIZONTAL</orient>
-																	<label>Interessi liquidazione trimestrale</label>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxALL</flag>
-																		<border>3</border>
-																		<object class="wxFlexGridSizer">
-																			<rows>2</rows>
-																			<cols>2</cols>
-																			<vgap>0</vgap>
-																			<hgap>0</hgap>
-																			<growablecols>1</growablecols>
-																			<growablerows></growablerows>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxStaticText" name="wxID_STATIC2721">
-																					<label>Percentuale:</label>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxTextCtrl" name="txt_percentuale">
-																					<style>wxTE_RIGHT</style>
-																					<size>40,-1</size>
-																					<value></value>
-																					<maxlength>3</maxlength>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																	<object class="spacer">
-																		<option>1</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<size>5,5</size>
-																	</object>
-																	<object class="sizeritem">
-																		<option>0</option>
-																		<flag>wxEXPAND|wxALL</flag>
-																		<border>3</border>
-																		<object class="wxBoxSizer">
-																			<orient>wxVERTICAL</orient>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-																				<border>3</border>
-																				<object class="wxButton" name="btn_salva">
-																					<size>100,-1</size>
-																					<label>Salva</label>
-																					<default>0</default>
-																				</object>
-																			</object>
-																		</object>
-																	</object>
-																</object>
-															</object>
 														</object>
 													</object>
 												</object>

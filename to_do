@@ -1,7 +1,5 @@
 Modifiche generiche
 - le dialog sarebbe meglio che accettassero un parametro di tipo hash configurabile anche da lookup
-- spostare gestione codici norma in impostazioni scadenzario
-- rendere attivi i report della liquidazione iva
 - tasto aggiorna (sulla toolbar) cliccabile solo per gestione in rete. (aggiorna i dati dal server)
 - spostare tutte le impostazioni nel modulo configurazione
 - verifica load_by_codice che includa anche l'azienda

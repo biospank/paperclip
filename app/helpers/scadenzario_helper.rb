@@ -7,6 +7,9 @@ module Helpers
     WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER = 2
     WXBRA_REPORT_SCADENZARIO_FOLDER = 3
 
+    WXBRA_INCASSI_PAGAMENTI_FOLDER = 0
+    WXBRA_NORMA_LIQUIDAZIONI_FOLDER = 1
+
     WXBRA_REPORT_SCADENZARIO_CLIENTI_FOLDER = 0
     WXBRA_REPORT_SCADENZARIO_FORNITORI_FOLDER = 1
     WXBRA_REPORT_LIQUIDAZIONE_IVA_FOLDER = 2
@@ -80,7 +83,7 @@ module Helpers
         acquisti = RigaFatturaPdc.search(:all, build_acquisti_report_conditions(filtro))
 
         acquisti.group_by(&:fattura_fornitore_id).each do |fattura_id, dati_acquisti|
-          dati_fattura_acquisti = []
+          dati_fattura_acquisti = IdentModel.new(fattura_id, FatturaFornitore)
           fattura = dati_acquisti.first.fattura_fornitore
           dati_fattura_acquisti << fattura.fornitore.denominazione
           dati_fattura_acquisti << fattura.num
@@ -192,7 +195,7 @@ module Helpers
         vendite = RigaFatturaPdc.search(:all, build_vendite_report_conditions(filtro))
 
         vendite.group_by(&:fattura_cliente_id).each do |fattura_id, dati_vendite|
-          dati_fattura_vendite = []
+          dati_fattura_vendite = IdentModel.new(fattura_id, FatturaClienteScadenzario)
           fattura = dati_vendite.first.fattura_cliente
           dati_fattura_vendite << fattura.cliente.denominazione
           dati_fattura_vendite << fattura.num
@@ -284,6 +287,10 @@ module Helpers
       end
 
       # gestione report corrispettivi
+      def load_corrispettivo(id)
+        Corrispettivo.find(id)
+      end
+
       def report_corrispettivi(filtro)
         data_matrix = []
         riepilogo_iva_data_matrix = []
@@ -292,7 +299,7 @@ module Helpers
 
 
         corrispettivi.each do |corrispettivo|
-          dati_iva_corrispettivi = []
+          dati_iva_corrispettivi = IdentModel.new(corrispettivo.id, Corrispettivo)
           dati_iva_corrispettivi << corrispettivo.data.to_s(:italian_date)
           dati_iva_corrispettivi << corrispettivo.importo
           dati_iva_corrispettivi << corrispettivo.aliquota.descrizione
