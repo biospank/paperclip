@@ -510,7 +510,7 @@ module Views
                              txt_cassa_avere, txt_cassa_dare,
                              txt_descrizione)
             else
-              evt.skip()
+              activate_field(btn_salva)
             end
           when Wx::K_F5
             self.dialog_sql_criteria = self.avere_sql_criteria()
@@ -900,6 +900,23 @@ module Views
                 return false
               end
           end
+
+          if(((self.scrittura.pdc_dare && self.scrittura.pdc_dare.costo?) &&
+                (self.scrittura.pdc_avere && self.scrittura.pdc_avere.ricavo?)) ||
+              ((self.scrittura.pdc_dare && self.scrittura.pdc_dare.ricavo?) &&
+                (self.scrittura.pdc_avere && self.scrittura.pdc_avere.costo?)))
+          
+            res = Wx::message_box("Presenza di due conti economici.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_dare.activate()
+                return false
+              end
+          end
+
+
         end
 
         if(!self.scrittura.causale_compatibile?)

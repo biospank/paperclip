@@ -14,7 +14,8 @@ module Views
 
       def ui
 
-        model :cliente => {:attrs => [:denominazione,
+        model :cliente => {:attrs => [:conto,
+                                      :denominazione,
                                       :no_p_iva,
                                       :p_iva,
                                       :cod_fisc,
@@ -36,6 +37,7 @@ module Views
         logger.debug('initializing ClientePanel...')
         xrc = Xrc.instance()
         # Anagrafica cliente
+        xrc.find('txt_conto', self, :extends => TextField)
         xrc.find('txt_denominazione', self, :extends => TextField)
         xrc.find('chk_no_p_iva', self, :extends => CheckField)
         xrc.find('txt_p_iva', self, :extends => TextField)

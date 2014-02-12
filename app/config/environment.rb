@@ -246,6 +246,9 @@ module PaperclipConfig
 
     Models.autoload 'InteressiLiquidazioneTrimestrale',  'app/models/interessi_liquidazione_trimestrale.rb'
 
+    Models.autoload 'ProgressivoCliente',  'app/models/progressivo_cliente.rb'
+    Models.autoload 'ProgressivoFornitore',  'app/models/progressivo_fornitore.rb'
+
     ActiveRecord::Base.extend Models::Base::Searchable
     
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(

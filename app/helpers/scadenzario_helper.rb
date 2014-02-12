@@ -99,7 +99,7 @@ module Helpers
             dati_iva_acquisti << acquisto.imponibile
             dati_iva_acquisti << acquisto.iva
             if norma = acquisto.norma
-              dati_iva_acquisti << (acquisto.iva - acquisto.detrazione)
+              dati_iva_acquisti << acquisto.detrazione
               dati_iva_acquisti << norma.descrizione
             else
               dati_iva_acquisti << ''
@@ -120,8 +120,8 @@ module Helpers
           riepilogo_iva.group_by(&:norma_id).each do |norma_id, riepilogo_norma|
             if norma = riepilogo_norma.first.norma
               riepilogo_iva_acquisti = []
-              riepilogo_iva_acquisti << aliquota.descrizione
-              riepilogo_iva_acquisti << norma.descrizione
+              riepilogo_iva_acquisti << Helpers::ApplicationHelper.percentage(aliquota.percentuale)
+              riepilogo_iva_acquisti << Helpers::ApplicationHelper.percentage(norma.percentuale)
               riepilogo_iva_acquisti << riepilogo_norma.sum(&:imponibile)
               riepilogo_iva_acquisti << riepilogo_norma.sum(&:iva)
               riepilogo_iva_acquisti << (riepilogo_norma.sum(&:iva) - riepilogo_norma.sum(&:detrazione)) # iva detraibile
@@ -137,7 +137,7 @@ module Helpers
 
           unless residuo_riepilogo_iva.empty?
             riepilogo_iva_acquisti = []
-            riepilogo_iva_acquisti << aliquota.descrizione
+            riepilogo_iva_acquisti << Helpers::ApplicationHelper.percentage(aliquota.percentuale)
             riepilogo_iva_acquisti << '' # descrizione norma
             riepilogo_iva_acquisti << residuo_riepilogo_iva.sum(&:imponibile)
             riepilogo_iva_acquisti << residuo_riepilogo_iva.sum(&:iva)
@@ -226,8 +226,8 @@ module Helpers
           riepilogo_iva.group_by(&:norma_id).each do |norma_id, riepilogo_norma|
             if norma = riepilogo_norma.first.norma
               riepilogo_iva_vendite = []
-              riepilogo_iva_vendite << aliquota.descrizione
-              riepilogo_iva_vendite << norma.descrizione
+              riepilogo_iva_vendite << Helpers::ApplicationHelper.percentage(aliquota.percentuale)
+              riepilogo_iva_vendite << Helpers::ApplicationHelper.percentage(norma.percentuale)
               riepilogo_iva_vendite << riepilogo_norma.sum(&:imponibile)
               riepilogo_iva_vendite << riepilogo_norma.sum(&:iva)
 
@@ -241,7 +241,7 @@ module Helpers
 
           unless residuo_riepilogo_iva.empty?
             riepilogo_iva_vendite = []
-            riepilogo_iva_vendite << aliquota.descrizione
+            riepilogo_iva_vendite << Helpers::ApplicationHelper.percentage(aliquota.percentuale)
             riepilogo_iva_vendite << '' # descrizione norma
             riepilogo_iva_vendite << residuo_riepilogo_iva.sum(&:imponibile)
             riepilogo_iva_vendite << residuo_riepilogo_iva.sum(&:iva)
@@ -314,7 +314,7 @@ module Helpers
 
           aliquota = riepilogo_iva.first.aliquota
 
-          riepilogo_iva_corrispettivi << aliquota.descrizione
+          riepilogo_iva_corrispettivi << Helpers::ApplicationHelper.percentage(aliquota.percentuale)
           riepilogo_iva_corrispettivi << riepilogo_iva.sum(&:imponibile)
           riepilogo_iva_corrispettivi << riepilogo_iva.sum(&:iva)
 

@@ -8,6 +8,7 @@ module Models
     set_table_name :pdc
 
     belongs_to :categoria_pdc, :foreign_key => 'categoria_pdc_id'
+    belongs_to :banca, :foreign_key => 'banca_id'
 
     validates_presence_of :categoria_pdc,
       :message => "Inserire la categoria"
@@ -26,9 +27,9 @@ module Models
       num = 0
       unless self.id.nil?
         num += Models::Corrispettivo.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
+        num += Models::Scrittura.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
         num += Models::RigaFatturaPdc.count(:conditions => ["pdc_id = ?", self.id])
         num += Models::Causale.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
-        num += Models::Banca.count(:conditions => ["pdc_id = ?", self.id])
         num += Models::Cliente.count(:conditions => ["pdc_id = ?", self.id])
         num += Models::Fornitore.count(:conditions => ["pdc_id = ?", self.id])
       end
@@ -52,7 +53,13 @@ module Models
       self.categoria_pdc.ricavo?
     end
 
-    alias_method :attivo?, :costo?
-    alias_method :passivo?, :ricavo?
+    def attivo?()
+      self.categoria_pdc.attivo?
+    end
+
+    def passivo?()
+      self.categoria_pdc.passivo?
+    end
+
   end
 end

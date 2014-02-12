@@ -38,6 +38,9 @@ module Models
           logger.debug("Totale pagamenti: " + sprintf("%8.20f", self.totale_incassi))
           errors.add(:importo, "L'importo della fattura non corrisponde al totale degli incassi.")
         end
+
+        errors.add(:data_emissione, "La data di emissione non può essere maggiore della data odierna.") if self.data_emissione.future?
+
       end
     end
   end

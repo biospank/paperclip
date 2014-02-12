@@ -10,11 +10,14 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       
+      attr_accessor :dialog_sql_criteria # utilizzato nelle dialog
+      
       def ui()
 
         model :pdc => {:attrs => [:categoria_pdc,
                                    :codice,
                                    :descrizione,
+                                   :banca,
                                    :attivo]}
         
         controller :prima_nota
@@ -25,7 +28,7 @@ module Views
         
         xrc.find('lku_categoria_pdc', self, :extends => LookupField) do |field|
           field.configure(:code => :codice,
-                                :label => lambda {|banca| self.txt_descrizione_categoria_pdc.view_data = (banca ? banca.descrizione : nil)},
+                                :label => lambda {|categoria| self.txt_descrizione_categoria_pdc.view_data = (categoria ? categoria.descrizione : nil)},
                                 :model => :categoria_pdc,
                                 :dialog => :categorie_pdc_dialog,
                                 :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
@@ -38,6 +41,17 @@ module Views
           field.evt_char { |evt| txt_codice_keypress(evt) }
         end
         xrc.find('txt_descrizione', self, :extends => TextField)
+
+        xrc.find('lku_banca', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|banca| self.txt_descrizione_banca.view_data = (banca ? banca.descrizione : nil)},
+                                :model => :banca,
+                                :dialog => :banche_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW,
+                                :folder => Helpers::PrimaNotaHelper::WXBRA_PDC_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_banca', self, :extends => TextField)
 
         xrc.find('chk_attivo', self, :extends => CheckField)
 
@@ -56,6 +70,10 @@ module Views
 
         subscribe(:evt_categoria_pdc_changed) do |data|
           lku_categoria_pdc.load_data(data)
+        end
+
+        subscribe(:evt_banca_changed) do |data|
+          lku_banca.load_data(data)
         end
 
         subscribe(:evt_new_pdc) do
@@ -105,6 +123,7 @@ module Views
             end
             evt.skip()
           when Wx::K_F5
+            self.dialog_sql_criteria = self.categoria_sql_criteria()
             btn_variazione_click(evt)
           else
             evt.skip()
@@ -232,16 +251,33 @@ module Views
       def reset_pdc_command_state()
         if pdc.new_record?
           disable_widgets [btn_elimina]
-          enable_widgets [lku_categoria_pdc, txt_codice, txt_descrizione]
+          enable_widgets [lku_categoria_pdc, txt_codice, txt_descrizione, lku_banca]
         else
           if pdc.modificabile?
-            enable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione]
+            enable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione, lku_banca]
           else
             disable_widgets [btn_elimina, lku_categoria_pdc, txt_codice, txt_descrizione]
+
+            if lku_banca.view_data
+              lku_banca.enable(false)
+            else
+              if pdc.attivo? || pdc.passivo?
+                lku_banca.enable(true)
+              else
+                lku_banca.enable(false)
+              end
+            end
+
+
           end
         end
       end
 
+      def categoria_sql_criteria()
+        if categoria = lku_categoria_pdc.view_data()
+          "pdc.categoria_pdc_id = #{categoria.id}"
+        end
+      end
     end
   end
 end

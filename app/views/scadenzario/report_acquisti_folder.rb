@@ -24,7 +24,7 @@ module Views
                             {:caption => 'Aliquota', :width => 150, :align => Wx::LIST_FORMAT_LEFT},
                             {:caption => 'Imponibile', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
                             {:caption => 'Iva', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
-                            {:caption => 'Iva detraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+                            {:caption => 'Iva indetraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
                             {:caption => 'Norma', :width => 150, :align => Wx::LIST_FORMAT_LEFT}])
 
           list.data_info([{:attr => :fornitore},
@@ -40,11 +40,11 @@ module Views
         end
 
         xrc.find('lstrep_iva', self, :extends => ReportField) do |field|
-          field.column_info([{:caption => 'Aliquota', :width => 180, :align => Wx::LIST_FORMAT_LEFT},
-              {:caption => 'Norma', :width => 180, :align => Wx::LIST_FORMAT_LEFT},
-              {:caption => 'Imponibile', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
-              {:caption => 'Iva', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
-              {:caption => 'Iva detraibile', :width => 80, :align => Wx::LIST_FORMAT_RIGHT},
+          field.column_info([{:caption => 'Aliquota', :width => 100, :align => Wx::LIST_FORMAT_LEFT},
+              {:caption => 'Norma', :width => 100, :align => Wx::LIST_FORMAT_LEFT},
+              {:caption => 'Imponibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+              {:caption => 'Iva', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+              {:caption => 'Iva detraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
               {:caption => 'Iva indetraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT}
             ])
           field.data_info([{:attr => :aliquota},
@@ -98,9 +98,18 @@ module Views
 
           dati_azienda = Models::Azienda.current.dati_azienda
 
+          case result_set_lstrep_iva.size
+          when 1..3
+            margin_bottom = 50
+          when 4..5
+            margin_bottom = 60
+          when 6..7
+            margin_bottom = 70
+          end
+
           generate(:report_acquisti,
             :margin_top => 40,
-            :margin_bottom => 60,
+            :margin_bottom => margin_bottom,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
             :preview => false

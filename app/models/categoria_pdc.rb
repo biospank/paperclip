@@ -58,14 +58,20 @@ module Models
     end
 
     def costo?()
-      self.type == ATTIVO || self.type == COSTO
+      self.type == COSTO
     end
 
     def ricavo?()
-      self.type == PASSIVO || self.type == RICAVO
+      self.type == RICAVO
     end
 
-    alias_method :attivo?, :costo?
-    alias_method :passivo?, :ricavo?
+    def attivo?()
+      self.type == ATTIVO
+    end
+
+    def passivo?()
+      self.type == PASSIVO
+    end
+
   end
 end

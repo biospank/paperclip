@@ -38,10 +38,10 @@ module Views
         end
 
         xrc.find('lstrep_iva', self, :extends => ReportField) do |field|
-          field.column_info([{:caption => 'Aliquota', :width => 200, :align => Wx::LIST_FORMAT_LEFT},
-              {:caption => 'Norma', :width => 200, :align => Wx::LIST_FORMAT_LEFT},
-              {:caption => 'Imponibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
-              {:caption => 'Iva', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+          field.column_info([{:caption => 'Aliquota', :width => 100, :align => Wx::LIST_FORMAT_LEFT},
+              {:caption => 'Norma', :width => 100, :align => Wx::LIST_FORMAT_LEFT},
+              {:caption => 'Imponibile', :width => 200, :align => Wx::LIST_FORMAT_RIGHT},
+              {:caption => 'Iva', :width => 200, :align => Wx::LIST_FORMAT_RIGHT},
             ])
           field.data_info([{:attr => :aliquota},
               {:attr => :norma},
@@ -88,9 +88,18 @@ module Views
 
           dati_azienda = Models::Azienda.current.dati_azienda
 
+          case result_set_lstrep_iva.size
+          when 1..3
+            margin_bottom = 50
+          when 4..5
+            margin_bottom = 60
+          when 6..7
+            margin_bottom = 70
+          end
+
           generate(:report_vendite,
             :margin_top => 40,
-            :margin_bottom => 50,
+            :margin_bottom => margin_bottom,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
             :preview => false

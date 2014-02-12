@@ -310,6 +310,7 @@ module Views
               reset_panel()
               self.fattura_cliente = ctrl.load_fattura_cliente(fatture_clienti_dlg.selected)
               self.cliente = self.fattura_cliente.cliente
+              self.righe_fattura_pdc = crea_righe_pdc_da_fatturazione()
               transfer_cliente_to_view()
               transfer_fattura_cliente_to_view()
               incassi_fattura_cliente_panel.display_incassi_fattura_cliente(self.fattura_cliente)
@@ -577,6 +578,26 @@ module Views
       end
 
       def pdc_compatibile?
+        if configatron.bilancio.attivo
+
+          incompleto = self.righe_fattura_pdc.any? do |riga|
+            riga.valid_record? && riga.pdc.nil?
+          end
+
+          if incompleto
+              Wx::message_box("Dettaglio iva incompleto: manca il codice conto.",
+                'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+            btn_pdc.set_focus()
+            return false
+          end
+        end
+
+        return true
+
+      end
+
+      def pdc_totale_compatibile?
         totale_righe = 0.0
         if configatron.bilancio.attivo
 

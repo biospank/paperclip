@@ -56,6 +56,17 @@ module Models
           logger.debug("Totale pagamenti: " + sprintf("%8.20f", self.totale_pagamenti))
           errors.add(:importo, "L'importo della fattura non corrisponde al totale dei pagamenti.")
         end
+
+        errors.add(:data_emissione, "La data di emissione non può essere maggiore della data odierna.") if self.data_emissione.future?
+
+        if configatron.bilancio.attivo
+          if self.data_registrazione.future?
+            errors.add(:data_registrazione, "La data di registrazione non può essere maggiore della data odierna.")
+          end
+          if self.data_emissione > self.data_registrazione
+            errors.add(:data_emissione, "La data di emissione non può essere maggiore della data di registrazione.") if self.data_emissione.future?
+          end
+        end
       end
     end
     

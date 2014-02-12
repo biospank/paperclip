@@ -532,6 +532,18 @@ module Views
                       Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
                     if res == Wx::NO
+                      txt_num.activate()
+                      return
+                    end
+                  end
+
+                  if fattura_cliente.data_emissione.future?
+                    res = Wx::message_box("La data di emissione è maggiore della data odierna: Confermi?",
+                      'Avvertenza',
+                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                    if res == Wx::NO
+                      txt_data_emissione.activate()
                       return
                     end
                   end

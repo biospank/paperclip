@@ -32,17 +32,17 @@
               <table class="table table-condensed" id="riepilogo">
                 <thead>
                   <tr>
-                    <th style="width: 50%" class="left">Aliquota</th>
-                    <th style="width: 25%" class="right">Imponibile</th>
-                    <th style="width: 25%" class="right">Iva</th>
+                    <th style="width: 30%" class="left">Aliquota</th>
+                    <th style="width: 35%" class="right">Imponibile</th>
+                    <th style="width: 35%" class="right">Iva</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% result_set_lstrep_iva.each do |riga| %>
                     <tr>
-                      <td style="width: 50%" class="left"><%= riga[0] %></td>
-                      <td style="width: 25%" class="right"><%= Helpers::ApplicationHelper.currency(riga[1]) %></td>
-                      <td style="width: 25%" class="right"><%= Helpers::ApplicationHelper.currency(riga[2]) %></td>
+                      <td style="width: 30%" class="left"><%= riga[0] %></td>
+                      <td style="width: 35%" class="right"><%= Helpers::ApplicationHelper.currency(riga[1]) %></td>
+                      <td style="width: 35%" class="right"><%= Helpers::ApplicationHelper.currency(riga[2]) %></td>
                     </tr>
                   <% end %>
                 </tbody>

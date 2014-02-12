@@ -75,7 +75,7 @@ module Models
     def validate()
       if errors.empty?
         if self.data.future?
-          errors.add(:giorno, "La data non può essere maggiore di oggi.")
+          errors.add(:giorno, "La data indicata è maggiore della data odierna.")
         end
       end
     end

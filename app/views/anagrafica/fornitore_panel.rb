@@ -14,7 +14,8 @@ module Views
 
       def ui
 
-        model :fornitore => {:attrs => [:denominazione,
+        model :fornitore => {:attrs => [:conto,
+                                      :denominazione,
                                       :no_p_iva,
                                       :p_iva,
                                       :cod_fisc,
@@ -35,6 +36,7 @@ module Views
         logger.debug('initializing FornitorePanel...')
         xrc = Xrc.instance()
         # Anagrafica fornitore
+        xrc.find('txt_conto', self, :extends => TextField)
         xrc.find('txt_denominazione', self, :extends => TextField)
         xrc.find('chk_no_p_iva', self, :extends => CheckField)
         xrc.find('txt_p_iva', self, :extends => TextField)

@@ -360,6 +360,13 @@ end
   conn.execute "INSERT INTO UTENTI (id, profilo_id, azienda_id, nominativo, login, password) VALUES (#{key}, 1, 1, 'Administrator', '#{value[0]}', '#{value[1]}')"
 end
 
+# inizializzo i progressivi utilizzati nei conti (clienti e fornitori)
+
+Models::Azienda.all.each do |azienda|
+  execute("insert into progressivo_clienti (azienda_id, progressivo) values (#{azienda.id}, 22000)")
+  execute("insert into progressivo_fornitori (azienda_id, progressivo) values (#{azienda.id}, 46000)")
+end
+
 Models::Licenza.create(
   :numero_seriale => '',
   :data_scadenza => Date.today.months_since(4),

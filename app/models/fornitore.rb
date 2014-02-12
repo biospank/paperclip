@@ -51,6 +51,10 @@ module Models
       (self.cod_fisc ||= '').upcase!
     end
 
+    def before_create
+      self.conto = Models::ProgressivoFornitore.next_sequence()
+    end
+
     def modificabile?
       num = 0
       num = Models::FatturaFornitore.count(:conditions => ["fornitore_id = ?", self.id])
