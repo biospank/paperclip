@@ -48,6 +48,7 @@ Ruby 1.9
  Utility
 - pry
 - axlsx
+- foreman
 - childprocess (https://github.com/jarib/childprocess) ko
 - vegas trasforma in eseguible un app sinatra (http://code.quirkey.com/vegas/)
 - launchy (https://github.com/copiousfreetime/launchy)

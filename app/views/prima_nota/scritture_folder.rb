@@ -916,27 +916,81 @@ module Views
               end
           end
 
+          # se alla scrittura e' associata una causale
+          if(self.scrittura.causale)
+            # che presuppone un movimento di banca
+            if(self.scrittura.causale.movimento_di_banca?)
+              # e non esiste almeno un conto con la banca
+              if((self.scrittura.pdc_dare.blank? || self.scrittura.pdc_dare.banca.blank?) &&
+                (self.scrittura.pdc_avere.blank? || self.scrittura.pdc_avere.banca.blank?))
+                # chiedo di selezionare un conto con la banca
+                Wx::message_box("La causale selezionata presuppone un movimento di banca:\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-        end
+                lku_pdc_dare.activate
 
-        if(!self.scrittura.causale_compatibile?)
-          Wx::message_box("La causale non e' compatibile con la banca.",
-            'Info',
-            Wx::OK | Wx::ICON_INFORMATION, self)
+                return false
+              end
+            end
+          else
+            # se uno dei conti della scrittura ha una banca associata
+            if((self.scrittura.pdc_dare && self.scrittura.pdc_dare.banca) || (self.scrittura.pdc_avere && self.scrittura.pdc_avere.banca))
+              # ma non e' una scrittura di banca
+              if !self.scrittura.di_banca?
+                Wx::message_box("Il conto selezionato prevede un movimento di banca.",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-          lku_causale.activate
-          
-          return false
-        end
-        
-        # se alla scrittura e' associata una causale
-        if(self.scrittura.causale)
-          # che presuppone un movimento di banca
-          if(self.scrittura.causale.movimento_di_banca?)
-            # e la scrittura non ha una banca
-            if(self.scrittura.banca.nil?) 
-              # chiedo di inserire una banca
-              Wx::message_box("La causale selezionata presuppone un movimento di banca:\nselezionare la banca se esiste, oppure, configurarne una nel pannello 'configurazione -> azienda'.",
+                txt_banca_dare.activate
+
+                return false
+              end
+            # se i conti della scrittura non hanno una banca associata
+            else
+              # ma e' una scrittura di banca
+              if self.scrittura.di_banca?
+                Wx::message_box("Importo banca non compatibile:\nuno dei conti selezionati deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
+
+                lku_pdc_dare.activate
+
+                return false
+              end
+            end
+
+          end
+        else
+          if(!self.scrittura.causale_compatibile?)
+            Wx::message_box("La causale non e' compatibile con la banca.",
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+
+            lku_causale.activate
+
+            return false
+          end
+
+          # se alla scrittura e' associata una causale
+          if(self.scrittura.causale)
+            # che presuppone un movimento di banca
+            if(self.scrittura.causale.movimento_di_banca?)
+              # e la scrittura non ha una banca
+              if(self.scrittura.banca.nil?)
+                # chiedo di inserire una banca
+                Wx::message_box("La causale selezionata presuppone un movimento di banca:\nselezionare la banca se esiste, oppure, configurarne una nel pannello 'configurazione -> azienda'.",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
+
+                lku_banca.activate
+
+                return false
+              end
+            end
+          else
+            if(!self.scrittura.importo_compatibile?)
+              Wx::message_box("L'importo non e' compatibile con la banca.",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
 
@@ -944,16 +998,6 @@ module Views
 
               return false
             end
-          end
-        else
-          if(!self.scrittura.importo_compatibile?)
-            Wx::message_box("L'importo non e' compatibile con la banca.",
-              'Info',
-              Wx::OK | Wx::ICON_INFORMATION, self)
-
-            lku_banca.activate
-
-            return false
           end
         end
 

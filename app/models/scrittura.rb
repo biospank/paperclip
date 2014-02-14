@@ -49,7 +49,9 @@ module Models
 
     def causale_compatibile?()
       res = true
+      # se esiste una banca e una causale
       if(self.banca and self.causale)
+        # che non prevede un movimento di banca
         if(self.causale.banca_dare == 0 and self.causale.banca_avere == 0)
           res = false
         end
@@ -72,6 +74,7 @@ module Models
           res = false
         end
       end
+
       return res
     end
     
