@@ -122,7 +122,7 @@ module Views
         @menu_bar.find_item(@mnu_avviso_parcella).check()
       end
       
-      mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio/Liquidazioni')).get_sub_menu()
+      mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio - Liquidazioni')).get_sub_menu()
         @mnu_bilancio_attivo = mnu_bilancio.find_item('Attivo')
         configatron.bilancio.set_default(:attivo, false)
         @menu_bar.find_item(@mnu_bilancio_attivo).check() if configatron.bilancio.attivo

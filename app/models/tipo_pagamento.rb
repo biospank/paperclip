@@ -9,6 +9,8 @@ module Models
     set_table_name :tipi_pagamento
     belongs_to :categoria
     belongs_to :banca, :foreign_key => 'banca_id'
+    belongs_to :pdc_dare, :class_name => "Models::Pdc", :foreign_key => 'pdc_dare_id'
+    belongs_to :pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'pdc_avere_id'
 
     validates_presence_of :codice, 
       :message => "Inserire il codice"
@@ -30,7 +32,7 @@ module Models
       end
       return res
     end
-    
+
     protected
     
     def validate()

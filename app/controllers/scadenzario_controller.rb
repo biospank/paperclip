@@ -93,7 +93,7 @@ module Controllers
           if pagamento.tipo_pagamento.valido?
             if pagamento.maxi_pagamento_cliente_id.nil?
               descrizione = build_descrizione_pagamento_fattura_cliente(pagamento, fattura_cliente.nota_di_credito?)
-              if scrittura = scrittura_prima_nota(pagamento, descrizione, fattura_cliente.nota_di_credito?)
+              if scrittura = scrittura_prima_nota(fattura_cliente, pagamento, descrizione)
                 relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
               end
             else
@@ -105,7 +105,7 @@ module Controllers
 #                totale_pagamenti_multipli = PagamentoFatturaCliente.find_by_sql(sql)[0][:totale_pagamenti_multipli].to_f
               if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(pagamento.maxi_pagamento_cliente.importo))
                 descrizione = build_descrizione_multipla_pagamento_fattura_cliente(pagamento, fattura_cliente.nota_di_credito?)
-                if scrittura = scrittura_multipla_prima_nota(pagamento.maxi_pagamento_cliente, descrizione, fattura_cliente.nota_di_credito?)
+                if scrittura = scrittura_multipla_prima_nota(fattura_cliente, pagamento.maxi_pagamento_cliente, descrizione)
                   relazione_multipla_pagamento_scrittura_prima_nota(scrittura, pagamento)
                 end
               end
@@ -141,7 +141,7 @@ module Controllers
               if scrittura = pagamento.scrittura
                 if scrittura.congelata?
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-                  storno_scrittura_multipla_prima_nota(scrittura, pagamento.maxi_pagamento_cliente, descrizione, fattura.nota_di_credito?)
+                  storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_cliente, descrizione)
                   # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
                   PagamentoPrimaNota.delete_all("maxi_pagamento_cliente_id = #{pagamento.maxi_pagamento_cliente.id}")
                 else
@@ -151,7 +151,7 @@ module Controllers
                 end
               else
                 descrizione = build_descrizione_multipla_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_multipla_prima_nota(scrittura, pagamento.maxi_pagamento_cliente, descrizione, fattura.nota_di_credito?)
+                storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_cliente, descrizione)
               end
               # resetto il flag della registrazione in prima nota per tutti i pagamenti associati al maxi pagamento
               # viene fatto all'interno di storno_scrittura_multipla_prima_nota
@@ -162,7 +162,7 @@ module Controllers
             if scrittura = pagamento.scrittura
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_prima_nota(pagamento, descrizione, fattura.nota_di_credito?)
+                storno_scrittura_prima_nota(fattura, pagamento, descrizione)
                 PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
               else
                   # il destroy direttamente su scrittura non funziona
@@ -170,7 +170,7 @@ module Controllers
               end
             else
               descrizione = build_descrizione_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-              storno_scrittura_prima_nota(pagamento, descrizione, fattura.nota_di_credito?)
+              storno_scrittura_prima_nota(fattura, pagamento, descrizione)
             end
           end
         end
@@ -241,7 +241,7 @@ module Controllers
           if pagamento.tipo_pagamento.valido?
             if pagamento.maxi_pagamento_fornitore_id.nil?
               descrizione = build_descrizione_pagamento_fattura_fornitore(pagamento, fattura_fornitore.nota_di_credito?)
-              if scrittura = scrittura_prima_nota(pagamento, descrizione, fattura_fornitore.nota_di_credito?)
+              if scrittura = scrittura_prima_nota(fattura_fornitore, pagamento, descrizione)
                 relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
               end
             else
@@ -253,7 +253,7 @@ module Controllers
 #                totale_pagamenti_multipli = PagamentoFatturaFornitore.find_by_sql(sql)[0][:totale_pagamenti_multipli].to_f
               if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(pagamento.maxi_pagamento_fornitore.importo))
                 descrizione = build_descrizione_multipla_pagamento_fattura_fornitore(pagamento, fattura_fornitore.nota_di_credito?)
-                if scrittura = scrittura_multipla_prima_nota(pagamento.maxi_pagamento_fornitore, descrizione, fattura_fornitore.nota_di_credito?)
+                if scrittura = scrittura_multipla_prima_nota(fattura_fornitore, pagamento.maxi_pagamento_fornitore, descrizione)
                   relazione_multipla_pagamento_scrittura_prima_nota(scrittura, pagamento)
                 end
               end
@@ -292,7 +292,7 @@ module Controllers
                 if scrittura.congelata?
                   # lo storno viene fatto solo se la scrittura e' congelata
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-                  storno_scrittura_multipla_prima_nota(scrittura, pagamento.maxi_pagamento_fornitore, descrizione, fattura.nota_di_credito?)
+                  storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_fornitore, descrizione)
                   # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
                   PagamentoPrimaNota.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
                 else
@@ -306,7 +306,7 @@ module Controllers
                 # in questo caso lo storno e' necessario per risalire al pagamento
                 # NOTA: non dovrebbe piu' verificarsi
                 descrizione = build_descrizione_multipla_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_multipla_prima_nota(scrittura, pagamento.maxi_pagamento_fornitore, descrizione, fattura.nota_di_credito?)
+                storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_fornitore, descrizione)
               end
               # resetto il flag della registrazione in prima nota per tutti i pagamenti associati al maxi pagamento
               # viene fatto all'interno di storno_scrittura_multipla_prima_nota
@@ -317,7 +317,7 @@ module Controllers
             if scrittura = pagamento.scrittura
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_prima_nota(pagamento, descrizione, fattura.nota_di_credito?)
+                storno_scrittura_prima_nota(fattura, pagamento, descrizione)
                 PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
               else
                 # il destroy direttamente su scrittura non funziona
@@ -325,7 +325,7 @@ module Controllers
               end
             else
               descrizione = build_descrizione_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-              storno_scrittura_prima_nota(pagamento, descrizione, fattura.nota_di_credito?)
+              storno_scrittura_prima_nota(fattura, pagamento, descrizione)
             end
           end
         end
@@ -478,11 +478,11 @@ module Controllers
             @@incassi.each do |incasso|
               pagamento = PagamentoFatturaCliente.find(incasso.id, :include => [:fattura_cliente, :maxi_pagamento_cliente, :tipo_pagamento])
 
-              unless pagamento.tipo_pagamento.nil?
+              if pagamento.tipo_pagamento && pagamento.tipo_pagamento.valid?
                 logger.debug("maxi pagamento id: " + pagamento.maxi_pagamento_cliente_id.to_s)
                 if pagamento.maxi_pagamento_cliente_id.nil?
                   descrizione = build_descrizione_pagamento_fattura_cliente(pagamento, pagamento.fattura_cliente.nota_di_credito?)
-                  if scrittura = scrittura_prima_nota(pagamento, descrizione, pagamento.fattura_cliente.nota_di_credito?)
+                  if scrittura = scrittura_prima_nota(pagamento.fattura_cliente, pagamento, descrizione)
                     relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
                   end
                 else
@@ -500,7 +500,7 @@ module Controllers
                     # DA TESTARE
                     if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(pagamento.maxi_pagamento_cliente.importo))
                       descrizione = build_descrizione_multipla_pagamento_fattura_cliente(pagamento, pagamento.fattura_cliente.nota_di_credito?)
-                      if scrittura = scrittura_multipla_prima_nota(pagamento.maxi_pagamento_cliente, descrizione, pagamento.fattura_cliente.nota_di_credito?)
+                      if scrittura = scrittura_multipla_prima_nota(pagamento.fattura_cliente, pagamento.maxi_pagamento_cliente, descrizione)
                         relazione_multipla_pagamento_scrittura_prima_nota(scrittura, pagamento)
                       end
                     end
@@ -525,10 +525,10 @@ module Controllers
             @@pagamenti.each do |pagamento|
               pagamento = PagamentoFatturaFornitore.find(pagamento.id, :include => [:fattura_fornitore, :maxi_pagamento_fornitore, :tipo_pagamento])
 
-              unless pagamento.tipo_pagamento.nil?
+              if pagamento.tipo_pagamento && pagamento.tipo_pagamento.valid?
                 if pagamento.maxi_pagamento_fornitore_id.nil?
                   descrizione = build_descrizione_pagamento_fattura_fornitore(pagamento, pagamento.fattura_fornitore.nota_di_credito?)
-                  if scrittura = scrittura_prima_nota(pagamento, descrizione, pagamento.fattura_fornitore.nota_di_credito?)
+                  if scrittura = scrittura_prima_nota(pagamento.fattura_fornitore, pagamento, descrizione)
                     relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
                   end
                 else
@@ -546,7 +546,7 @@ module Controllers
                     # DA TESTARE
                     if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(pagamento.maxi_pagamento_fornitore.importo))
                       descrizione = build_descrizione_multipla_pagamento_fattura_fornitore(pagamento, pagamento.fattura_fornitore.nota_di_credito?)
-                      if scrittura = scrittura_multipla_prima_nota(pagamento.maxi_pagamento_fornitore, descrizione, pagamento.fattura_fornitore.nota_di_credito?)
+                      if scrittura = scrittura_multipla_prima_nota(pagamento.fattura_fornitore, pagamento.maxi_pagamento_fornitore, descrizione)
                         relazione_multipla_pagamento_scrittura_prima_nota(scrittura, pagamento)
                       end
                     end
@@ -734,10 +734,10 @@ module Controllers
 
     end
 
-    def scrittura_prima_nota(pagamento, descrizione, nota_di_credito)
+    def scrittura_prima_nota(fattura, pagamento, descrizione)
       logger.debug("tipo pagamento: " + pagamento.tipo_pagamento.descrizione)
       logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + nota_di_credito.to_s)
+      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
 
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => pagamento.banca,
@@ -747,7 +747,7 @@ module Controllers
                                 :esterna => 1,
                                 :congelata => 0)
 
-      if(nota_di_credito)
+      if(fattura.nota_di_credito?)
         if (pagamento.tipo_pagamento.nc_cassa_dare? ||
             pagamento.tipo_pagamento.nc_cassa_avere? ||
             pagamento.tipo_pagamento.nc_banca_dare? ||
@@ -761,6 +761,16 @@ module Controllers
           scrittura.banca_avere = pagamento.importo if pagamento.tipo_pagamento.nc_banca_avere?
           scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_dare?
           scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+          if configatron.bilancio.attivo
+            if pagamento.kind_of? Models::PagamentoFatturaCliente
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+            end
+          end
 
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_prima_nota => 1)
@@ -786,6 +796,16 @@ module Controllers
           scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_dare?
           scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_avere?
 
+          if configatron.bilancio.attivo
+            if pagamento.kind_of? Models::PagamentoFatturaCliente
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+            end
+          end
+
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_prima_nota => 1)
 
@@ -801,10 +821,11 @@ module Controllers
 
     end
 
-    def storno_scrittura_prima_nota(pagamento, descrizione, nota_di_credito)
+    def storno_scrittura_prima_nota(fattura, pagamento, descrizione)
       logger.debug("tipo pagamento: " + pagamento.tipo_pagamento.descrizione)
       logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + nota_di_credito.to_s)
+      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
+
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => pagamento.banca,
                                 :descrizione => descrizione,
@@ -815,7 +836,7 @@ module Controllers
 
       negativo = (pagamento.importo * -1)
 
-      if(nota_di_credito)
+      if(fattura.nota_di_credito?)
         if (pagamento.tipo_pagamento.nc_cassa_dare? ||
             pagamento.tipo_pagamento.nc_cassa_avere? ||
             pagamento.tipo_pagamento.nc_banca_dare? ||
@@ -832,6 +853,16 @@ module Controllers
 
           scrittura.parent = pagamento.scrittura
           
+          if configatron.bilancio.attivo
+            if pagamento.kind_of? Models::PagamentoFatturaCliente
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+            end
+          end
+
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_prima_nota => 1)
 
@@ -855,6 +886,16 @@ module Controllers
           scrittura.fuori_partita_avere = negativo if pagamento.tipo_pagamento.fuori_partita_avere?
 
           scrittura.parent = pagamento.scrittura
+
+          if configatron.bilancio.attivo
+            if pagamento.kind_of? Models::PagamentoFatturaCliente
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+            end
+          end
 
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_prima_nota => 1)
@@ -880,10 +921,10 @@ module Controllers
       end
     end
 
-    def scrittura_multipla_prima_nota(maxi_pagamento, descrizione, nota_di_credito)
+    def scrittura_multipla_prima_nota(fattura, maxi_pagamento, descrizione)
       logger.debug("tipo maxi_pagamento: " + maxi_pagamento.tipo_pagamento.descrizione)
       logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + nota_di_credito.to_s)
+      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
 
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => maxi_pagamento.banca,
@@ -893,7 +934,7 @@ module Controllers
                                 :esterna => 1,
                                 :congelata => 0)
 
-      if(nota_di_credito)
+      if(fattura.nota_di_credito?)
         if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
             maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
             maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
@@ -907,6 +948,16 @@ module Controllers
           scrittura.banca_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_banca_avere?
           scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
           scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+          if configatron.bilancio.attivo
+            if maxi_pagamento.kind_of? MaxiPagamentoCliente
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+            end
+          end
 
           scrittura.save_with_validation(false)
           #pagamento.update_attributes(:registrato_in_prima_nota => 1)
@@ -938,6 +989,16 @@ module Controllers
           scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_dare?
           scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
 
+          if configatron.bilancio.attivo
+            if maxi_pagamento.kind_of? MaxiPagamentoCliente
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+            end
+          end
+
           scrittura.save_with_validation(false)
           #pagamento.update_attributes(:registrato_in_prima_nota => 1)
           logger.debug("maxi pagamento: " + maxi_pagamento.inspect)
@@ -960,10 +1021,10 @@ module Controllers
 
     end
 
-    def storno_scrittura_multipla_prima_nota(old_scrittura, maxi_pagamento, descrizione, nota_di_credito)
+    def storno_scrittura_multipla_prima_nota(fattura, old_scrittura, maxi_pagamento, descrizione)
       logger.debug("tipo maxi_pagamento: " + maxi_pagamento.tipo_pagamento.descrizione)
       logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + nota_di_credito.to_s)
+      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
 
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => maxi_pagamento.banca,
@@ -975,7 +1036,7 @@ module Controllers
 
       negativo = (maxi_pagamento.importo * -1)
 
-      if(nota_di_credito)
+      if(fattura.nota_di_credito?)
         if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
             maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
             maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
@@ -991,6 +1052,16 @@ module Controllers
           scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
 
           scrittura.parent = old_scrittura
+
+          if configatron.bilancio.attivo
+            if maxi_pagamento.kind_of? MaxiPagamentoCliente
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+            end
+          end
 
           scrittura.save_with_validation(false)
           #pagamento.update_attributes(:registrato_in_prima_nota => 1)
@@ -1023,6 +1094,16 @@ module Controllers
           scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
 
           scrittura.parent = old_scrittura
+
+          if configatron.bilancio.attivo
+            if maxi_pagamento.kind_of? MaxiPagamentoCliente
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere || fattura.cliente.conto
+            else
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare || fattura.fornitore.conto
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+            end
+          end
 
           scrittura.save_with_validation(false)
           #pagamento.update_attributes(:registrato_in_prima_nota => 1)

@@ -9,6 +9,8 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       
+      attr_accessor :dialog_sql_criteria # utilizzato nelle dialog dei conti
+
       def ui()
 
         model :tipo_pagamento_fornitore => {:attrs => [:codice, 
@@ -27,7 +29,9 @@ module Views
                                        :nc_banca_dare,
                                        :nc_banca_avere,
                                        :nc_fuori_partita_dare,
-                                       :nc_fuori_partita_avere],
+                                       :nc_fuori_partita_avere,
+                                        :pdc_dare,
+                                        :pdc_avere],
                                      :alias => :pagamento}
                                    
         controller :scadenzario
@@ -76,6 +80,37 @@ module Views
         xrc.find('chk_nc_banca_avere', self, :extends => CheckField)
         xrc.find('chk_nc_fuori_partita_dare', self, :extends => CheckField)
         xrc.find('chk_nc_fuori_partita_avere', self, :extends => CheckField)
+
+        xrc.find('lku_pdc_dare', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_dare.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                                :folder => Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_dare', self, :extends => TextField)
+
+        xrc.find('lku_pdc_avere', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_pdc_avere.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                                :folder => Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
+
+        subscribe(:evt_pdc_changed) do |data|
+          lku_pdc_dare.load_data(data)
+          lku_pdc_avere.load_data(data)
+        end
+
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
+        end
 
         xrc.find('btn_variazione', self)
         xrc.find('btn_salva', self)
@@ -147,6 +182,72 @@ module Views
         update_ui()
       end
       
+      def lku_pdc_dare_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.dare_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_pdc_dare.view_data = ctrl.load_pdc(dlg.selected)
+              lku_pdc_dare_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                  Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
+      def lku_pdc_avere_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.avere_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
+              lku_pdc_avere_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                  Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
       def btn_variazione_click(evt)
         begin
           transfer_pagamento_from_view()
@@ -179,15 +280,17 @@ module Views
               if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
                 transfer_pagamento_from_view()
                 if self.pagamento.valid?
-                  ctrl.save_pagamento()
-                  evt_chg = Views::Base::CustomEvent::TipoPagamentoFornitoreChangedEvent.new(ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::FORNITORI))
-                  # This sends the event for processing by listeners
-                  process_event(evt_chg)
-                  Wx::message_box('Salvataggio avvenuto correttamente.',
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
-                  reset_panel()
-                  process_event(Views::Base::CustomEvent::BackEvent.new())
+                  if pagamento_compatibile?
+                    ctrl.save_pagamento()
+                    evt_chg = Views::Base::CustomEvent::TipoPagamentoFornitoreChangedEvent.new(ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::FORNITORI))
+                    # This sends the event for processing by listeners
+                    process_event(evt_chg)
+                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    reset_panel()
+                    process_event(Views::Base::CustomEvent::BackEvent.new())
+                  end
                 else
                   Wx::message_box(self.pagamento.error_msg,
                     'Info',
@@ -304,6 +407,84 @@ module Views
 
       def categoria()
         Helpers::AnagraficaHelper::FORNITORI
+      end
+
+      def dare_sql_criteria()
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}', '#{Models::CategoriaPdc::COSTO}')"
+      end
+
+      def avere_sql_criteria()
+        "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}', '#{Models::CategoriaPdc::RICAVO}')"
+      end
+
+      def pagamento_compatibile?
+
+        if configatron.bilancio.attivo
+          if self.pagamento.pdc_dare && self.pagamento.pdc_dare.ricavo?
+            res = Wx::message_box("Il conto in dare non è un costo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_dare.activate()
+                return false
+              end
+          end
+
+          if self.pagamento.pdc_avere && self.pagamento.pdc_avere.costo?
+            res = Wx::message_box("Il conto in avere non è un ricavo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_avere.activate()
+                return false
+              end
+          end
+
+          if(((self.pagamento.pdc_dare && self.pagamento.pdc_dare.costo?) &&
+                (self.pagamento.pdc_avere && self.pagamento.pdc_avere.ricavo?)) ||
+              ((self.pagamento.pdc_dare && self.pagamento.pdc_dare.ricavo?) &&
+                (self.pagamento.pdc_avere && self.pagamento.pdc_avere.costo?)))
+
+            res = Wx::message_box("Presenza di due conti economici.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_pdc_dare.activate()
+                return false
+              end
+          end
+
+          # se uno dei conti del pagamento ha una banca associata
+          if((self.pagamento.pdc_dare && self.pagamento.pdc_dare.banca) || (self.pagamento.pdc_avere && self.pagamento.pdc_avere.banca))
+            # ma non e' un pagamento che movimenta la banca
+            if((!self.pagamento.movimento_di_banca?) && (!self.pagamento.movimento_di_banca?(true)))
+              Wx::message_box("Il conto selezionato prevede un movimento di banca.",
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              txt_banca_dare.activate
+
+              return false
+            end
+          # se i conti del pagamento non hanno una banca associata
+          else
+            # ma e' un pagamento che movimenta la banca
+            if((self.pagamento.movimento_di_banca?) || (self.pagamento.movimento_di_banca?(true)))
+              Wx::message_box("Importo banca non compatibile:\nuno dei conti selezionati deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              lku_pdc_dare.activate
+
+              return false
+            end
+          end
+        end
+
+        return true
       end
 
     end
