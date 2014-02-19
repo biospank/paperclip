@@ -49,7 +49,7 @@ module Models
       end
       return res
     end
-    
+
     protected
     
     def validate()

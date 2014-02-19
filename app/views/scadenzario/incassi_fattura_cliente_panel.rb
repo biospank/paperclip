@@ -529,32 +529,45 @@ module Views
       end
       
       def incasso_compatibile?
-        if(!self.incasso_fattura.compatibile?(owner.fattura_cliente.nota_di_credito?))
-          Wx::message_box("La tipologia di incasso non e' compatibile con la banca.",
-            'Info',
-            Wx::OK | Wx::ICON_INFORMATION, self)
+        if configatron.bilancio.attivo
+          if self.incasso_fattura.tipo_pagamento.conto_incompleto?
+            Wx::message_box("La tipologia di incasso utilizzata è incompleta.\nAggiungere l'informazione del conto nel pannello 'Scadenzario -> impostazioni -> incassi e pagamenti.",
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
 
-          lku_tipo_pagamento.activate
-          
-          return false
-        end
-        
-        # se all'incasso e' associato un tipo pagamento
-        if(self.incasso_fattura.tipo_pagamento)
-          # che presuppone un movimento di banca
-          if(self.incasso_fattura.tipo_pagamento.movimento_di_banca?(owner.fattura_cliente.nota_di_credito?))
-            # e l'incasso non ha una banca
-            if(self.incasso_fattura.banca.nil?) 
-              # chiedo di inserire una banca
-              Wx::message_box("La modalità di incasso selezionata presuppone un movimento di banca:\nselezionare la banca se esiste, oppure, configurarne una nel pannello 'configurazione -> azienda'.",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+            lku_tipo_pagamento.activate
 
-              lku_banca.activate
+            return false
+          end
+        else
+          if(!self.incasso_fattura.compatibile?(owner.fattura_cliente.nota_di_credito?))
+            Wx::message_box("La tipologia di incasso non e' compatibile con la banca.",
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
 
-              return false
+            lku_tipo_pagamento.activate
+
+            return false
+          end
+
+          # se all'incasso e' associato un tipo pagamento
+          if(self.incasso_fattura.tipo_pagamento)
+            # che presuppone un movimento di banca
+            if(self.incasso_fattura.tipo_pagamento.movimento_di_banca?(owner.fattura_cliente.nota_di_credito?))
+              # e l'incasso non ha una banca
+              if(self.incasso_fattura.banca.nil?)
+                # chiedo di inserire una banca
+                Wx::message_box("La modalità di incasso selezionata presuppone un movimento di banca:\nselezionare la banca se esiste, oppure, configurarne una nel pannello 'configurazione -> azienda'.",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
+
+                lku_banca.activate
+
+                return false
+              end
             end
           end
+
         end
 
         return true

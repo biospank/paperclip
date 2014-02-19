@@ -6,8 +6,8 @@ module Models
 
     set_table_name :progressivo_fornitori
 
-    def self.next_sequence(azienda = nil)
-      pgr = self.find(:first, :conditions => ["azienda_id = ?", (azienda || Models::Azienda.current)])
+    def self.next_sequence()
+      pgr = self.first
       pgr.increment!(:progressivo)
       pgr.progressivo
     end

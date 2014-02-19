@@ -41,6 +41,7 @@ module Models
     end
 
     def modificabile?
+      return false if self.standard?
       num = 0
       unless self.id.nil?
         num += Models::Pdc.count(:conditions => ["categoria_pdc_id = ?", self.id])

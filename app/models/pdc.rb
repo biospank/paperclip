@@ -24,8 +24,10 @@ module Models
       :message => "Codice pdc gia' utilizzato."
 
     def modificabile?
+      return false if self.standard?
       num = 0
       unless self.id.nil?
+        num += Models::TipoPagamento.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
         num += Models::Corrispettivo.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
         num += Models::Scrittura.count(:conditions => ["pdc_dare_id = ? or pdc_avere_id = ?", self.id, self.id])
         num += Models::RigaFatturaPdc.count(:conditions => ["pdc_id = ?", self.id])

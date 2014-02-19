@@ -145,6 +145,9 @@ module Controllers
       query_str = []
       parametri = []
 
+      query_str << "pdc.hidden = ?"
+      parametri << false
+
       filtro.build_conditions(query_str, parametri) if filtro
 
       {:conditions => [query_str.join(' AND '), *parametri],

@@ -339,6 +339,13 @@ conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 30, 80001, 'SOPRAVVENIENZE PASSIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 30, 82507, 'ACCANTONAMENTO IRAP')")
 
+conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (31, 220, 'CLIENTI', 'Attivo')")
+conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (32, 460, 'FORNITORI', 'Passivo')")
+
+# inizializzo i progressivi utilizzati nei conti (clienti e fornitori)
+conn.execute("insert into progressivo_clienti (progressivo) values (22000)")
+conn.execute("insert into progressivo_fornitori (progressivo) values (46000)")
+
 # norma
 conn.execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 20, 20, 'Acq. con Iva Indetraibile 20%')")
 conn.execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 40, 40, 'Acq. con Iva Indetraibile 40%')")
@@ -358,13 +365,6 @@ end
   2 => ['bratech', '8743342106303a9cb104d2484a6fcbf516d2f8be']
 }.each do |key, value|
   conn.execute "INSERT INTO UTENTI (id, profilo_id, azienda_id, nominativo, login, password) VALUES (#{key}, 1, 1, 'Administrator', '#{value[0]}', '#{value[1]}')"
-end
-
-# inizializzo i progressivi utilizzati nei conti (clienti e fornitori)
-
-Models::Azienda.all.each do |azienda|
-  execute("insert into progressivo_clienti (azienda_id, progressivo) values (#{azienda.id}, 22000)")
-  execute("insert into progressivo_fornitori (azienda_id, progressivo) values (#{azienda.id}, 46000)")
 end
 
 Models::Licenza.create(

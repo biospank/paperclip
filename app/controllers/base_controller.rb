@@ -175,7 +175,7 @@ module Controllers
     end
 
     def search_pdc()
-      Pdc.search(:all, :order => 'codice')
+      Pdc.search(:all, :conditions => {:hidden => false}, :order => 'codice')
     end
 
     def search_categorie_pdc()

@@ -33,6 +33,10 @@ module Models
       return res
     end
 
+    def conto_incompleto?
+      self.pdc_dare.nil? && self.pdc_avere.nil?
+    end
+
     protected
     
     def validate()

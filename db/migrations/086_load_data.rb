@@ -279,6 +279,9 @@ class LoadData < ActiveRecord::Migration
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 30, 80001, 'SOPRAVVENIENZE PASSIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 30, 82507, 'ACCANTONAMENTO IRAP')")
 
+    execute("insert into categorie_pdc (id, codice, descrizione, type) values (31, 220, 'CLIENTI', 'Attivo')")
+    execute("insert into categorie_pdc (id, codice, descrizione, type) values (32, 460, 'FORNITORI', 'Passivo')")
+
     # norma
     execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 20, 20, 'Acq. con Iva Indetraibile 20%')")
     execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 40, 40, 'Acq. con Iva Indetraibile 40%')")
