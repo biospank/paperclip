@@ -146,7 +146,7 @@ module Controllers
       parametri = []
 
       query_str << "pdc.hidden = ?"
-      parametri << false
+      parametri << 0
 
       filtro.build_conditions(query_str, parametri) if filtro
 

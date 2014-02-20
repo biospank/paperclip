@@ -33,6 +33,22 @@ module Models
       return res
     end
 
+    def movimento_di_banca_dare?(nota_di_credito=false)
+      if(nota_di_credito)
+        nc_banca_dare?
+      else
+        banca_dare?
+      end
+    end
+
+    def movimento_di_banca_avere?(nota_di_credito=false)
+      if(nota_di_credito)
+        nc_banca_avere?
+      else
+        banca_avere?
+      end
+    end
+
     def conto_incompleto?
       self.pdc_dare.nil? && self.pdc_avere.nil?
     end

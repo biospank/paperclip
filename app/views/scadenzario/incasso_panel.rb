@@ -31,7 +31,9 @@ module Views
                                        :nc_fuori_partita_dare,
                                        :nc_fuori_partita_avere,
                                         :pdc_dare,
-                                        :pdc_avere],
+                                        :pdc_avere,
+                                        :nc_pdc_dare,
+                                        :nc_pdc_avere],
                                      :alias => :incasso}
         
         controller :scadenzario
@@ -103,13 +105,37 @@ module Views
 
         xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
 
+        xrc.find('lku_nc_pdc_dare', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_nc_pdc_dare.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                                :folder => Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_nc_pdc_dare', self, :extends => TextField)
+
+        xrc.find('lku_nc_pdc_avere', self, :extends => LookupField) do |field|
+          field.configure(:code => :codice,
+                                :label => lambda {|pdc| self.txt_descrizione_nc_pdc_avere.view_data = (pdc ? pdc.descrizione : nil)},
+                                :model => :pdc,
+                                :dialog => :pdc_dialog,
+                                :view => Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                                :folder => Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER)
+        end
+
+        xrc.find('txt_descrizione_nc_pdc_avere', self, :extends => TextField)
+
         subscribe(:evt_pdc_changed) do |data|
           lku_pdc_dare.load_data(data)
           lku_pdc_avere.load_data(data)
+          lku_nc_pdc_dare.load_data(data)
+          lku_nc_pdc_avere.load_data(data)
         end
 
         subscribe(:evt_bilancio_attivo) do |data|
-          data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
+          data ? enable_widgets([lku_pdc_dare, lku_pdc_avere, lku_nc_pdc_dare, lku_nc_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere, lku_nc_pdc_dare, lku_nc_pdc_avere])
         end
 
         xrc.find('btn_variazione', self)
@@ -226,6 +252,72 @@ module Views
             if answer == Wx::ID_OK
               lku_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
               lku_pdc_avere_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                  Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
+      def lku_nc_pdc_dare_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.dare_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_nc_pdc_dare.view_data = ctrl.load_pdc(dlg.selected)
+              lku_nc_pdc_dare_after_change()
+            elsif(answer == dlg.btn_nuovo.get_id)
+              evt_new = Views::Base::CustomEvent::NewEvent.new(
+                :pdc,
+                [
+                  Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW,
+                  Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER
+                ]
+              )
+              process_event(evt_new)
+            end
+
+            dlg.destroy()
+
+          else
+            evt.skip()
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
+      def lku_nc_pdc_avere_keypress(evt)
+        begin
+          case evt.get_key_code
+          when Wx::K_F5
+            self.dialog_sql_criteria = self.avere_sql_criteria()
+            dlg = Views::Dialog::PdcDialog.new(self)
+            dlg.center_on_screen(Wx::BOTH)
+            answer = dlg.show_modal()
+            if answer == Wx::ID_OK
+              lku_nc_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
+              lku_nc_pdc_avere_after_change()
             elsif(answer == dlg.btn_nuovo.get_id)
               evt_new = Views::Base::CustomEvent::NewEvent.new(
                 :pdc,
@@ -387,6 +479,60 @@ module Views
                             chk_nc_cassa_dare, chk_nc_cassa_avere,
                             chk_nc_banca_dare, chk_nc_banca_avere,
                             chk_nc_fuori_partita_dare, chk_nc_fuori_partita_avere]
+
+            if lku_banca.view_data
+              lku_banca.enable(false)
+            else
+              if incasso.movimento_di_banca?
+                lku_banca.enable(true)
+              else
+                lku_banca.enable(false)
+              end
+            end
+
+          end
+        end
+
+        if configatron.bilancio.attivo
+          if self.incasso.new_record?
+            enable_widgets [lku_pdc_dare, lku_pdc_avere, lku_nc_pdc_dare, lku_nc_pdc_avere]
+          else
+            if lku_pdc_dare.view_data
+              if self.incasso.modificabile?
+                lku_pdc_dare.enable(true)
+              else
+                lku_pdc_dare.enable(false)
+              end
+            else
+              lku_pdc_dare.enable(true)
+            end
+            if lku_pdc_avere.view_data
+              if self.incasso.modificabile?
+                lku_pdc_avere.enable(true)
+              else
+                lku_pdc_avere.enable(false)
+              end
+            else
+              lku_pdc_avere.enable(true)
+            end
+            if lku_nc_pdc_dare.view_data
+              if self.incasso.modificabile?
+                lku_nc_pdc_dare.enable(true)
+              else
+                lku_nc_pdc_dare.enable(false)
+              end
+            else
+              lku_nc_pdc_dare.enable(true)
+            end
+            if lku_nc_pdc_avere.view_data
+              if self.incasso.modificabile?
+                lku_nc_pdc_avere.enable(true)
+              else
+                lku_nc_pdc_avere.enable(false)
+              end
+            else
+              lku_nc_pdc_avere.enable(true)
+            end
           end
         end
       end
@@ -416,7 +562,7 @@ module Views
 
         if configatron.bilancio.attivo
           if self.incasso.pdc_dare && self.incasso.pdc_dare.ricavo?
-            res = Wx::message_box("Il conto in dare non è un costo.\nVuoi forzare il dato?",
+            res = Wx::message_box("Il conto fattura in dare non è un costo.\nVuoi forzare il dato?",
               'Avvertenza',
               Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
 
@@ -426,8 +572,19 @@ module Views
               end
           end
 
+          if self.incasso.nc_pdc_dare && self.incasso.nc_pdc_dare.ricavo?
+            res = Wx::message_box("Il conto nota di credito in dare non è un costo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_nc_pdc_dare.activate()
+                return false
+              end
+          end
+
           if self.incasso.pdc_avere && self.incasso.pdc_avere.costo?
-            res = Wx::message_box("Il conto in avere non è un ricavo.\nVuoi forzare il dato?",
+            res = Wx::message_box("Il conto fattura in avere non è un ricavo.\nVuoi forzare il dato?",
               'Avvertenza',
               Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
 
@@ -437,12 +594,23 @@ module Views
               end
           end
 
+          if self.incasso.nc_pdc_avere && self.incasso.nc_pdc_avere.costo?
+            res = Wx::message_box("Il conto nota di credito in avere non è un ricavo.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
+
+              if res == Wx::NO
+                lku_nc_pdc_avere.activate()
+                return false
+              end
+          end
+
           if(((self.incasso.pdc_dare && self.incasso.pdc_dare.costo?) &&
                 (self.incasso.pdc_avere && self.incasso.pdc_avere.ricavo?)) ||
               ((self.incasso.pdc_dare && self.incasso.pdc_dare.ricavo?) &&
                 (self.incasso.pdc_avere && self.incasso.pdc_avere.costo?)))
 
-            res = Wx::message_box("Presenza di due conti economici.\nVuoi forzare il dato?",
+            res = Wx::message_box("Presenza nei conti fattura di due conti economici.\nVuoi forzare il dato?",
               'Avvertenza',
               Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
 
@@ -452,31 +620,66 @@ module Views
               end
           end
 
-          # se uno dei conti dell'incasso ha una banca associata
-          if((self.incasso.pdc_dare && self.incasso.pdc_dare.banca) || (self.incasso.pdc_avere && self.incasso.pdc_avere.banca))
-            # ma non e' un incasso che movimenta la banca
-            if((!self.incasso.movimento_di_banca?) && (!self.incasso.movimento_di_banca?(true)))
-              Wx::message_box("Il conto selezionato prevede un movimento di banca.",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+          if(((self.incasso.nc_pdc_dare && self.incasso.nc_pdc_dare.costo?) &&
+                (self.incasso.nc_pdc_avere && self.incasso.nc_pdc_avere.ricavo?)) ||
+              ((self.incasso.nc_pdc_dare && self.incasso.nc_pdc_dare.ricavo?) &&
+                (self.incasso.nc_pdc_avere && self.incasso.nc_pdc_avere.costo?)))
 
-              txt_banca_dare.activate
+            res = Wx::message_box("Presenza nei conti di nota di credito di due conti economici.\nVuoi forzare il dato?",
+              'Avvertenza',
+              Wx::YES_NO | Wx::NO_DEFAULT | Wx::ICON_QUESTION, self)
 
-              return false
-            end
-          # se i conti dell'incasso non hanno una banca associata
-          else
-            # ma e' un incasso che movimenta la banca
-            if((self.incasso.movimento_di_banca?) || (self.incasso.movimento_di_banca?(true)))
-              Wx::message_box("Importo banca non compatibile:\nuno dei conti selezionati deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
-
-              lku_pdc_dare.activate
-
-              return false
-            end
+              if res == Wx::NO
+                lku_nc_pdc_dare.activate()
+                return false
+              end
           end
+
+#          # se il conto in dare dell'incasso ha una banca associata
+#          if(self.incasso.pdc_dare && self.incasso.pdc_dare.banca)
+#            # ma non e' un incasso che movimenta la banca in dare
+#            if(!self.incasso.movimento_di_banca_dare?)
+#              Wx::message_box("Il conto fattura in dare ha una banca associata ma l'opzione fattura banca in dare non è selezionata.",
+#                'Info',
+#                Wx::OK | Wx::ICON_INFORMATION, self)
+#
+#              lku_banca_dare.activate
+#
+#              return false
+#            end
+#          # se il conto in avere dell'incasso ha una banca associata
+#          elsif(self.incasso.pdc_avere && self.incasso.pdc_avere.banca)
+#            # ma non e' un incasso che movimenta la banca in avere
+#            if(!self.incasso.movimento_di_banca_avere?)
+#              Wx::message_box("Il conto fattura in avere ha una banca associata ma l'opzione fattura banca in avere non è selezionata.",
+#                'Info',
+#                Wx::OK | Wx::ICON_INFORMATION, self)
+#
+#              lku_banca_avere.activate
+#
+#              return false
+#            end
+#          # se i conti dell'incasso non hanno una banca associata
+#          else
+#            # ma e' un incasso che movimenta la banca in dare
+#            if(self.incasso.movimento_di_banca_dare?)
+#              Wx::message_box("Opzione fattura banca dare selezionata:\nil conto fattura in dare deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
+#                'Info',
+#                Wx::OK | Wx::ICON_INFORMATION, self)
+#
+#              lku_pdc_dare.activate
+#
+#              return false
+#            elsif(self.incasso.movimento_di_banca_avere?)
+#              Wx::message_box("Opzione fattura banca avere selezionata:\nil conto fattura in 'avere' deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
+#                'Info',
+#                Wx::OK | Wx::ICON_INFORMATION, self)
+#
+#              lku_pdc_dare.activate
+#
+#              return false
+#            end
+#          end
         end
 
         return true

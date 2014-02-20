@@ -56,6 +56,7 @@ class LoadData < ActiveRecord::Migration
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29499, 'SOCI C/PRELEVAMENTO')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29502, 'TITOLARE C/PRELEV.')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29503, 'EFFETTI IN PORTAFOGLIO')")
+    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29504, 'CAMBIALI ATTIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29505, 'ERARIO C/RIT.ATTIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29515, 'RIT. FISCALE DA BANCHE E PT')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29534, 'ERARIO C/ACC.TO IRAP')")
@@ -72,6 +73,7 @@ class LoadData < ActiveRecord::Migration
     execute("insert into categorie_pdc (id, codice, descrizione, type) values (7, 330, 'ATT.CIRC.: DISPONIBILITA'' LIQ.', 'Attivo')")
 
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 33000, 'C/C.BANCARI')")
+    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 33001, 'BANCA MPS')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 34100, 'CASSA')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 34105, 'CASSA - ASSEGNI')")
 
@@ -112,6 +114,7 @@ class LoadData < ActiveRecord::Migration
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49800, 'DEBITI PER SALARI E STIPENDI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49803, 'DEBITI VARI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49804, 'FATTURE DA RICEVERE')")
+    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49805, 'CAMBIALI PASSIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49850, 'CLIENTI C/ANTICIPI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49851, 'CREDITORI DIVERSI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49855, 'SOCI C/VERSAMENTO')")

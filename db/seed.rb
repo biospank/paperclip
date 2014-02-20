@@ -47,13 +47,13 @@ conn = ActiveRecord::Base.connection
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (1, 1, 'CONTANTI', '', 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '001')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (2, 1, 'ASSEGNO', '', 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, '002')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (3, 1, 'BONIFICO', '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, '003')"
-conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (4, 1, 'CAMBIALI', '', 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, '004')"
+conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (4, 1, 'CAMBIALI ATTIVE', '', 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, '004')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (5, 1, 'RI.BA.', '', 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, '005')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (6, 1, 'IN ATTESA', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, '006')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (7, 2, 'CONTANTI', '', 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, '001')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice)  VALUES (8, 2, 'ASSEGNO', '', 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, '002')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (9, 2, 'BONIFICO', '', 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, '003')"
-conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (10, 2, 'CAMBIALI', '', 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, '004')"
+conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (10, 2, 'CAMBIALI PASSIVE', '', 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, '004')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (11, 2, 'RI.BA.', '', 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, '005')"
 conn.execute "INSERT INTO tipi_pagamento (id, categoria_id, descrizione, descrizione_agg, cassa_dare, cassa_avere, banca_dare, banca_avere, fuori_partita_dare, fuori_partita_avere, nc_cassa_dare, nc_cassa_avere, nc_banca_dare, nc_banca_avere, nc_fuori_partita_dare, nc_fuori_partita_avere, attivo, predefinito, codice) VALUES (12, 2, 'IN ATTESA', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, '006')"
 
@@ -116,6 +116,7 @@ conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29499, 'SOCI C/PRELEVAMENTO')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29502, 'TITOLARE C/PRELEV.')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29503, 'EFFETTI IN PORTAFOGLIO')")
+conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29504, 'CAMBIALI ATTIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29505, 'ERARIO C/RIT.ATTIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29515, 'RIT. FISCALE DA BANCHE E PT')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29534, 'ERARIO C/ACC.TO IRAP')")
@@ -132,6 +133,7 @@ conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values
 conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (7, 330, 'ATT.CIRC.: DISPONIBILITA'' LIQ.', 'Attivo')")
 
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 33000, 'C/C.BANCARI')")
+conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 33001, 'BANCA MPS')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 34100, 'CASSA')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 7, 34105, 'CASSA - ASSEGNI')")
 
@@ -172,6 +174,7 @@ conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49800, 'DEBITI PER SALARI E STIPENDI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49803, 'DEBITI VARI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49804, 'FATTURE DA RICEVERE')")
+conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49805, 'CAMBIALI PASSIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49850, 'CLIENTI C/ANTICIPI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49851, 'CREDITORI DIVERSI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49855, 'SOCI C/VERSAMENTO')")
@@ -352,6 +355,20 @@ conn.execute("insert into norma (id, codice, percentuale, descrizione) values (N
 conn.execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 50, 50, 'Acq. con Iva Indetraibile 50%')")
 conn.execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 80, 80, 'Acq. con Iva Indetraibile 80%')")
 conn.execute("insert into norma (id, codice, percentuale, descrizione) values (NULL, 100, 100, 'Acq. con Iva Indetraibile 100%')")
+
+# pdc associati agli incassi impostati da sistema
+conn.execute("update tipi_pagamento set pdc_dare_id = 34100, nc_pdc_avere_id = 34100 where categoria_id = 1 and descrizione = 'CONTANTI'")
+conn.execute("update tipi_pagamento set pdc_dare_id = 34105, nc_pdc_avere_id = 34105 where categoria_id = 1 and descrizione = 'ASSEGNO'")
+conn.execute("update tipi_pagamento set pdc_dare_id = 33001, nc_pdc_avere_id = 33001 where categoria_id = 1 and descrizione = 'BONIFICO'")
+conn.execute("update tipi_pagamento set pdc_dare_id = 33001, pdc_avere_id = 29504, nc_pdc_dare_id = 49805, nc_pdc_avere_id = 33001 where categoria_id = 1 and descrizione like 'CAMBIALI%'")
+conn.execute("update tipi_pagamento set pdc_dare_id = 33001, nc_pdc_avere_id = 33001 where categoria_id = 1 and descrizione = 'RI.BA.'")
+
+# pdc associati ai pagamenti impostati da sistema
+conn.execute("update tipi_pagamento set pdc_avere_id = 34100, nc_pdc_dare_id = 34100 where categoria_id = 2 and descrizione = 'CONTANTI'")
+conn.execute("update tipi_pagamento set pdc_avere_id = 34105, nc_pdc_dare_id = 34105 where categoria_id = 2 and descrizione = 'ASSEGNO'")
+conn.execute("update tipi_pagamento set pdc_avere_id = 33001, nc_pdc_dare_id = 33001 where categoria_id = 2 and descrizione = 'BONIFICO'")
+conn.execute("update tipi_pagamento set pdc_avere_id = 33001, pdc_dare_id = 29504, nc_pdc_avere_id = 49805, nc_pdc_dare_id = 33001 where categoria_id = 2 and descrizione like 'CAMBIALI%'")
+conn.execute("update tipi_pagamento set pdc_avere_id = 33001, nc_pdc_dare_id = 33001 where categoria_id = 2 and descrizione = 'RI.BA.'")
 
 ['Admin', 'User', 'Guest'].each do |profilo|
   Models::Profilo.create(
