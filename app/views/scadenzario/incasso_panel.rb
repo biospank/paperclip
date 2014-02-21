@@ -171,6 +171,8 @@ module Views
       def reset_panel()
         begin
           reset_incasso()
+
+          update_ui()
           
           reset_incasso_command_state()
 

@@ -171,6 +171,8 @@ module Views
       def reset_panel()
         begin
           reset_pagamento()
+
+          update_ui()
           
           reset_pagamento_command_state()
 

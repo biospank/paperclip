@@ -56,86 +56,6 @@ module Models
       },
       :message => "L'incasso prevede un conto nota di credito in avere.\nInserire il conto in avere oppure premere F5 per la ricerca."
 
-    # se il conto fattura in dare dell'incasso ha una banca associata
-    # ma non e' un incasso che movimenta la banca in dare
-    validates_presence_of :pdc_dare,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (incasso.pdc_dare && incasso.pdc_dare.banca) &&
-          (!incasso.movimento_di_banca_dare?))
-      },
-      :message => "Il conto fattura in dare ha una banca associata ma l'opzione fattura banca in dare non è selezionata."
-
-    # se il conto fattura in avere dell'incasso ha una banca associata
-    # ma non e' un incasso che movimenta la banca in avere
-    validates_presence_of :pdc_avere,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (incasso.pdc_avere && incasso.pdc_avere.banca) &&
-          (!incasso.movimento_di_banca_avere?))
-      },
-      :message => "Il conto fattura in avere ha una banca associata ma l'opzione fattura banca in avere non è selezionata."
-
-    # se il conto fattura in dare dell'incasso non ha una banca associata
-    # ma e' un incasso che movimenta la banca in dare
-    validates_presence_of :pdc_dare,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (!incasso.pdc_dare && !incasso.pdc_dare.banca) &&
-          (incasso.movimento_di_banca_dare?))
-      },
-      :message => "Opzione fattura banca dare selezionata:\nil conto fattura in dare deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'."
-
-    # se il conto fattura in avere dell'incasso non ha una banca associata
-    # ma e' un incasso che movimenta la banca in avere
-    validates_presence_of :pdc_avere,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (!incasso.pdc_avere && !incasso.pdc_avere.banca) &&
-          (incasso.movimento_di_banca_avere?))
-      },
-      :message => "Opzione fattura banca avere selezionata:\nil conto fattura in 'avere' deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'."
-
-    # se il conto nota di credito in dare dell'incasso ha una banca associata
-    # ma non e' un incasso che movimenta la banca in dare
-    validates_presence_of :nc_pdc_dare,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (incasso.nc_pdc_dare && incasso.nc_pdc_dare.banca) &&
-          (!incasso.movimento_di_banca_dare?(true)))
-      },
-      :message => "Il conto nota di credito in dare ha una banca associata ma l'opzione nota di credito banca in dare non è selezionata."
-
-    # se il conto nota di credito in avere dell'incasso ha una banca associata
-    # ma non e' un incasso che movimenta la banca in avere
-    validates_presence_of :nc_pdc_avere,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (incasso.nc_pdc_avere && incasso.nc_pdc_avere.banca) &&
-          (!incasso.movimento_di_banca_avere?(true)))
-      },
-      :message => "Il conto nota di credito in avere ha una banca associata ma l'opzione nota di credito banca in avere non è selezionata."
-
-    # se il conto nota di credito in dare dell'incasso non ha una banca associata
-    # ma e' un incasso che movimenta la banca in dare
-    validates_presence_of :nc_pdc_dare,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (!incasso.nc_pdc_dare && !incasso.nc_pdc_dare.banca) &&
-          (incasso.movimento_di_banca_dare?(true)))
-      },
-      :message => "Opzione nota di credito banca dare selezionata:\nil conto nota di credito in dare deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'."
-
-    # se il conto nota di credito in avere dell'incasso non ha una banca associata
-    # ma e' un incasso che movimenta la banca in avere
-    validates_presence_of :nc_pdc_avere,
-      :if => Proc.new { |incasso|
-        ((configatron.bilancio.attivo) &&
-            (!incasso.nc_pdc_avere && !incasso.nc_pdc_avere.banca) &&
-          (incasso.movimento_di_banca_avere?(true)))
-      },
-      :message => "Opzione nota di credito banca avere selezionata:\nil conto nota di credito in 'avere' deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'."
-
    def modificabile?
       num = 0
       num = Models::PagamentoFatturaCliente.count(:conditions => ["tipo_pagamento_id = ?", self.id])
@@ -144,5 +64,4 @@ module Models
     end
   
   end
-
 end
