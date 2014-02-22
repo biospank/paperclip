@@ -497,7 +497,7 @@ module Views
       
       def pagamento_compatibile?
         if configatron.bilancio.attivo
-          if self.incasso_fattura.tipo_pagamento.conto_incompleto?
+          if self.pagamento_fattura.tipo_pagamento && self.pagamento_fattura.tipo_pagamento.conto_incompleto?
             Wx::message_box("La tipologia di pagamento utilizzata è incompleta.\nAggiungere l'informazione del conto nel pannello 'Scadenzario -> impostazioni -> incassi e pagamenti.",
               'Info',
               Wx::OK | Wx::ICON_INFORMATION, self)
@@ -517,11 +517,11 @@ module Views
             return false
           end
 
-          # se all'incasso e' associato un tipo pagamento
+          # se al pagamento e' associato un tipo pagamento
           if(self.pagamento_fattura.tipo_pagamento)
             # che presuppone un movimento di banca
             if(self.pagamento_fattura.tipo_pagamento.movimento_di_banca?(owner.fattura_fornitore.nota_di_credito?))
-              # e l'incasso non ha una banca
+              # e il pagamento non ha una banca
               if(self.pagamento_fattura.banca.nil?)
                 # chiedo di inserire una banca
                 Wx::message_box("La modalità di pagamento selezionata presuppone un movimento di banca:\nselezionare la banca se esiste, oppure, configurarne una nel pannello 'configurazione -> azienda'.",

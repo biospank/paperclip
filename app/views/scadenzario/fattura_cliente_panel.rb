@@ -214,13 +214,7 @@ module Views
         begin
           Wx::BusyCursor.busy() do
             if cliente? && importo?
-              # se viene da fatturazione
-              if self.fattura_cliente.da_fatturazione?
-                self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
-                self.righe_fattura_pdc = crea_righe_pdc_da_fatturazione() if self.righe_fattura_pdc.empty?
-              else
-                self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
-              end
+              carica_righe_fattura_pdc()
 
               rf_pdc_dlg = Views::Dialog::RigheFatturaPdcClientiDialog.new(self, (self.righe_fattura_pdc || []).dup)
               rf_pdc_dlg.center_on_screen(Wx::BOTH)
@@ -361,6 +355,7 @@ module Views
               reset_panel()
               self.fattura_cliente = ctrl.load_fattura_cliente(fatture_clienti_dlg.selected)
               self.cliente = self.fattura_cliente.cliente
+              carica_righe_fattura_pdc()
               transfer_cliente_to_view()
               transfer_fattura_cliente_to_view()
               incassi_fattura_cliente_panel.display_incassi_fattura_cliente(self.fattura_cliente)
@@ -402,7 +397,7 @@ module Views
             Wx::BusyCursor.busy() do
               if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
                 transfer_fattura_cliente_from_view()
-                if cliente? && pdc_compilato? && pdc_compatibile?
+                if cliente? && pdc_compilato? && pdc_compatibile? && pdc_totale_compatibile?
                   if self.fattura_cliente.valid?
                     ctrl.save_fattura_cliente()
 
@@ -561,6 +556,16 @@ module Views
           return true
         end
 
+      end
+
+      def carica_righe_fattura_pdc
+        # se viene da fatturazione
+        if self.fattura_cliente.da_fatturazione?
+          self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
+          self.righe_fattura_pdc = crea_righe_pdc_da_fatturazione() if self.righe_fattura_pdc.empty?
+        else
+          self.righe_fattura_pdc ||= ctrl.search_righe_fattura_pdc_clienti(self.fattura_cliente) unless self.fattura_cliente.new_record?
+        end
       end
 
       def pdc_compilato?

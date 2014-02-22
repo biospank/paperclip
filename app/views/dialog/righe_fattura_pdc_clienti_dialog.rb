@@ -80,7 +80,7 @@ module Views
             {:caption => 'Norma', :width => 150, :align => Wx::LIST_FORMAT_LEFT},
             {:caption => 'Imponibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Iva', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
-            {:caption => 'Iva indetraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
+            {:caption => 'Iva detraibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
             {:caption => 'Conto', :width => 150, :align => Wx::LIST_FORMAT_LEFT}
           ])
           list.data_info([{:attr => lambda {|pagamento| (pagamento.aliquota ? pagamento.aliquota.descrizione : '')}},

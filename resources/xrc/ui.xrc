@@ -7372,7 +7372,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Fornitori</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="SCADENZARIO_FORNITORI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -7385,7 +7385,7 @@
 																<style>wxTAB_TRAVERSAL</style>
 																<object class="wxStaticBoxSizer">
 																	<orient>wxHORIZONTAL</orient>
-																	<label>Fattura Cliente</label>
+																	<label>Fattura Fornitore</label>
 																	<object class="sizeritem">
 																		<option>0</option>
 																		<flag>wxALIGN_TOP|wxALL</flag>
@@ -8048,7 +8048,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -21552,7 +21552,7 @@
 										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
 										<border>3</border>
 										<object class="wxStaticText" name="wxID_STATIC10611">
-											<label>Detrazione:</label>
+											<label>Iva detraibile:</label>
 										</object>
 									</object>
 									<object class="sizeritem">

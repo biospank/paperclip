@@ -530,7 +530,7 @@ module Views
       
       def incasso_compatibile?
         if configatron.bilancio.attivo
-          if self.incasso_fattura.tipo_pagamento.conto_incompleto?
+          if self.incasso_fattura.tipo_pagamento && self.incasso_fattura.tipo_pagamento.conto_incompleto?
             Wx::message_box("La tipologia di incasso utilizzata è incompleta.\nAggiungere l'informazione del conto nel pannello 'Scadenzario -> impostazioni -> incassi e pagamenti.",
               'Info',
               Wx::OK | Wx::ICON_INFORMATION, self)

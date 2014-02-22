@@ -318,6 +318,7 @@ module Views
               reset_panel()
               self.fattura_fornitore = ctrl.load_fattura_fornitore(fatture_fornitori_dlg.selected)
               self.fornitore = self.fattura_fornitore.fornitore
+              self.righe_fattura_pdc = ctrl.search_righe_fattura_pdc_fornitori(self.fattura_fornitore)
               transfer_fornitore_to_view()
               transfer_fattura_fornitore_to_view()
               pagamenti_fattura_fornitore_panel.display_pagamenti_fattura_fornitore(self.fattura_fornitore)
@@ -355,7 +356,7 @@ module Views
             Wx::BusyCursor.busy() do
               if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
                 transfer_fattura_fornitore_from_view()
-                if fornitore? && pdc_compilato? && pdc_compatibile?
+                if fornitore? && pdc_compilato? && pdc_compatibile? && pdc_totale_compatibile?
                   if self.fattura_fornitore.valid?
                     ctrl.save_fattura_fornitore()
 
@@ -531,6 +532,26 @@ module Views
       end
 
       def pdc_compatibile?
+        if configatron.bilancio.attivo
+
+          incompleto = self.righe_fattura_pdc.any? do |riga|
+            riga.valid_record? && riga.pdc.nil?
+          end
+
+          if incompleto
+              Wx::message_box("Dettaglio iva incompleto: manca il codice conto.",
+                'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+            btn_pdc.set_focus()
+            return false
+          end
+        end
+
+        return true
+
+      end
+
+      def pdc_totale_compatibile?
         totale_righe = 0.0
         if configatron.bilancio.attivo
 
