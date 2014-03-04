@@ -60,8 +60,8 @@ class AddContoTipiPagamento < ActiveRecord::Migration
 
     assegno = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 2 and descrizione = 'ASSEGNO'"])
-    assegno.pdc_avere = Models::Pdc.find_by_codice(34105)
-    assegno.nc_pdc_dare = Models::Pdc.find_by_codice(34105)
+    assegno.pdc_avere = Models::Pdc.find_by_codice(33001)
+    assegno.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
     assegno.save_with_validation(false)
 
     bonifico = Models::TipoPagamento.find(:first,

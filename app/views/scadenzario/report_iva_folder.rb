@@ -77,34 +77,64 @@ module Views
           end
 
           if saldo_periodo_precedente = Models::SaldoIvaMensile.search(:first, :conditions => ["anno = ? and mese = ?", anno, mese])
-            self.iva_debito_periodo_precedente = saldo_periodo_precedente.debito || 0.0
-            self.lbl_iva_debito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_debito_periodo_precedente) if((!self.iva_debito_periodo_precedente.zero?) && (self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE))
-            self.iva_credito_periodo_precedente = saldo_periodo_precedente.credito || 0.0
+            self.iva_debito_periodo_precedente = saldo_periodo_precedente.debito
+            self.lbl_iva_debito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_debito_periodo_precedente) unless self.iva_debito_periodo_precedente.zero?
+            self.iva_credito_periodo_precedente = saldo_periodo_precedente.credito
             self.lbl_iva_credito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_credito_periodo_precedente) unless self.iva_credito_periodo_precedente.zero?
           else
             self.iva_debito_periodo_precedente = 0.0
             self.iva_credito_periodo_precedente = 0.0
           end
           
-          self.totale_iva_debito = (self.diff_iva_debito + self.iva_debito_periodo_precedente) if self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE
+          self.totale_iva_debito = (self.diff_iva_debito + self.iva_debito_periodo_precedente)
           self.totale_iva_credito = (self.diff_iva_credito + self.iva_credito_periodo_precedente)
 
-          if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
-            self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(self.totale_iva_debito - self.totale_iva_credito)
-          else
-            self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(self.totale_iva_credito - self.totale_iva_debito)
-          end
-
           if saldo = Models::SaldoIvaMensile.search(:first, :conditions => ["anno = ? and mese = ?", filtro.anno.to_i, filtro.periodo.to_i])
-            saldo.update_attributes(:debito => self.totale_iva_debito, :credito => self.totale_iva_credito)
+            if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
+              iva_debito = (self.totale_iva_debito - self.totale_iva_credito)
+              self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(iva_debito)
+              if iva_debito < SALDO_LIMITE_PERIODO_PRECEDENTE
+                saldo.update_attributes(:debito => iva_debito, :credito => 0.0)
+              else
+                saldo.update_attributes(:debito => 0.0, :credito => 0.0)
+              end
+            else
+              iva_credito = (self.totale_iva_credito - self.totale_iva_debito)
+              self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(iva_credito)
+              saldo.update_attributes(:credito => iva_credito, :debito => 0.0)
+            end
           else
-            Models::SaldoIvaMensile.create(
-              :azienda => Models::Azienda.current,
-              :anno => filtro.anno.to_i,
-              :mese => filtro.periodo.to_i,
-              :debito => self.totale_iva_debito,
-              :credito => self.totale_iva_credito
-            )
+            if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
+              iva_debito = (self.totale_iva_debito - self.totale_iva_credito)
+              self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(iva_debito)
+              if iva_debito < SALDO_LIMITE_PERIODO_PRECEDENTE
+                Models::SaldoIvaMensile.create(
+                  :azienda => Models::Azienda.current,
+                  :anno => filtro.anno.to_i,
+                  :mese => filtro.periodo.to_i,
+                  :debito => iva_debito,
+                  :credito => 0.0
+                )
+              else
+                Models::SaldoIvaMensile.create(
+                  :azienda => Models::Azienda.current,
+                  :anno => filtro.anno.to_i,
+                  :mese => filtro.periodo.to_i,
+                  :debito => 0.0,
+                  :credito => 0.0
+                )
+              end
+            else
+              iva_credito = (self.totale_iva_credito - self.totale_iva_debito)
+              self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(iva_credito)
+              Models::SaldoIvaMensile.create(
+                :azienda => Models::Azienda.current,
+                :anno => filtro.anno.to_i,
+                :mese => filtro.periodo.to_i,
+                :debito => 0.0,
+                :credito => iva_credito
+              )
+            end
           end
         else
           if (filtro.periodo.to_i == 1)
@@ -116,9 +146,9 @@ module Views
           end
 
           if saldo_periodo_precedente = Models::SaldoIvaTrimestrale.search(:first, :conditions => ["anno = ? and trimestre = ?", anno, trimestre])
-            self.iva_debito_periodo_precedente = saldo_periodo_precedente.debito || 0.0
-            self.lbl_iva_debito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_debito_periodo_precedente) if((!self.iva_debito_periodo_precedente.zero?) && (self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE))
-            self.iva_credito_periodo_precedente = saldo_periodo_precedente.credito || 0.0
+            self.iva_debito_periodo_precedente = saldo_periodo_precedente.debito
+            self.lbl_iva_debito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_debito_periodo_precedente) unless self.iva_debito_periodo_precedente.zero?
+            self.iva_credito_periodo_precedente = saldo_periodo_precedente.credito
             self.lbl_iva_credito_periodo_precedente.label = Helpers::ApplicationHelper.currency(self.iva_credito_periodo_precedente) unless self.iva_credito_periodo_precedente.zero?
           else
             self.iva_debito_periodo_precedente = 0.0
@@ -132,25 +162,55 @@ module Views
             self.totale_iva_debito = self.diff_iva_debito + self.interessi_trimestrali
           end
           
-          self.totale_iva_debito = (self.totale_iva_debito + self.iva_debito_periodo_precedente) if self.iva_debito_periodo_precedente < SALDO_LIMITE_PERIODO_PRECEDENTE
+          self.totale_iva_debito = (self.totale_iva_debito + self.iva_debito_periodo_precedente)
           self.totale_iva_credito = (self.diff_iva_credito + self.iva_credito_periodo_precedente)
 
-          if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
-            self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(self.totale_iva_debito - self.totale_iva_credito)
-          else
-            self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(self.totale_iva_credito - self.totale_iva_debito)
-          end
-
           if saldo = Models::SaldoIvaTrimestrale.search(:first, :conditions => ["anno = ? and trimestre = ?", filtro.anno.to_i, filtro.periodo.to_i])
-            saldo.update_attributes(:debito => self.totale_iva_debito, :credito => self.totale_iva_credito)
+            if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
+              iva_debito = (self.totale_iva_debito - self.totale_iva_credito)
+              self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(iva_debito)
+              if iva_debito < SALDO_LIMITE_PERIODO_PRECEDENTE
+                saldo.update_attributes(:debito => iva_debito, :credito => 0.0)
+              else
+                saldo.update_attributes(:debito => 0.0, :credito => 0.0)
+              end
+            else
+              iva_credito = (self.totale_iva_credito - self.totale_iva_debito)
+              self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(iva_credito)
+              saldo.update_attributes(:credito => iva_credito, :debito => 0.0)
+            end
           else
-            Models::SaldoIvaTrimestrale.create(
-              :azienda => Models::Azienda.current,
-              :anno => filtro.anno.to_i,
-              :trimestre => filtro.periodo.to_i,
-              :debito => self.totale_iva_debito,
-              :credito => self.totale_iva_credito
-            )
+            if(Helpers::ApplicationHelper.real(self.totale_iva_debito) >= Helpers::ApplicationHelper.real(self.totale_iva_credito))
+              iva_debito = (self.totale_iva_debito - self.totale_iva_credito)
+              self.lbl_totale_iva_debito.label = Helpers::ApplicationHelper.currency(iva_debito)
+              if iva_debito < SALDO_LIMITE_PERIODO_PRECEDENTE
+                Models::SaldoIvaTrimestrale.create(
+                  :azienda => Models::Azienda.current,
+                  :anno => filtro.anno.to_i,
+                  :trimestre => filtro.periodo.to_i,
+                  :debito => iva_debito,
+                  :credito => 0.0
+                )
+              else
+                Models::SaldoIvaTrimestrale.create(
+                  :azienda => Models::Azienda.current,
+                  :anno => filtro.anno.to_i,
+                  :trimestre => filtro.periodo.to_i,
+                  :debito => 0.0,
+                  :credito => 0.0
+                )
+              end
+            else
+              iva_credito = (self.totale_iva_credito - self.totale_iva_debito)
+              self.lbl_totale_iva_credito.label = Helpers::ApplicationHelper.currency(iva_credito)
+              Models::SaldoIvaTrimestrale.create(
+                :azienda => Models::Azienda.current,
+                :anno => filtro.anno.to_i,
+                :trimestre => filtro.periodo.to_i,
+                :debito => 0.0,
+                :credito => iva_credito
+              )
+            end
           end
 
         end

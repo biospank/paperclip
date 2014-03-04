@@ -498,7 +498,7 @@ module Views
       def pagamento_compatibile?
         if configatron.bilancio.attivo
           if self.pagamento_fattura.tipo_pagamento && self.pagamento_fattura.tipo_pagamento.conto_incompleto?
-            Wx::message_box("La tipologia di pagamento utilizzata è incompleta.\nAggiungere l'informazione del conto nel pannello 'Scadenzario -> impostazioni -> incassi e pagamenti.",
+            Wx::message_box("La tipologia di pagamento utilizzata è incompleta.\nAggiungere l'informazione del conto nel pannello 'Scadenzario -> Impostazioni -> Incassi e Pagamenti.",
               'Info',
               Wx::OK | Wx::ICON_INFORMATION, self)
 

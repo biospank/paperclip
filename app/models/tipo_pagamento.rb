@@ -52,7 +52,7 @@ module Models
     end
 
     def conto_incompleto?
-      self.pdc_dare.nil? && self.pdc_avere.nil?
+      self.valido? && self.pdc_dare.nil? && self.pdc_avere.nil? && self.nc_pdc_dare.nil? && self.nc_pdc_avere.nil?
     end
 
     protected
