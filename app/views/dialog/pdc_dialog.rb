@@ -19,6 +19,7 @@ module Views
 
         filtro.attivi = attivi
         filtro.sql_criteria = parent.dialog_sql_criteria() if parent.respond_to? :dialog_sql_criteria
+        filtro.hidden = parent.include_hidden_pdc if parent.respond_to? :include_hidden_pdc
         
         xrc = Xrc.instance()
         xrc.resource.load_dialog_subclass(self, parent, "PDC_DLG")

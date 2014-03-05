@@ -6,9 +6,9 @@ class AddContoClientiFornitori < ActiveRecord::Migration
     add_column :clienti, :conto, :integer
     add_column :fornitori, :conto, :integer
 
+    cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 220])
     Models::Cliente.find(:all).each do |cliente|
       seq = Models::ProgressivoCliente.next_sequence()
-      cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 220])
       Models::Pdc.create(
         :categoria_pdc => cat_pdc,
         :codice => seq,
@@ -20,9 +20,9 @@ class AddContoClientiFornitori < ActiveRecord::Migration
       cliente.update_attribute(:conto, seq)
     end
 
+    cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 460])
     Models::Fornitore.find(:all).each do |fornitore|
       seq = Models::ProgressivoFornitore.next_sequence()
-      cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 460])
       Models::Pdc.create(
         :categoria_pdc => cat_pdc,
         :codice => seq,

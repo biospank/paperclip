@@ -145,9 +145,11 @@ module Controllers
       query_str = []
       parametri = []
 
-      query_str << "pdc.hidden = ?"
-      parametri << 0
-
+      unless filtro.hidden
+        query_str << "pdc.hidden = ?"
+        parametri << 0
+      end
+      
       filtro.build_conditions(query_str, parametri) if filtro
 
       {:conditions => [query_str.join(' AND '), *parametri],
@@ -521,5 +523,249 @@ module Controllers
       
     end
     
+    # gestione report bilancio stato patrimoniale
+    def report_stato_patrimoniale(filtro)
+      attivita_data_matrix = {}
+      passivita_data_matrix = {}
+
+      conti_dare = Scrittura.search(:all, build_conti_dare_report_conditions())
+      conti_avere = Scrittura.search(:all, build_conti_avere_report_conditions())
+
+      conti_dare.group_by(&:pdc_dare_id).each do |pdc_id, scritture|
+        conto = scritture.first.pdc_dare
+        dare = (scritture.sum(&:cassa_dare) + scritture.sum(&:banca_dare) + scritture.sum(&:fuori_partita_dare))
+        avere = (scritture.sum(&:cassa_avere) + scritture.sum(&:banca_avere) + scritture.sum(&:fuori_partita_avere))
+        if(Helpers::ApplicationHelper.real(dare) >= Helpers::ApplicationHelper.real(avere))
+          attivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (dare - avere)]
+        else
+          passivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (avere - dare)]
+        end
+      end
+
+      conti_avere.group_by(&:pdc_avere_id).each do |pdc_id, scritture|
+        conto = scritture.first.pdc_avere
+        dare = (scritture.sum(&:cassa_dare) + scritture.sum(&:banca_dare) + scritture.sum(&:fuori_partita_dare))
+        avere = (scritture.sum(&:cassa_avere) + scritture.sum(&:banca_avere) + scritture.sum(&:fuori_partita_avere))
+        if(Helpers::ApplicationHelper.real(dare) >= Helpers::ApplicationHelper.real(avere))
+          attivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (dare - avere)]
+        else
+          passivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (avere - dare)]
+        end
+      end
+
+      acquisti = RigaFatturaPdc.search(:all, build_acquisti_report_conditions())
+      vendite = RigaFatturaPdc.search(:all, build_vendite_report_conditions())
+
+      iva_detraibile = (acquisti.sum(&:iva) - acquisti.sum(&:detrazione))
+      iva_indetraibile = (vendite.sum(&:iva) - vendite.sum(&:detrazione))
+      iva_indetraibile += Corrispettivo.sum(:iva, build_corrispettivi_report_conditions())
+
+      if(Helpers::ApplicationHelper.real(iva_detraibile) >= Helpers::ApplicationHelper.real(iva_indetraibile))
+        attivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_detraibile - iva_indetraibile)]
+      else
+        passivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_indetraibile - iva_detraibile)]
+      end
+
+      totale_fatture_fornitori = FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions())
+      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions())
+
+      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
+        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
+      else
+        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
+      end
+
+      totale_fatture_clienti = FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions())
+      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions())
+
+      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
+        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
+      else
+        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
+      end
+
+      conti_corrispettivi = Corrispettivo..search(:all, build_corrispettivi_report_conditions())
+
+      conti_corrispettivi.group_by(&:pdc_dare_id).each do |pdc_id, corrispettivi|
+        conto = corrispettivi.first.conto
+        attivita_data_matrix[conto.codice.to_i][2] += corrispettivi.sum(&:importo)
+      end
+
+      conti_corrispettivi.group_by(&:pdc_avere_id).each do |pdc_id, corrispettivi|
+        conto = corrispettivi.first.conto
+        passivita_data_matrix[conto.codice.to_i][2] += corrispettivi.sum(&:imponibile)
+      end
+
+      [attivita_data_matrix, passivita_data_matrix]
+
+    end
+
+    def build_conti_dare_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('prima_nota.data_registrazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('prima_nota.data_registrazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "prima_nota.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "prima_nota.pdc_dare_id is not null"
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:pdc_dare]
+      }
+    end
+
+    def build_conti_avere_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "prima_nota.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "prima_nota.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "prima_nota.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "prima_nota.pdc_avere_id is not null"
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:pdc_avere]
+      }
+    end
+
+    def build_acquisti_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_fornitori.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_fornitori.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "fatture_fornitori.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:fattura_fornitore]
+      }
+    end
+
+    def build_vendite_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_clienti.data_emissione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_clienti.data_emissione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "fatture_clienti.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:fattura_cliente]
+      }
+    end
+
+    def build_fatture_fornitori_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_fornitori.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_fornitori.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "fatture_fornitori.nota_di_credito = 0"
+
+      query_str << "fatture_fornitori.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri]}
+
+    end
+
+    def build_fatture_clienti_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_clienti.data_emissione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_clienti.data_emissione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "fatture_clienti.nota_di_credito = 0"
+
+      query_str << "fatture_clienti.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri]}
+
+    end
+
+    def build_pagamenti_fatture_fornitori_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "pagamenti_fatture_fornitori.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "pagamenti_fatture_fornitori.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "pagamenti_fatture_fornitori.registrato_in_prima_nota = 1 "
+
+      query_str << "fatture_fornitori.nota_di_credito = 0"
+
+      query_str << "fatture_fornitori.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :joins => :fattura_fornitore
+      }
+
+    end
+
+    def build_incassi_fatture_clienti_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "pagamenti_fatture_clienti.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "pagamenti_fatture_clienti.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << "pagamenti_fatture_clienti.registrato_in_prima_nota = 1 "
+
+      query_str << "fatture_clienti.nota_di_credito = 0"
+
+      query_str << "fatture_clienti.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :joins => :fattura_cliente_scadenzario
+      }
+
+    end
+
+    def build_corrispettivi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "corrispettivi.data >= ? "
+      parametri << get_date(:from)
+      query_str << "corrispettivi.data <= ? "
+      parametri << get_date(:to)
+
+      query_str << "fatture_clienti.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:conditions => [query_str.join(' AND '), *parametri]}
+
+    end
   end
 end

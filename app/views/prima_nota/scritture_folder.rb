@@ -95,10 +95,22 @@ module Views
 
         xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
 
-        subscribe(:evt_pdc_changed) do |data|
-          lku_pdc_dare.load_data(data)
-          lku_pdc_avere.load_data(data)
-        end
+        # il pdc delle scritture deve caricare anche i conti dei clienti e dei fornitori
+        lku_pdc_dare.load_data(Models::Pdc.search(:all,
+            :conditions => dare_sql_criteria,
+            :joins => :categoria_pdc
+          )
+        )
+
+        lku_pdc_avere.load_data(Models::Pdc.search(:all,
+            :conditions => avere_sql_criteria,
+            :joins => :categoria_pdc
+          )
+        )
+#        subscribe(:evt_pdc_changed) do |data|
+#          lku_pdc_dare.load_data(data)
+#          lku_pdc_avere.load_data(data)
+#        end
 
         subscribe(:evt_bilancio_attivo) do |data|
           data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
@@ -1133,6 +1145,10 @@ module Views
 
       def avere_sql_criteria()
         "categorie_pdc.type in ('#{Models::CategoriaPdc::ATTIVO}', '#{Models::CategoriaPdc::PASSIVO}', '#{Models::CategoriaPdc::RICAVO}')"
+      end
+
+      def include_hidden_pdc()
+        true
       end
     end
   end

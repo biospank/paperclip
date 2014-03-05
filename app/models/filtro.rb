@@ -9,6 +9,7 @@ module Models
                   :categoria, # indica la categoria [clienti, fornitori]
                   :attivi, # indica tutte le occorrenze che hanno attivo = 1
                   :attive, # indica tutte le occorrenze che hanno attiva = 1
+                  :hidden, # utilizzto nella ricerca dei pdc
                   :dettagliata, # viene usata nel report anagrafica per la stampa dettagliata
                   :anno, # viene usato nelle dialog
                   :mese, # corrispettivi
