@@ -249,6 +249,10 @@ module PaperclipConfig
     Models.autoload 'ProgressivoCliente',  'app/models/progressivo_cliente.rb'
     Models.autoload 'ProgressivoFornitore',  'app/models/progressivo_fornitore.rb'
 
+    Models.autoload 'ScritturaPd',  'app/models/scrittura_pd.rb'
+    Models.autoload 'PagamentoPartitaDoppia',  'app/models/pagamento_partita_doppia.rb'
+    Models.autoload 'CorrispettivoPartitaDoppia',  'app/models/corrispettivo_partita_doppia.rb'
+
     ActiveRecord::Base.extend Models::Base::Searchable
     
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(

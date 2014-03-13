@@ -113,10 +113,10 @@ conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values
 conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (6, 293, 'ATT.CIRC.: CREDITI', 'Attivo')")
 
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29300, 'RIT. ACC.TO 4%')")
+conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29301, 'CAMBIALI ATTIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29499, 'SOCI C/PRELEVAMENTO')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29502, 'TITOLARE C/PRELEV.')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29503, 'EFFETTI IN PORTAFOGLIO')")
-conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29504, 'CAMBIALI ATTIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29505, 'ERARIO C/RIT.ATTIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29515, 'RIT. FISCALE DA BANCHE E PT')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29534, 'ERARIO C/ACC.TO IRAP')")
@@ -172,9 +172,9 @@ conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values
 conn.execute("insert into categorie_pdc (id, codice, descrizione, type) values (12, 498, 'ALTRI DEBITI', 'Passivo')")
 
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49800, 'DEBITI PER SALARI E STIPENDI')")
+conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49801, 'CAMBIALI PASSIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49803, 'DEBITI VARI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49804, 'FATTURE DA RICEVERE')")
-conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49805, 'CAMBIALI PASSIVE')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49850, 'CLIENTI C/ANTICIPI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49851, 'CREDITORI DIVERSI')")
 conn.execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49855, 'SOCI C/VERSAMENTO')")
@@ -367,7 +367,7 @@ contanti.save_with_validation(false)
 assegno = Models::TipoPagamento.find(:first,
   :conditions => ["categoria_id = 1 and descrizione = 'ASSEGNO'"])
 assegno.pdc_dare = Models::Pdc.find_by_codice(34105)
-assegno.nc_pdc_avere = Models::Pdc.find_by_codice(34105)
+assegno.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
 assegno.save_with_validation(false)
 
 bonifico = Models::TipoPagamento.find(:first,
@@ -381,8 +381,8 @@ cambiali = Models::TipoPagamento.find(:first,
   :order => 'id'
 )
 cambiali.pdc_dare = Models::Pdc.find_by_codice(33001)
-cambiali.pdc_avere = Models::Pdc.find_by_codice(29504)
-cambiali.nc_pdc_dare = Models::Pdc.find_by_codice(49805)
+cambiali.pdc_avere = Models::Pdc.find_by_codice(29301)
+cambiali.nc_pdc_dare = Models::Pdc.find_by_codice(49801)
 cambiali.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
 cambiali.save_with_validation(false)
 
@@ -403,7 +403,7 @@ contanti.save_with_validation(false)
 assegno = Models::TipoPagamento.find(:first,
   :conditions => ["categoria_id = 2 and descrizione = 'ASSEGNO'"])
 assegno.pdc_avere = Models::Pdc.find_by_codice(33001)
-assegno.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
+assegno.nc_pdc_dare = Models::Pdc.find_by_codice(34105)
 assegno.save_with_validation(false)
 
 bonifico = Models::TipoPagamento.find(:first,
@@ -416,16 +416,16 @@ cambiali = Models::TipoPagamento.find(:first,
   :conditions => "categoria_id = 2 and descrizione like 'CAMBIALI%'",
   :order => 'id'
 )
-cambiali.pdc_dare = Models::Pdc.find_by_codice(29504)
+cambiali.pdc_dare = Models::Pdc.find_by_codice(49801)
 cambiali.pdc_avere = Models::Pdc.find_by_codice(33001)
 cambiali.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
-cambiali.nc_pdc_avere = Models::Pdc.find_by_codice(49805)
+cambiali.nc_pdc_avere = Models::Pdc.find_by_codice(29301)
 cambiali.save_with_validation(false)
 
 riba = Models::TipoPagamento.find(:first,
   :conditions => ["categoria_id = 2 and descrizione = 'RI.BA.'"])
-riba.pdc_dare = Models::Pdc.find_by_codice(33001)
-riba.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
+riba.pdc_avere = Models::Pdc.find_by_codice(33001)
+riba.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
 riba.save_with_validation(false)
 
 # profilo utente

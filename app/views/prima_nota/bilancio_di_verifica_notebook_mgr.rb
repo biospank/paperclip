@@ -36,9 +36,41 @@ module Views
         evt.skip()
       end
 
-      def init_folders()
-        
+      def ricerca(filtro)
+        begin
+          stato_patrimoniale_folder.ricerca(filtro)
+          conto_economico_folder.ricerca(filtro)
+        rescue Exception => e
+          log_error(self, e)
+        end
       end
+
+      def stampa()
+        Wx::BusyCursor.busy() do
+
+          stato_patrimoniale_folder.stampa(filtro)
+          conto_economico_folder.stampa(filtro)
+
+          merge_all([
+              :report_stato_patrimoniale,
+              :report_conto_economico
+            ],
+            :output => :bilancio
+          )
+
+        end
+
+      end
+
+      def init_folder()
+
+      end
+      
+      def reset_folder()
+        stato_patrimoniale_folder.reset_folder
+        conto_economico_folder.reset_folder
+      end
+
     end
   end
 end

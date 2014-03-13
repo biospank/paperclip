@@ -16,8 +16,8 @@ module Views
         xrc = Helpers::WxHelper::Xrc.instance()
         xrc.find('BILANCIO_DI_VERIFICA_FOLDER', self, :extends => Views::PrimaNota::BilancioDiVerificaFolder)
         bilancio_di_verifica_folder.ui()
-        xrc.find('REPORT_PARTITARIO_FOLDER', self, :extends => Views::PrimaNota::ReportPartitarioFolder)
-        report_partitario_folder.ui()
+#        xrc.find('REPORT_PARTITARIO_FOLDER', self, :extends => Views::PrimaNota::ReportPartitarioFolder)
+#        report_partitario_folder.ui()
         
       end
 
@@ -29,8 +29,8 @@ module Views
         case evt.selection
         when Helpers::PrimaNotaHelper::WXBRA_BILANCIO_DI_VERIFICA_FOLDER
           bilancio_di_verifica_folder().init_folder()
-        when Helpers::PrimaNotaHelper::WXBRA_REPORT_BILANCIO_PARTITARIO_FOLDER
-          report_bilancio_partitario_folder().init_folder()
+#        when Helpers::PrimaNotaHelper::WXBRA_REPORT_BILANCIO_PARTITARIO_FOLDER
+#          report_bilancio_partitario_folder().init_folder()
           
         end
         evt.skip()

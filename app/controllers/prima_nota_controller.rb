@@ -524,117 +524,449 @@ module Controllers
     end
     
     # gestione report bilancio stato patrimoniale
-    def report_stato_patrimoniale(filtro)
+    def report_stato_patrimoniale()
       attivita_data_matrix = {}
       passivita_data_matrix = {}
 
-      conti_dare = Scrittura.search(:all, build_conti_dare_report_conditions())
-      conti_avere = Scrittura.search(:all, build_conti_avere_report_conditions())
+      attivi_data_matrix = {}
+      passivi_data_matrix = {}
 
-      conti_dare.group_by(&:pdc_dare_id).each do |pdc_id, scritture|
-        conto = scritture.first.pdc_dare
-        dare = (scritture.sum(&:cassa_dare) + scritture.sum(&:banca_dare) + scritture.sum(&:fuori_partita_dare))
-        avere = (scritture.sum(&:cassa_avere) + scritture.sum(&:banca_avere) + scritture.sum(&:fuori_partita_avere))
-        if(Helpers::ApplicationHelper.real(dare) >= Helpers::ApplicationHelper.real(avere))
-          attivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (dare - avere)]
+      attivi = ScritturaPd.all(build_attivi_report_conditions())
+
+      attivi.each do |dati_attivi|
+        conto = dati_attivi.codice.to_i
+        attivi_data_matrix[conto] = [conto, dati_attivi.descrizione, dati_attivi.importo]
+        self.totale_attivita += dati_attivi.importo
+      end
+
+      attivi_nc = ScritturaPd.all(build_attivi_nc_report_conditions())
+
+      attivi_nc.each do |dati_attivi_nc|
+        conto = dati_attivi_nc.codice.to_i
+        if attivi_data_matrix[conto]
+          attivi_data_matrix[conto][2] += dati_attivi_nc.importo
         else
-          passivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (avere - dare)]
+          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, dati_attivi_nc.importo]
+        end
+        self.totale_attivita += dati_attivi_nc.importo
+      end
+
+      passivi = ScritturaPd.all(build_passivi_report_conditions())
+
+      passivi.each do |dati_passivi|
+        conto = dati_passivi.codice.to_i
+        passivi_data_matrix[conto] = [conto, dati_passivi.descrizione, dati_passivi.importo]
+        self.totale_passivita += dati_passivi.importo
+      end
+
+      passivi_nc = ScritturaPd.all(build_passivi_nc_report_conditions())
+
+      passivi_nc.each do |dati_passivi_nc|
+        conto = dati_passivi_nc.codice.to_i
+        if passivi_data_matrix[conto]
+          passivi_data_matrix[conto][2] += dati_passivi_nc.importo
+        else
+          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, dati_passivi_nc.importo]
+        end
+        self.totale_passivita += dati_passivi_nc.importo
+      end
+
+      attivi_data_matrix.each do |conto, attivo|
+        if passivo = passivi_data_matrix.delete(conto)
+          if(Helpers::ApplicationHelper.real(attivo[2]) >= Helpers::ApplicationHelper.real(passivo[2]))
+            attivita_data_matrix[conto] = [attivo[0], attivo[1], (attivo[2] - passivo[2])]
+          else
+            passivita_data_matrix[conto] = [passivo[0], passivo[1], (passivo[2] - attivo[2])]
+          end
+        else
+          attivita_data_matrix[conto] = attivo
         end
       end
 
-      conti_avere.group_by(&:pdc_avere_id).each do |pdc_id, scritture|
-        conto = scritture.first.pdc_avere
-        dare = (scritture.sum(&:cassa_dare) + scritture.sum(&:banca_dare) + scritture.sum(&:fuori_partita_dare))
-        avere = (scritture.sum(&:cassa_avere) + scritture.sum(&:banca_avere) + scritture.sum(&:fuori_partita_avere))
-        if(Helpers::ApplicationHelper.real(dare) >= Helpers::ApplicationHelper.real(avere))
-          attivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (dare - avere)]
-        else
-          passivita_data_matrix[conto.codice] = [conto.codice, conto.descrizione, (avere - dare)]
-        end
+      passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
       end
 
-      acquisti = RigaFatturaPdc.search(:all, build_acquisti_report_conditions())
-      vendite = RigaFatturaPdc.search(:all, build_vendite_report_conditions())
+      iva_acquisti = RigaFatturaPdc.sum(:iva, build_acquisti_report_conditions())
+      detrazione_iva_acquisti = RigaFatturaPdc.sum(:detrazione, build_acquisti_report_conditions())
+      iva_vendite = RigaFatturaPdc.sum(:iva, build_vendite_report_conditions())
+      detrazione_iva_vendite = RigaFatturaPdc.sum(:detrazione, build_vendite_report_conditions())
 
-      iva_detraibile = (acquisti.sum(&:iva) - acquisti.sum(&:detrazione))
-      iva_indetraibile = (vendite.sum(&:iva) - vendite.sum(&:detrazione))
-      iva_indetraibile += Corrispettivo.sum(:iva, build_corrispettivi_report_conditions())
+      iva_detraibile = (iva_acquisti - detrazione_iva_acquisti)
+      iva_indetraibile = (iva_vendite - detrazione_iva_vendite)
+      iva_indetraibile += Corrispettivo.sum(:iva, build_iva_corrispettivi_report_conditions())
 
       if(Helpers::ApplicationHelper.real(iva_detraibile) >= Helpers::ApplicationHelper.real(iva_indetraibile))
         attivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_detraibile - iva_indetraibile)]
+        self.totale_attivita += (iva_detraibile - iva_indetraibile)
       else
         passivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_indetraibile - iva_detraibile)]
+        self.totale_passivita += (iva_indetraibile - iva_detraibile)
       end
 
       totale_fatture_fornitori = FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions())
-      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions())
+      passivita_data_matrix[46000] = ['46000', 'FORNITORI', totale_fatture_fornitori]
+      self.totale_passivita += totale_fatture_fornitori
 
-      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
-        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
-      else
-        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
-      end
+#      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions())
+#
+#      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
+#        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
+#        self.totale_passivita += (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)
+#      else
+#        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
+#        self.totale_attivita += (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)
+#      end
 
       totale_fatture_clienti = FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions())
-      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions())
+      attivita_data_matrix[22000] = ['22000', 'CLIENTI', totale_fatture_clienti]
+      self.totale_attivita += totale_fatture_clienti
+      
+#      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions())
+#
+#      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
+#        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
+#        self.totale_attivita += (totale_fatture_clienti - totale_incassi_fatture_clienti)
+#      else
+#        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
+#        self.totale_passivita += (totale_incassi_fatture_clienti - totale_fatture_clienti)
+#      end
 
-      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
-        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
-      else
-        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
+      corrispettivi = Corrispettivo.all(build_importi_corrispettivi_report_conditions())
+
+      corrispettivi.each do |dati_corrispettivi|
+        conto = dati_corrispettivi.codice.to_i
+        if attivita_data_matrix[conto]
+          attivita_data_matrix[conto][2] += dati_corrispettivi.importo
+        else
+          attivita_data_matrix[conto] = [conto, dati_corrispettivi.descrizione, dati_corrispettivi.importo]
+        end
+        self.totale_attivita += dati_corrispettivi.importo
       end
 
-      conti_corrispettivi = Corrispettivo..search(:all, build_corrispettivi_report_conditions())
-
-      conti_corrispettivi.group_by(&:pdc_dare_id).each do |pdc_id, corrispettivi|
-        conto = corrispettivi.first.conto
-        attivita_data_matrix[conto.codice.to_i][2] += corrispettivi.sum(&:importo)
-      end
-
-      conti_corrispettivi.group_by(&:pdc_avere_id).each do |pdc_id, corrispettivi|
-        conto = corrispettivi.first.conto
-        passivita_data_matrix[conto.codice.to_i][2] += corrispettivi.sum(&:imponibile)
-      end
-
-      [attivita_data_matrix, passivita_data_matrix]
+      [(attivita_data_matrix.sort.map {|a| a.last}), (passivita_data_matrix.sort.map {|p| p.last})]
 
     end
 
-    def build_conti_dare_report_conditions()
+    # gestione report bilancio conto economico
+    def report_conto_economico()
+      costi_data_matrix = {}
+      ricavi_data_matrix = {}
+
+      c_data_matrix = {}
+      r_data_matrix = {}
+
+      costi = ScritturaPd.all(build_costi_report_conditions())
+
+      costi.each do |dati_costi|
+        conto = dati_costi.codice.to_i
+        c_data_matrix[conto] = [conto, dati_costi.descrizione, dati_costi.importo]
+        self.totale_costi += dati_costi.importo
+      end
+
+      costi_nc = ScritturaPd.all(build_costi_nc_report_conditions())
+
+      costi_nc.each do |dati_costi_nc|
+        conto = dati_costi_nc.codice.to_i
+        if c_data_matrix[conto]
+          c_data_matrix[conto][2] += dati_costi_nc.importo
+        else
+          c_data_matrix[conto] = [conto, dati_costi_nc.descrizione, dati_costi_nc.importo]
+        end
+        self.totale_costi += dati_costi_nc.importo
+      end
+
+      ricavi = ScritturaPd.all(build_ricavi_report_conditions())
+
+      ricavi.each do |dati_ricavi|
+        conto = dati_ricavi.codice.to_i
+        r_data_matrix[conto] = [conto, dati_ricavi.descrizione, dati_ricavi.importo]
+        self.totale_ricavi += dati_ricavi.importo
+      end
+
+      ricavi_nc = ScritturaPd.all(build_ricavi_nc_report_conditions())
+
+      ricavi_nc.each do |dati_ricavi_nc|
+        conto = dati_ricavi_nc.codice.to_i
+        if r_data_matrix[conto]
+          r_data_matrix[conto][2] += dati_ricavi_nc.importo
+        else
+          r_data_matrix[conto] = [conto, dati_ricavi_nc.descrizione, dati_ricavi_nc.importo]
+        end
+        self.totale_ricavi += dati_ricavi_nc.importo
+      end
+
+      c_data_matrix.each do |conto, costo|
+        if ricavo = r_data_matrix.delete(conto)
+          if(Helpers::ApplicationHelper.real(costo[2]) >= Helpers::ApplicationHelper.real(ricavo[2]))
+            costi_data_matrix[conto] = [costo[0], costo[1], (costo[2] - ricavo[2])]
+          else
+            ricavi_data_matrix[conto] = [ricavo[0], ricavo[1], (ricavo[2] - costo[2])]
+          end
+        else
+          costi_data_matrix[conto] = costo
+        end
+      end
+
+      r_data_matrix.each do |conto, ricavo|
+        ricavi_data_matrix[conto] = ricavo
+      end
+
+      acquisti = RigaFatturaPdc.all(build_dettaglio_iva_acquisti_report_conditions("fatture_fornitori.nota_di_credito = 0"))
+      vendite = RigaFatturaPdc.all(build_dettaglio_iva_vendite_report_conditions("fatture_clienti.nota_di_credito = 0"))
+
+      acquisti.each do |dati_acquisti|
+        conto = dati_acquisti.codice.to_i
+        totale_acquisti = (dati_acquisti.imponibile + dati_acquisti.iva)
+        if costi_data_matrix[conto]
+          costi_data_matrix[conto][2] += totale_acquisti
+        else
+          costi_data_matrix[conto] = [conto, dati_acquisti.descrizione, totale_acquisti]
+        end
+        self.totale_costi += totale_acquisti
+      end
+
+      vendite.each do |dati_vendite|
+        conto = dati_vendite.codice.to_i
+        totale_vendite = (dati_vendite.imponibile + dati_vendite.iva)
+        if ricavi_data_matrix[conto]
+          ricavi_data_matrix[conto][2] += totale_vendite
+        else
+          ricavi_data_matrix[conto] = [conto, dati_vendite.descrizione, totale_vendite]
+        end
+        self.totale_ricavi += totale_vendite
+      end
+
+      acquisti_nc = RigaFatturaPdc.all(build_dettaglio_iva_acquisti_report_conditions("fatture_fornitori.nota_di_credito = 1"))
+      vendite_nc = RigaFatturaPdc.all(build_dettaglio_iva_vendite_report_conditions("fatture_clienti.nota_di_credito = 1"))
+
+      acquisti_nc.each do |dati_acquisti_nc|
+        conto = dati_acquisti_nc.codice.to_i
+        totale_acquisti_nc = (dati_acquisti_nc.imponibile + dati_acquisti_nc.iva)
+        if costi_data_matrix[conto]
+          costi_data_matrix[conto][2] -= totale_acquisti_nc
+        else
+          costi_data_matrix[conto] = [conto, dati_acquisti_nc.descrizione, (totale_acquisti_nc * -1)]
+        end
+        self.totale_costi -= totale_acquisti_nc
+      end
+
+      vendite_nc.each do |dati_vendite_nc|
+        conto = dati_vendite_nc.codice.to_i
+        totale_vendite_nc = (dati_vendite_nc.imponibile + dati_vendite_nc.iva)
+        if ricavi_data_matrix[conto]
+          ricavi_data_matrix[conto][2] -= totale_vendite_nc
+        else
+          ricavi_data_matrix[conto] = [conto, dati_vendite_nc.descrizione, (totale_vendite_nc * -1)]
+        end
+        self.totale_ricavi -= totale_vendite_nc
+      end
+
+      corrispettivi = Corrispettivo.all(build_imponibili_corrispettivi_report_conditions())
+
+      corrispettivi.each do |dati_corrispettivi|
+        conto = dati_corrispettivi.codice.to_i
+        if ricavi_data_matrix[conto]
+          ricavi_data_matrix[conto][2] += dati_corrispettivi.imponibile
+        else
+          ricavi_data_matrix[conto] = [conto, dati_corrispettivi.descrizione, dati_corrispettivi.imponibile]
+        end
+        self.totale_ricavi += dati_corrispettivi.imponibile
+      end
+
+      [(costi_data_matrix.sort.map {|c| c.last}), (ricavi_data_matrix.sort.map {|r| r.last})]
+
+    end
+
+    def build_attivi_report_conditions()
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('prima_nota.data_registrazione')} >= ? "
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
       parametri << get_date(:from)
-      query_str << "#{to_sql_year('prima_nota.data_registrazione')} <= ? "
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
       parametri << get_date(:to)
 
-      query_str << "prima_nota.azienda_id = ?"
+      query_str << "partita_doppia.pdc_dare_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
       parametri << Azienda.current
 
-      query_str << "prima_nota.pdc_dare_id is not null"
+      query_str << "categorie_pdc.type = 'Attivo'"
 
-      {:conditions => [query_str.join(' AND '), *parametri],
-        :include => [:pdc_dare]
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.pdc_dare_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
       }
     end
 
-    def build_conti_avere_report_conditions()
+    def build_attivi_nc_report_conditions()
       query_str = []
       parametri = []
 
-      query_str << "prima_nota.data_registrazione >= ? "
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
       parametri << get_date(:from)
-      query_str << "prima_nota.data_registrazione <= ? "
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
       parametri << get_date(:to)
 
-      query_str << "prima_nota.azienda_id = ?"
+      query_str << "partita_doppia.nc_pdc_dare_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
       parametri << Azienda.current
 
-      query_str << "prima_nota.pdc_avere_id is not null"
+      query_str << "categorie_pdc.type = 'Attivo'"
 
-      {:conditions => [query_str.join(' AND '), *parametri],
-        :include => [:pdc_avere]
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.nc_pdc_dare_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_passivi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.pdc_avere_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Passivo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.pdc_avere_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_passivi_nc_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.nc_pdc_avere_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Passivo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.nc_pdc_avere_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_costi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.pdc_dare_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Costo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.pdc_dare_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_costi_nc_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.nc_pdc_dare_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Costo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.nc_pdc_dare_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_ricavi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.pdc_avere_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Ricavo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.pdc_avere_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+    end
+
+    def build_ricavi_nc_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      parametri << get_date(:from)
+      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      parametri << get_date(:to)
+
+      query_str << "partita_doppia.nc_pdc_avere_id is not null"
+
+      query_str << "partita_doppia.azienda_id = ?"
+      parametri << Azienda.current
+
+      query_str << "categorie_pdc.type = 'Ricavo'"
+
+      {:select => "sum(partita_doppia.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON partita_doppia.nc_pdc_avere_id = pdc.id
+                   INNER JOIN categorie_pdc ON pdc.categoria_pdc_id = categorie_pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
       }
     end
 
@@ -651,7 +983,28 @@ module Controllers
       parametri << Azienda.current
 
       {:conditions => [query_str.join(' AND '), *parametri],
-        :include => [:fattura_fornitore]
+        :joins => :fattura_fornitore
+      }
+    end
+
+    def build_dettaglio_iva_acquisti_report_conditions(additional_criteria = nil)
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_fornitori.data_registrazione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_fornitori.data_registrazione <= ? "
+      parametri << get_date(:to)
+
+      query_str << additional_criteria if additional_criteria
+
+      query_str << "fatture_fornitori.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:select => "sum(righe_fattura_pdc.imponibile) as imponibile, sum(righe_fattura_pdc.iva) as iva, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN fatture_fornitori on righe_fattura_pdc.fattura_fornitore_id = fatture_fornitori.id INNER JOIN pdc on righe_fattura_pdc.pdc_id = pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
       }
     end
 
@@ -668,7 +1021,30 @@ module Controllers
       parametri << Azienda.current
 
       {:conditions => [query_str.join(' AND '), *parametri],
-        :include => [:fattura_cliente]
+        :joins => :fattura_cliente
+      }
+    end
+
+    def build_dettaglio_iva_vendite_report_conditions(additional_criteria = nil)
+      query_str = []
+      parametri = []
+
+      query_str << "fatture_clienti.data_emissione >= ? "
+      parametri << get_date(:from)
+      query_str << "fatture_clienti.data_emissione <= ? "
+      parametri << get_date(:to)
+
+      query_str << additional_criteria if additional_criteria
+
+      query_str << "fatture_clienti.da_scadenzario = 1"
+
+      query_str << "fatture_clienti.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:select => "sum(righe_fattura_pdc.imponibile) as imponibile, sum(righe_fattura_pdc.iva) as iva, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN fatture_clienti on righe_fattura_pdc.fattura_cliente_id = fatture_clienti.id INNER JOIN pdc on righe_fattura_pdc.pdc_id = pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
       }
     end
 
@@ -752,7 +1128,7 @@ module Controllers
 
     end
 
-    def build_corrispettivi_report_conditions()
+    def build_iva_corrispettivi_report_conditions()
       query_str = []
       parametri = []
 
@@ -761,10 +1137,49 @@ module Controllers
       query_str << "corrispettivi.data <= ? "
       parametri << get_date(:to)
 
-      query_str << "fatture_clienti.azienda_id = ?"
+      query_str << "corrispettivi.azienda_id = ?"
       parametri << Azienda.current
 
       {:conditions => [query_str.join(' AND '), *parametri]}
+    end
+
+    def build_importi_corrispettivi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "corrispettivi.data >= ? "
+      parametri << get_date(:from)
+      query_str << "corrispettivi.data <= ? "
+      parametri << get_date(:to)
+
+      query_str << "corrispettivi.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:select => "sum(corrispettivi.importo) as importo, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON corrispettivi.pdc_dare_id = pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
+
+    end
+
+    def build_imponibili_corrispettivi_report_conditions()
+      query_str = []
+      parametri = []
+
+      query_str << "corrispettivi.data >= ? "
+      parametri << get_date(:from)
+      query_str << "corrispettivi.data <= ? "
+      parametri << get_date(:to)
+
+      query_str << "corrispettivi.azienda_id = ?"
+      parametri << Azienda.current
+
+      {:select => "sum(corrispettivi.imponibile) as imponibile, pdc.codice as codice, pdc.descrizione as descrizione",
+        :conditions => [query_str.join(' AND '), *parametri],
+        :joins => "INNER JOIN pdc ON corrispettivi.pdc_avere_id = pdc.id",
+        :group => 'pdc.codice, pdc.descrizione'
+      }
 
     end
   end

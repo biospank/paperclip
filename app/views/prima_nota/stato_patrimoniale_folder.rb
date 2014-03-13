@@ -1,14 +1,14 @@
 # encoding: utf-8
 
 module Views
-  module Scadenzario
+  module PrimaNota
     module StatoPatrimonialeFolder
       include Views::Base::Folder
       include Helpers::MVCHelper
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
 
-      attr_accessor :totale_attivita, :totale_passivita, :utile_esercizio, :totale_pareggio
+      attr_accessor :filtro, :totale_attivita, :totale_passivita, :utile_esercizio
       
       def ui
         controller :prima_nota
@@ -38,10 +38,14 @@ module Views
 
         end
 
-        xrc.find('lbl_totale_attivita', self)
-        xrc.find('lbl_totale_passivita', self)
-        xrc.find('lbl_utile_esercizio', self)
-        xrc.find('lbl_totale_pareggio', self)
+        xrc.find('lbl_totale_attivo', self)
+        xrc.find('lbl_totale_passivo', self)
+        xrc.find('cpt_utile_esercizio_attivo', self)
+        xrc.find('lbl_utile_esercizio_attivo', self)
+        xrc.find('cpt_utile_esercizio_passivo', self)
+        xrc.find('lbl_utile_esercizio_passivo', self)
+        xrc.find('lbl_totale_pareggio_attivo', self)
+        xrc.find('lbl_totale_pareggio_passivo', self)
 
         map_events(self)
 
@@ -63,31 +67,35 @@ module Views
       def ricerca(filtro)
         begin
           reset_totali()
-          self.result_set_lstrep_attivita, self.result_set_lstrep_passivita = ctrl.report_stato_patrimoniale(filtro)
+          self.filtro = filtro
+          self.result_set_lstrep_attivita, self.result_set_lstrep_passivita = ctrl.report_stato_patrimoniale()
           lstrep_attivita.display_matrix(result_set_lstrep_attivita)
           lstrep_passivita.display_matrix(result_set_lstrep_passivita)
-          self.lbl_totale_attivita.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
-          self.lbl_totale_passivita.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
-          self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
-          self.lbl_totale_pareggio.label = Helpers::ApplicationHelper.currency(self.totale_totale_pareggio)
+          self.lbl_totale_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+          self.lbl_totale_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+          if(Helpers::ApplicationHelper.real(self.totale_attivita) >= Helpers::ApplicationHelper.real(self.totale_passivita))
+            self.utile_esercizio = self.totale_attivita - self.totale_passivita
+            self.cpt_utile_esercizio_passivo.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio_passivo.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+            self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+          else
+            self.utile_esercizio = self.totale_passivita - self.totale_attivita
+            self.cpt_utile_esercizio_attivo.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio_attivo.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+            self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+          end
         rescue Exception => e
           log_error(self, e)
         end
       end
 
       def stampa(filtro)
+        self.filtro = filtro
         Wx::BusyCursor.busy() do
 
           dati_azienda = Models::Azienda.current.dati_azienda
-
-          case result_set_lstrep_iva.size
-          when 1..3
-            margin_bottom = 50
-          when 4..5
-            margin_bottom = 60
-          when 6..7
-            margin_bottom = 70
-          end
 
           generate(:report_acquisti,
             :margin_top => 40,
@@ -166,11 +174,14 @@ module Views
         self.totale_attivita = 0.0
         self.totale_passivita = 0.0
         self.utile_esercizio = 0.0
-        self.totale_pareggio = 0.0
-        self.lbl_totale_attivita.label = ''
-        self.lbl_totale_passivita.label = ''
-        self.lbl_utile_esercizio.label = ''
-        self.lbl_totale_pareggio.label = ''
+        self.lbl_totale_attivo.label = ''
+        self.lbl_totale_passivo.label = ''
+        self.cpt_utile_esercizio_attivo.label = ''
+        self.lbl_utile_esercizio_attivo.label = ''
+        self.cpt_utile_esercizio_passivo.label = ''
+        self.lbl_utile_esercizio_passivo.label = ''
+        self.lbl_totale_pareggio_attivo.label = ''
+        self.lbl_totale_pareggio_passivo.label = ''
       end
     end
   end

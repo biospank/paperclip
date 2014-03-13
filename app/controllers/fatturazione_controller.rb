@@ -174,6 +174,11 @@ module Controllers
         if scrittura = scrittura_corrispettivo(corrispettivo, descrizione)
           relazione_scrittura_corrispettivo(scrittura, corrispettivo)
         end
+#        if configatron.bilancio.attivo
+#          if scrittura = scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
+#            relazione_scrittura_corrispettivo_partita_doppia(scrittura, corrispettivo)
+#          end
+#        end
       end
 
       return true
@@ -189,6 +194,10 @@ module Controllers
                 descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
                 storno_scrittura_corrispettivo(corrispettivo, descrizione)
                 CorrispettivoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
+#                if configatron.bilancio.attivo
+#                  storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
+#                  CorrispettivoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura.id}")
+#                end
               else
                   # il destroy direttamente su scrittura non funziona
                 Models::Scrittura.find(scrittura).destroy
@@ -196,6 +205,9 @@ module Controllers
             else
               descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
               storno_scrittura_corrispettivo(corrispettivo, descrizione)
+#              if configatron.bilancio.attivo
+#                storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
+#              end
             end
         end
         corrispettivo.destroy
@@ -225,8 +237,30 @@ module Controllers
 
     end
 
+    def scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
+      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+                                :importo => corrispettivo.importo,
+                                :pdc_dare => corrispettivo.pdc_dare,
+                                :descrizione => descrizione,
+                                :data_operazione => corrispettivo.data,
+                                :data_registrazione => Time.now,
+                                :esterna => 1,
+                                :congelata => 0)
+
+      scrittura.save_with_validation(false)
+      corrispettivo.update_attributes(:registrato_in_partita_doppia => 1)
+
+      scrittura
+
+    end
+
     def relazione_scrittura_corrispettivo(scrittura, corrispettivo)
       CorrispettivoPrimaNota.create(:prima_nota_id => scrittura.id,
+                                :corrispettivo_id => corrispettivo.id)
+    end
+
+    def relazione_scrittura_corrispettivo_partita_doppia(scrittura, corrispettivo)
+      CorrispettivoPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                 :corrispettivo_id => corrispettivo.id)
     end
 
@@ -249,6 +283,25 @@ module Controllers
 
       scrittura.save_with_validation(false)
       corrispettivo.update_attributes(:registrato_in_prima_nota => 1)
+
+      scrittura
+
+    end
+
+    def storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
+      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+                                :importo => corrispettivo.importo,
+                                :pdc_avere => corrispettivo.pdc_avere,
+                                :descrizione => descrizione,
+                                :data_operazione => Date.today,
+                                :data_registrazione => Time.now,
+                                :esterna => 1,
+                                :congelata => 0)
+
+      scrittura.parent = corrispettivo.scrittura_pd
+
+      scrittura.save_with_validation(false)
+      corrispettivo.update_attributes(:registrato_in_partita_doppia => 1)
 
       scrittura
 

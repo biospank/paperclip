@@ -12,7 +12,9 @@ module Models
     belongs_to :banca, :foreign_key => 'banca_id'
     belongs_to :maxi_pagamento_cliente, :class_name => 'Models::MaxiPagamentoCliente', :foreign_key => 'maxi_pagamento_cliente_id'
     has_one    :pagamento_prima_nota, :class_name => 'Models::PagamentoPrimaNota', :foreign_key => 'pagamento_fattura_cliente_id'
+    has_one    :pagamento_partita_doppia, :class_name => 'Models::PagamentoPartitaDoppia', :foreign_key => 'pagamento_fattura_cliente_id'
     has_one    :scrittura, :through => :pagamento_prima_nota
+    has_one    :scrittura_pd, :through => :pagamento_partita_doppia
     
     validates_exclusion_of :importo,
       :in => [0],

@@ -30,10 +30,6 @@ module Views
           init_folder()
         end
 
-        subscribe(:evt_azienda_updated) do
-          init_folder()
-        end
-
         xrc.find('btn_calcola', self)
         xrc.find('btn_pulisci', self)
         xrc.find('btn_stampa', self)

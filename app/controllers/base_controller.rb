@@ -203,12 +203,19 @@ module Controllers
     end
 
     def search_scritture()
-      Scrittura.search(:all, 
-        :conditions => ["data_registrazione >= ?", Date.today], 
+      Scrittura.search(:all,
+        :conditions => ["data_registrazione >= ?", Date.today],
         :include => [:storno, :causale, :banca],
         :order => 'data_registrazione desc')
     end
-    
+
+    def search_scritture_pd()
+      ScritturaPd.search(:all,
+        :conditions => ["data_registrazione >= ?", Date.today],
+        :include => [:storno, :causale],
+        :order => 'data_registrazione desc')
+    end
+
     def search_tipi_pagamento(categoria)
       TipoPagamento.search(:all, :conditions => ["categoria_id = ?", categoria], :order => 'descrizione')
     end

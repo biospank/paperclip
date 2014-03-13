@@ -53,10 +53,10 @@ class LoadData < ActiveRecord::Migration
     execute("insert into categorie_pdc (id, codice, descrizione, type) values (6, 293, 'ATT.CIRC.: CREDITI', 'Attivo')")
 
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29300, 'RIT. ACC.TO 4%')")
+    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29301, 'CAMBIALI ATTIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29499, 'SOCI C/PRELEVAMENTO')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29502, 'TITOLARE C/PRELEV.')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29503, 'EFFETTI IN PORTAFOGLIO')")
-    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29504, 'CAMBIALI ATTIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29505, 'ERARIO C/RIT.ATTIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29515, 'RIT. FISCALE DA BANCHE E PT')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 6, 29534, 'ERARIO C/ACC.TO IRAP')")
@@ -112,9 +112,9 @@ class LoadData < ActiveRecord::Migration
     execute("insert into categorie_pdc (id, codice, descrizione, type) values (12, 498, 'ALTRI DEBITI', 'Passivo')")
 
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49800, 'DEBITI PER SALARI E STIPENDI')")
+    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49801, 'CAMBIALI PASSIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49803, 'DEBITI VARI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49804, 'FATTURE DA RICEVERE')")
-    execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49805, 'CAMBIALI PASSIVE')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49850, 'CLIENTI C/ANTICIPI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49851, 'CREDITORI DIVERSI')")
     execute("insert into pdc (id, categoria_pdc_id, codice, descrizione) values (NULL, 12, 49855, 'SOCI C/VERSAMENTO')")
