@@ -81,7 +81,7 @@ module Views
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
           else
             self.utile_esercizio = self.totale_passivita - self.totale_attivita
-            self.cpt_utile_esercizio_attivo.label = "UTILE D'ESERCIZIO"
+            self.cpt_utile_esercizio_attivo.label = "PERDITA D'ESERCIZIO"
             self.lbl_utile_esercizio_attivo.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
             self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)

@@ -506,7 +506,11 @@ module Views
                 lku_pdc_dare.enable(false)
               end
             else
-              lku_pdc_dare.enable(true)
+              if chk_fuori_partita_dare.checked?
+                lku_pdc_dare.enable(true)
+              else
+                lku_pdc_dare.enable(false)
+              end
             end
             if lku_pdc_avere.view_data
               if self.incasso.modificabile?
@@ -515,7 +519,11 @@ module Views
                 lku_pdc_avere.enable(false)
               end
             else
-              lku_pdc_avere.enable(true)
+              if chk_fuori_partita_avere.checked?
+                lku_pdc_avere.enable(true)
+              else
+                lku_pdc_avere.enable(false)
+              end
             end
             if lku_nc_pdc_dare.view_data
               if self.incasso.modificabile?
@@ -524,7 +532,11 @@ module Views
                 lku_nc_pdc_dare.enable(false)
               end
             else
-              lku_nc_pdc_dare.enable(true)
+              if chk_nc_fuori_partita_dare.checked?
+                lku_nc_pdc_dare.enable(true)
+              else
+                lku_nc_pdc_dare.enable(false)
+              end
             end
             if lku_nc_pdc_avere.view_data
               if self.incasso.modificabile?
@@ -533,7 +545,11 @@ module Views
                 lku_nc_pdc_avere.enable(false)
               end
             else
-              lku_nc_pdc_avere.enable(true)
+              if chk_nc_fuori_partita_avere.checked?
+                lku_nc_pdc_avere.enable(true)
+              else
+                lku_nc_pdc_avere.enable(false)
+              end
             end
           end
         end

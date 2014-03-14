@@ -528,6 +528,9 @@ module Controllers
       attivita_data_matrix = {}
       passivita_data_matrix = {}
 
+      saldi_attivi_data_matrix, saldi_passivi_data_matrix = report_saldi_stato_patrimoniale()
+
+      # ATTIVI
       attivi_data_matrix = {}
       passivi_data_matrix = {}
 
@@ -536,7 +539,6 @@ module Controllers
       attivi.each do |dati_attivi|
         conto = dati_attivi.codice.to_i
         attivi_data_matrix[conto] = [conto, dati_attivi.descrizione, dati_attivi.importo]
-        self.totale_attivita += dati_attivi.importo
       end
 
       attivi_nc = ScritturaPd.all(build_attivi_nc_report_conditions())
@@ -544,19 +546,18 @@ module Controllers
       attivi_nc.each do |dati_attivi_nc|
         conto = dati_attivi_nc.codice.to_i
         if attivi_data_matrix[conto]
-          attivi_data_matrix[conto][2] += dati_attivi_nc.importo
+          attivi_data_matrix[conto][2] -= dati_attivi_nc.importo
         else
-          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, dati_attivi_nc.importo]
+          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, (dati_attivi_nc.importo * -1)]
         end
-        self.totale_attivita += dati_attivi_nc.importo
       end
 
+      # PASSIVI
       passivi = ScritturaPd.all(build_passivi_report_conditions())
 
       passivi.each do |dati_passivi|
         conto = dati_passivi.codice.to_i
         passivi_data_matrix[conto] = [conto, dati_passivi.descrizione, dati_passivi.importo]
-        self.totale_passivita += dati_passivi.importo
       end
 
       passivi_nc = ScritturaPd.all(build_passivi_nc_report_conditions())
@@ -564,11 +565,168 @@ module Controllers
       passivi_nc.each do |dati_passivi_nc|
         conto = dati_passivi_nc.codice.to_i
         if passivi_data_matrix[conto]
-          passivi_data_matrix[conto][2] += dati_passivi_nc.importo
+          passivi_data_matrix[conto][2] -= dati_passivi_nc.importo
         else
-          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, dati_passivi_nc.importo]
+          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, (dati_passivi_nc.importo * -1)]
         end
-        self.totale_passivita += dati_passivi_nc.importo
+      end
+
+      # merge tra attivi, passivi e saldi
+      attivi_data_matrix.each do |conto, attivo|
+        totale_attivo = saldi_attivi_data_matrix.delete(conto)[2] rescue 0.0
+        totale_attivo += attivo[2]
+        totale_passivo = saldi_passivi_data_matrix.delete(conto)[2] rescue 0.0
+        totale_passivo += passivi_data_matrix.delete(conto)[2] rescue 0.0
+
+
+        if(Helpers::ApplicationHelper.real(totale_attivo) >= Helpers::ApplicationHelper.real(totale_passivo))
+          attivita_data_matrix[conto] = [attivo[0], attivo[1], (totale_attivo - totale_passivo)]
+          self.totale_attivita += (totale_attivo - totale_passivo)
+        else
+          passivita_data_matrix[conto] = [attivo[0], attivo[1], (totale_passivo - totale_attivo)]
+          self.totale_passivita += (totale_passivo - totale_attivo)
+        end
+
+#        if passivo = passivi_data_matrix.delete(conto)
+#          if(Helpers::ApplicationHelper.real(attivo[2]) >= Helpers::ApplicationHelper.real(passivo[2]))
+#            attivita_data_matrix[conto] = [attivo[0], attivo[1], (attivo[2] - passivo[2])]
+#          else
+#            passivita_data_matrix[conto] = [passivo[0], passivo[1], (passivo[2] - attivo[2])]
+#          end
+#        else
+#          attivita_data_matrix[conto] = attivo
+#        end
+      end
+
+      passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
+        self.totale_passivita += passivo[2]
+      end
+
+      # IVA
+      iva_acquisti = RigaFatturaPdc.sum(:iva, build_acquisti_report_conditions())
+      detrazione_iva_acquisti = RigaFatturaPdc.sum(:detrazione, build_acquisti_report_conditions())
+      iva_vendite = RigaFatturaPdc.sum(:iva, build_vendite_report_conditions())
+      detrazione_iva_vendite = RigaFatturaPdc.sum(:detrazione, build_vendite_report_conditions())
+
+      iva_detraibile = (iva_acquisti - detrazione_iva_acquisti)
+      iva_detraibile += saldi_attivi_data_matrix.delete(30000)[2] rescue 0.0
+      iva_indetraibile = (iva_vendite - detrazione_iva_vendite)
+      iva_indetraibile += saldi_passivi_data_matrix.delete(30000)[2] rescue 0.0
+      iva_indetraibile += Corrispettivo.sum(:iva, build_iva_corrispettivi_report_conditions())
+
+      if(Helpers::ApplicationHelper.real(iva_detraibile) >= Helpers::ApplicationHelper.real(iva_indetraibile))
+        attivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_detraibile - iva_indetraibile)]
+        self.totale_attivita += (iva_detraibile - iva_indetraibile)
+      else
+        passivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_indetraibile - iva_detraibile)]
+        self.totale_passivita += (iva_indetraibile - iva_detraibile)
+      end
+
+      # FORNITORI
+      totale_fatture_fornitori = FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 0"))
+      totale_fatture_fornitori += saldi_passivi_data_matrix.delete(46000)[2] rescue 0.0
+      totale_fatture_fornitori -= FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 1"))
+      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 0"))
+      totale_pagamenti_fatture_fornitori += saldi_attivi_data_matrix.delete(46000)[2] rescue 0.0
+      totale_pagamenti_fatture_fornitori -= PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 1"))
+
+      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
+        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
+        self.totale_passivita += (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)
+      else
+        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
+        self.totale_attivita += (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)
+      end
+
+      # CLIENTI
+      totale_fatture_clienti = FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 0"))
+      totale_fatture_clienti += saldi_attivi_data_matrix.delete(22000)[2] rescue 0.0
+      totale_fatture_clienti -= FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 1"))
+      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 0"))
+      totale_incassi_fatture_clienti += saldi_passivi_data_matrix.delete(22000)[2] rescue 0.0
+      totale_incassi_fatture_clienti -= PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 1"))
+
+      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
+        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
+        self.totale_attivita += (totale_fatture_clienti - totale_incassi_fatture_clienti)
+      else
+        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
+        self.totale_passivita += (totale_incassi_fatture_clienti - totale_fatture_clienti)
+      end
+
+      # CORRISPETTIVI
+      corrispettivi = Corrispettivo.all(build_importi_corrispettivi_report_conditions())
+
+      corrispettivi.each do |dati_corrispettivi|
+        conto = dati_corrispettivi.codice.to_i
+        totale_corrispettivi = dati_corrispettivi.importo
+        totale_corrispettivi += saldi_attivi_data_matrix.delete(conto)[2] rescue 0.0
+        if attivita_data_matrix[conto]
+          attivita_data_matrix[conto][2] += totale_corrispettivi
+        else
+          attivita_data_matrix[conto] = [conto, dati_corrispettivi.descrizione, totale_corrispettivi]
+        end
+        self.totale_attivita += totale_corrispettivi
+      end
+
+      # SALDI CONTI ATTIVI RESIDUI
+      saldi_attivi_data_matrix.each do |conto, attivo|
+        attivita_data_matrix[conto] = attivo
+        self.totale_attivita += attivo[2]
+      end
+
+      # SALDI CONTI PASSIVI RESIDUI
+      saldi_passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
+        self.totale_passivita += passivo[2]
+      end
+
+      [(attivita_data_matrix.sort.map {|a| a.last}), (passivita_data_matrix.sort.map {|p| p.last})]
+
+    end
+
+    def report_saldi_stato_patrimoniale()
+      attivita_data_matrix = {}
+      passivita_data_matrix = {}
+
+      attivi_data_matrix = {}
+      passivi_data_matrix = {}
+
+      attivi = ScritturaPd.all(build_attivi_report_conditions(true))
+
+      attivi.each do |dati_attivi|
+        conto = dati_attivi.codice.to_i
+        attivi_data_matrix[conto] = [conto, dati_attivi.descrizione, dati_attivi.importo]
+      end
+
+      attivi_nc = ScritturaPd.all(build_attivi_nc_report_conditions(true))
+
+      attivi_nc.each do |dati_attivi_nc|
+        conto = dati_attivi_nc.codice.to_i
+        if attivi_data_matrix[conto]
+          attivi_data_matrix[conto][2] -= dati_attivi_nc.importo
+        else
+          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, (dati_attivi_nc.importo * -1)]
+        end
+      end
+
+      passivi = ScritturaPd.all(build_passivi_report_conditions(true))
+
+      passivi.each do |dati_passivi|
+        conto = dati_passivi.codice.to_i
+        passivi_data_matrix[conto] = [conto, dati_passivi.descrizione, dati_passivi.importo]
+      end
+
+      passivi_nc = ScritturaPd.all(build_passivi_nc_report_conditions(true))
+
+      passivi_nc.each do |dati_passivi_nc|
+        conto = dati_passivi_nc.codice.to_i
+        if passivi_data_matrix[conto]
+          passivi_data_matrix[conto][2] -= dati_passivi_nc.importo
+        else
+          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, (dati_passivi_nc.importo * -1)]
+        end
       end
 
       attivi_data_matrix.each do |conto, attivo|
@@ -587,52 +745,44 @@ module Controllers
         passivita_data_matrix[conto] = passivo
       end
 
-      iva_acquisti = RigaFatturaPdc.sum(:iva, build_acquisti_report_conditions())
-      detrazione_iva_acquisti = RigaFatturaPdc.sum(:detrazione, build_acquisti_report_conditions())
-      iva_vendite = RigaFatturaPdc.sum(:iva, build_vendite_report_conditions())
-      detrazione_iva_vendite = RigaFatturaPdc.sum(:detrazione, build_vendite_report_conditions())
+      iva_acquisti = RigaFatturaPdc.sum(:iva, build_acquisti_report_conditions(true))
+      detrazione_iva_acquisti = RigaFatturaPdc.sum(:detrazione, build_acquisti_report_conditions(true))
+      iva_vendite = RigaFatturaPdc.sum(:iva, build_vendite_report_conditions(true))
+      detrazione_iva_vendite = RigaFatturaPdc.sum(:detrazione, build_vendite_report_conditions(true))
 
       iva_detraibile = (iva_acquisti - detrazione_iva_acquisti)
       iva_indetraibile = (iva_vendite - detrazione_iva_vendite)
-      iva_indetraibile += Corrispettivo.sum(:iva, build_iva_corrispettivi_report_conditions())
+      iva_indetraibile += Corrispettivo.sum(:iva, build_iva_corrispettivi_report_conditions(true))
 
       if(Helpers::ApplicationHelper.real(iva_detraibile) >= Helpers::ApplicationHelper.real(iva_indetraibile))
         attivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_detraibile - iva_indetraibile)]
-        self.totale_attivita += (iva_detraibile - iva_indetraibile)
       else
         passivita_data_matrix[30000] = ['30000', 'IVA C/ERARIO', (iva_indetraibile - iva_detraibile)]
-        self.totale_passivita += (iva_indetraibile - iva_detraibile)
       end
 
-      totale_fatture_fornitori = FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions())
-      passivita_data_matrix[46000] = ['46000', 'FORNITORI', totale_fatture_fornitori]
-      self.totale_passivita += totale_fatture_fornitori
+      totale_fatture_fornitori = FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 0", true))
+      totale_fatture_fornitori -= FatturaFornitore.sum(:importo, build_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 1", true))
+      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 0", true))
+      totale_pagamenti_fatture_fornitori -= PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions("fatture_fornitori.nota_di_credito = 1", true))
 
-#      totale_pagamenti_fatture_fornitori = PagamentoFatturaFornitore.sum(:importo, build_pagamenti_fatture_fornitori_report_conditions())
-#
-#      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
-#        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
-#        self.totale_passivita += (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)
-#      else
-#        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
-#        self.totale_attivita += (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)
-#      end
+      if(Helpers::ApplicationHelper.real(totale_fatture_fornitori) >= Helpers::ApplicationHelper.real(totale_pagamenti_fatture_fornitori))
+        passivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_fatture_fornitori - totale_pagamenti_fatture_fornitori)]
+      else
+        attivita_data_matrix[46000] = ['46000', 'FORNITORI', (totale_pagamenti_fatture_fornitori - totale_fatture_fornitori)]
+      end
 
-      totale_fatture_clienti = FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions())
-      attivita_data_matrix[22000] = ['22000', 'CLIENTI', totale_fatture_clienti]
-      self.totale_attivita += totale_fatture_clienti
-      
-#      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions())
-#
-#      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
-#        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
-#        self.totale_attivita += (totale_fatture_clienti - totale_incassi_fatture_clienti)
-#      else
-#        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
-#        self.totale_passivita += (totale_incassi_fatture_clienti - totale_fatture_clienti)
-#      end
+      totale_fatture_clienti = FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 0", true))
+      totale_fatture_clienti -= FatturaClienteScadenzario.sum(:importo, build_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 1", true))
+      totale_incassi_fatture_clienti = PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 0", true))
+      totale_incassi_fatture_clienti -= PagamentoFatturaCliente.sum(:importo, build_incassi_fatture_clienti_report_conditions("fatture_clienti.nota_di_credito = 1", true))
 
-      corrispettivi = Corrispettivo.all(build_importi_corrispettivi_report_conditions())
+      if(Helpers::ApplicationHelper.real(totale_fatture_clienti) >= Helpers::ApplicationHelper.real(totale_incassi_fatture_clienti))
+        attivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_fatture_clienti - totale_incassi_fatture_clienti)]
+      else
+        passivita_data_matrix[22000] = ['22000', 'CLIENTI', (totale_incassi_fatture_clienti - totale_fatture_clienti)]
+      end
+
+      corrispettivi = Corrispettivo.all(build_importi_corrispettivi_report_conditions(true))
 
       corrispettivi.each do |dati_corrispettivi|
         conto = dati_corrispettivi.codice.to_i
@@ -641,10 +791,9 @@ module Controllers
         else
           attivita_data_matrix[conto] = [conto, dati_corrispettivi.descrizione, dati_corrispettivi.importo]
         end
-        self.totale_attivita += dati_corrispettivi.importo
       end
 
-      [(attivita_data_matrix.sort.map {|a| a.last}), (passivita_data_matrix.sort.map {|p| p.last})]
+      [attivita_data_matrix, passivita_data_matrix]
 
     end
 
@@ -653,6 +802,7 @@ module Controllers
       costi_data_matrix = {}
       ricavi_data_matrix = {}
 
+      # COSTI
       c_data_matrix = {}
       r_data_matrix = {}
 
@@ -669,13 +819,14 @@ module Controllers
       costi_nc.each do |dati_costi_nc|
         conto = dati_costi_nc.codice.to_i
         if c_data_matrix[conto]
-          c_data_matrix[conto][2] += dati_costi_nc.importo
+          c_data_matrix[conto][2] -= dati_costi_nc.importo
         else
-          c_data_matrix[conto] = [conto, dati_costi_nc.descrizione, dati_costi_nc.importo]
+          c_data_matrix[conto] = [conto, dati_costi_nc.descrizione, (dati_costi_nc.importo * -1)]
         end
-        self.totale_costi += dati_costi_nc.importo
+        self.totale_costi -= dati_costi_nc.importo
       end
 
+      # RICAVI
       ricavi = ScritturaPd.all(build_ricavi_report_conditions())
 
       ricavi.each do |dati_ricavi|
@@ -689,11 +840,11 @@ module Controllers
       ricavi_nc.each do |dati_ricavi_nc|
         conto = dati_ricavi_nc.codice.to_i
         if r_data_matrix[conto]
-          r_data_matrix[conto][2] += dati_ricavi_nc.importo
+          r_data_matrix[conto][2] -= dati_ricavi_nc.importo
         else
-          r_data_matrix[conto] = [conto, dati_ricavi_nc.descrizione, dati_ricavi_nc.importo]
+          r_data_matrix[conto] = [conto, dati_ricavi_nc.descrizione, (dati_ricavi_nc.importo * -1)]
         end
-        self.totale_ricavi += dati_ricavi_nc.importo
+        self.totale_ricavi -= dati_ricavi_nc.importo
       end
 
       c_data_matrix.each do |conto, costo|
@@ -778,14 +929,19 @@ module Controllers
 
     end
 
-    def build_attivi_report_conditions()
+    def build_attivi_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
-      parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "partita_doppia.data_operazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "partita_doppia.data_operazione >= ? "
+        parametri << get_date(:from)
+        query_str << "partita_doppia.data_operazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "partita_doppia.pdc_dare_id is not null"
 
@@ -802,14 +958,19 @@ module Controllers
       }
     end
 
-    def build_attivi_nc_report_conditions()
+    def build_attivi_nc_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
-      parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "partita_doppia.data_operazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "partita_doppia.data_operazione >= ? "
+        parametri << get_date(:from)
+        query_str << "partita_doppia.data_operazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "partita_doppia.nc_pdc_dare_id is not null"
 
@@ -826,14 +987,19 @@ module Controllers
       }
     end
 
-    def build_passivi_report_conditions()
+    def build_passivi_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
-      parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "partita_doppia.data_operazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "partita_doppia.data_operazione >= ? "
+        parametri << get_date(:from)
+        query_str << "partita_doppia.data_operazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "partita_doppia.pdc_avere_id is not null"
 
@@ -850,15 +1016,20 @@ module Controllers
       }
     end
 
-    def build_passivi_nc_report_conditions()
+    def build_passivi_nc_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
-      parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
-      parametri << get_date(:to)
-
+      if saldi
+        query_str << "partita_doppia.data_operazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "partita_doppia.data_operazione >= ? "
+        parametri << get_date(:from)
+        query_str << "partita_doppia.data_operazione <= ? "
+        parametri << get_date(:to)
+      end
+      
       query_str << "partita_doppia.nc_pdc_avere_id is not null"
 
       query_str << "partita_doppia.azienda_id = ?"
@@ -878,9 +1049,9 @@ module Controllers
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      query_str << "partita_doppia.data_operazione >= ? "
       parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      query_str << "partita_doppia.data_operazione <= ? "
       parametri << get_date(:to)
 
       query_str << "partita_doppia.pdc_dare_id is not null"
@@ -898,13 +1069,13 @@ module Controllers
       }
     end
 
-    def build_costi_nc_report_conditions()
+    def build_costi_nc_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      query_str << "partita_doppia.data_operazione >= ? "
       parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      query_str << "partita_doppia.data_operazione <= ? "
       parametri << get_date(:to)
 
       query_str << "partita_doppia.nc_pdc_dare_id is not null"
@@ -926,9 +1097,9 @@ module Controllers
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      query_str << "partita_doppia.data_operazione >= ? "
       parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      query_str << "partita_doppia.data_operazione <= ? "
       parametri << get_date(:to)
 
       query_str << "partita_doppia.pdc_avere_id is not null"
@@ -950,9 +1121,9 @@ module Controllers
       query_str = []
       parametri = []
 
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} >= ? "
+      query_str << "partita_doppia.data_operazione >= ? "
       parametri << get_date(:from)
-      query_str << "#{to_sql_year('partita_doppia.data_operazione')} <= ? "
+      query_str << "partita_doppia.data_operazione <= ? "
       parametri << get_date(:to)
 
       query_str << "partita_doppia.nc_pdc_avere_id is not null"
@@ -970,14 +1141,19 @@ module Controllers
       }
     end
 
-    def build_acquisti_report_conditions()
+    def build_acquisti_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "fatture_fornitori.data_registrazione >= ? "
-      parametri << get_date(:from)
-      query_str << "fatture_fornitori.data_registrazione <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "fatture_fornitori.data_registrazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "fatture_fornitori.data_registrazione >= ? "
+        parametri << get_date(:from)
+        query_str << "fatture_fornitori.data_registrazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "fatture_fornitori.azienda_id = ?"
       parametri << Azienda.current
@@ -987,7 +1163,7 @@ module Controllers
       }
     end
 
-    def build_dettaglio_iva_acquisti_report_conditions(additional_criteria = nil)
+    def build_dettaglio_iva_acquisti_report_conditions(additional_criteria)
       query_str = []
       parametri = []
 
@@ -1008,14 +1184,19 @@ module Controllers
       }
     end
 
-    def build_vendite_report_conditions()
+    def build_vendite_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "fatture_clienti.data_emissione >= ? "
-      parametri << get_date(:from)
-      query_str << "fatture_clienti.data_emissione <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "fatture_clienti.data_emissione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "fatture_clienti.data_emissione >= ? "
+        parametri << get_date(:from)
+        query_str << "fatture_clienti.data_emissione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "fatture_clienti.azienda_id = ?"
       parametri << Azienda.current
@@ -1025,7 +1206,7 @@ module Controllers
       }
     end
 
-    def build_dettaglio_iva_vendite_report_conditions(additional_criteria = nil)
+    def build_dettaglio_iva_vendite_report_conditions(additional_criteria)
       query_str = []
       parametri = []
 
@@ -1048,16 +1229,21 @@ module Controllers
       }
     end
 
-    def build_fatture_fornitori_report_conditions()
+    def build_fatture_fornitori_report_conditions(additional_criteria, saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "fatture_fornitori.data_registrazione >= ? "
-      parametri << get_date(:from)
-      query_str << "fatture_fornitori.data_registrazione <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "fatture_fornitori.data_registrazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "fatture_fornitori.data_registrazione >= ? "
+        parametri << get_date(:from)
+        query_str << "fatture_fornitori.data_registrazione <= ? "
+        parametri << get_date(:to)
+      end
 
-      query_str << "fatture_fornitori.nota_di_credito = 0"
+      query_str << additional_criteria if additional_criteria
 
       query_str << "fatture_fornitori.azienda_id = ?"
       parametri << Azienda.current
@@ -1066,16 +1252,21 @@ module Controllers
 
     end
 
-    def build_fatture_clienti_report_conditions()
+    def build_fatture_clienti_report_conditions(additional_criteria, saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "fatture_clienti.data_emissione >= ? "
-      parametri << get_date(:from)
-      query_str << "fatture_clienti.data_emissione <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "fatture_clienti.data_emissione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "fatture_clienti.data_emissione >= ? "
+        parametri << get_date(:from)
+        query_str << "fatture_clienti.data_emissione <= ? "
+        parametri << get_date(:to)
+      end
 
-      query_str << "fatture_clienti.nota_di_credito = 0"
+      query_str << additional_criteria if additional_criteria
 
       query_str << "fatture_clienti.azienda_id = ?"
       parametri << Azienda.current
@@ -1084,18 +1275,23 @@ module Controllers
 
     end
 
-    def build_pagamenti_fatture_fornitori_report_conditions()
+    def build_pagamenti_fatture_fornitori_report_conditions(additional_criteria, saldo = false)
       query_str = []
       parametri = []
 
-      query_str << "pagamenti_fatture_fornitori.data_registrazione >= ? "
-      parametri << get_date(:from)
-      query_str << "pagamenti_fatture_fornitori.data_registrazione <= ? "
-      parametri << get_date(:to)
+      if saldo
+        query_str << "pagamenti_fatture_fornitori.data_registrazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "pagamenti_fatture_fornitori.data_registrazione >= ? "
+        parametri << get_date(:from)
+        query_str << "pagamenti_fatture_fornitori.data_registrazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "pagamenti_fatture_fornitori.registrato_in_prima_nota = 1 "
 
-      query_str << "fatture_fornitori.nota_di_credito = 0"
+      query_str << additional_criteria if additional_criteria
 
       query_str << "fatture_fornitori.azienda_id = ?"
       parametri << Azienda.current
@@ -1106,18 +1302,23 @@ module Controllers
 
     end
 
-    def build_incassi_fatture_clienti_report_conditions()
+    def build_incassi_fatture_clienti_report_conditions(additional_criteria, saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "pagamenti_fatture_clienti.data_registrazione >= ? "
-      parametri << get_date(:from)
-      query_str << "pagamenti_fatture_clienti.data_registrazione <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "pagamenti_fatture_clienti.data_registrazione < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "pagamenti_fatture_clienti.data_registrazione >= ? "
+        parametri << get_date(:from)
+        query_str << "pagamenti_fatture_clienti.data_registrazione <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "pagamenti_fatture_clienti.registrato_in_prima_nota = 1 "
 
-      query_str << "fatture_clienti.nota_di_credito = 0"
+      query_str << additional_criteria if additional_criteria
 
       query_str << "fatture_clienti.azienda_id = ?"
       parametri << Azienda.current
@@ -1128,14 +1329,19 @@ module Controllers
 
     end
 
-    def build_iva_corrispettivi_report_conditions()
+    def build_iva_corrispettivi_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "corrispettivi.data >= ? "
-      parametri << get_date(:from)
-      query_str << "corrispettivi.data <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "corrispettivi.data < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "corrispettivi.data >= ? "
+        parametri << get_date(:from)
+        query_str << "corrispettivi.data <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "corrispettivi.azienda_id = ?"
       parametri << Azienda.current
@@ -1143,14 +1349,19 @@ module Controllers
       {:conditions => [query_str.join(' AND '), *parametri]}
     end
 
-    def build_importi_corrispettivi_report_conditions()
+    def build_importi_corrispettivi_report_conditions(saldi = false)
       query_str = []
       parametri = []
 
-      query_str << "corrispettivi.data >= ? "
-      parametri << get_date(:from)
-      query_str << "corrispettivi.data <= ? "
-      parametri << get_date(:to)
+      if saldi
+        query_str << "corrispettivi.data < ? "
+        parametri << get_date(:from)
+      else
+        query_str << "corrispettivi.data >= ? "
+        parametri << get_date(:from)
+        query_str << "corrispettivi.data <= ? "
+        parametri << get_date(:to)
+      end
 
       query_str << "corrispettivi.azienda_id = ?"
       parametri << Azienda.current

@@ -87,7 +87,7 @@ module Views
             {:attr => :imponibile, :format => :currency},
             {:attr => :iva, :format => :currency},
             {:attr => :detrazione, :format => :currency},
-            {:attr => lambda {|pagamento| (pagamento.pdc ? pagamento.pdc.descrizione : '')}}
+            {:attr => lambda {|pagamento| (pagamento.pdc ? "#{pagamento.pdc.codice} - #{pagamento.pdc.descrizione}" : '')}}
           ])
         end
 

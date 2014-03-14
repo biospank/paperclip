@@ -75,7 +75,7 @@ module Views
           self.lbl_totale_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
           if(Helpers::ApplicationHelper.real(self.totale_costi) >= Helpers::ApplicationHelper.real(self.totale_ricavi))
             self.utile_esercizio = self.totale_costi - self.totale_ricavi
-            self.cpt_utile_esercizio_ricavi.label = "UTILE D'ESERCIZIO"
+            self.cpt_utile_esercizio_ricavi.label = "PERDITA D'ESERCIZIO"
             self.lbl_utile_esercizio_ricavi.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_costi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
             self.lbl_totale_pareggio_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
