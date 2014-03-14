@@ -8,7 +8,7 @@ module Views
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
 
-      attr_accessor :filtro, :totale_attivita, :totale_passivita, :utile_esercizio
+      attr_accessor :filtro, :totale_attivita, :totale_passivita, :utile_esercizio, :perdita_esercizio
       
       def ui
         controller :prima_nota
@@ -40,10 +40,10 @@ module Views
 
         xrc.find('lbl_totale_attivo', self)
         xrc.find('lbl_totale_passivo', self)
-        xrc.find('cpt_utile_esercizio_attivo', self)
-        xrc.find('lbl_utile_esercizio_attivo', self)
-        xrc.find('cpt_utile_esercizio_passivo', self)
-        xrc.find('lbl_utile_esercizio_passivo', self)
+        xrc.find('cpt_perdita_esercizio', self)
+        xrc.find('lbl_perdita_esercizio', self)
+        xrc.find('cpt_utile_esercizio', self)
+        xrc.find('lbl_utile_esercizio', self)
         xrc.find('lbl_totale_pareggio_attivo', self)
         xrc.find('lbl_totale_pareggio_passivo', self)
 
@@ -75,14 +75,14 @@ module Views
           self.lbl_totale_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
           if(Helpers::ApplicationHelper.real(self.totale_attivita) >= Helpers::ApplicationHelper.real(self.totale_passivita))
             self.utile_esercizio = self.totale_attivita - self.totale_passivita
-            self.cpt_utile_esercizio_passivo.label = "UTILE D'ESERCIZIO"
-            self.lbl_utile_esercizio_passivo.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
           else
-            self.utile_esercizio = self.totale_passivita - self.totale_attivita
-            self.cpt_utile_esercizio_attivo.label = "PERDITA D'ESERCIZIO"
-            self.lbl_utile_esercizio_attivo.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.perdita_esercizio = self.totale_passivita - self.totale_attivita
+            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO"
+            self.lbl_perdita_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
             self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
           end
@@ -174,12 +174,13 @@ module Views
         self.totale_attivita = 0.0
         self.totale_passivita = 0.0
         self.utile_esercizio = 0.0
+        self.perdita_esercizio = 0.0
         self.lbl_totale_attivo.label = ''
         self.lbl_totale_passivo.label = ''
-        self.cpt_utile_esercizio_attivo.label = ''
-        self.lbl_utile_esercizio_attivo.label = ''
-        self.cpt_utile_esercizio_passivo.label = ''
-        self.lbl_utile_esercizio_passivo.label = ''
+        self.cpt_perdita_esercizio.label = ''
+        self.lbl_perdita_esercizio.label = ''
+        self.cpt_utile_esercizio.label = ''
+        self.lbl_utile_esercizio.label = ''
         self.lbl_totale_pareggio_attivo.label = ''
         self.lbl_totale_pareggio_passivo.label = ''
       end

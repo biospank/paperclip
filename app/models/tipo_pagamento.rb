@@ -4,8 +4,6 @@ module Models
   class TipoPagamento < ActiveRecord::Base
     include Base::Model
     
-    Modulo = Helpers::ApplicationHelper::Modulo::SCADENZARIO
-
     set_table_name :tipi_pagamento
     belongs_to :categoria
     belongs_to :banca, :foreign_key => 'banca_id'

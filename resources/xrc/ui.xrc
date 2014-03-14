@@ -15390,7 +15390,7 @@
 																										<style>wxNB_FIXEDWIDTH</style>
 																										<object class="notebookpage">
 																											<label>Stato Patrimoniale</label>
-																											<selected>0</selected>
+																											<selected>1</selected>
 																											<object class="wxPanel" name="STATO_PATRIMONIALE_FOLDER">
 																												<style>wxTAB_TRAVERSAL</style>
 																												<object class="wxBoxSizer">
@@ -15472,7 +15472,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="cpt_utile_esercizio_attivo">
+																																				<object class="wxStaticText" name="cpt_perdita_esercizio">
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>
@@ -15487,7 +15487,8 @@
 																																				<option>0</option>
 																																				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="lbl_utile_esercizio_attivo">
+																																				<object class="wxStaticText" name="lbl_perdita_esercizio">
+																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>
@@ -15612,7 +15613,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="cpt_utile_esercizio_passivo">
+																																				<object class="wxStaticText" name="cpt_utile_esercizio">
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>
@@ -15627,7 +15628,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="lbl_utile_esercizio_passivo">
+																																				<object class="wxStaticText" name="lbl_utile_esercizio">
 																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
 																																					<fg>#004e98</fg>
 																																					<font>
@@ -15681,7 +15682,7 @@
 																										</object>
 																										<object class="notebookpage">
 																											<label>Conto Economico</label>
-																											<selected>1</selected>
+																											<selected>0</selected>
 																											<object class="wxPanel" name="CONTO_ECONOMICO_FOLDER">
 																												<style>wxTAB_TRAVERSAL</style>
 																												<object class="wxBoxSizer">
@@ -15763,7 +15764,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="cpt_utile_esercizio_costi">
+																																				<object class="wxStaticText" name="cpt_utile_esercizio">
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>
@@ -15778,7 +15779,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="lbl_utile_esercizio_costi">
+																																				<object class="wxStaticText" name="lbl_utile_esercizio">
 																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
 																																					<fg>#004e98</fg>
 																																					<font>
@@ -15904,7 +15905,7 @@
 																																				<option>0</option>
 																																				<flag>wxALL</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="cpt_utile_esercizio_ricavi">
+																																				<object class="wxStaticText" name="cpt_perdita_esercizio">
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>
@@ -15919,7 +15920,8 @@
 																																				<option>0</option>
 																																				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 																																				<border>3</border>
-																																				<object class="wxStaticText" name="lbl_utile_esercizio_ricavi">
+																																				<object class="wxStaticText" name="lbl_perdita_esercizio">
+																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
 																																					<fg>#004e98</fg>
 																																					<font>
 																																						<family>default</family>

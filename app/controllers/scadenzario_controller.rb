@@ -291,7 +291,7 @@ module Controllers
                 relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
               end
               if configatron.bilancio_attivo
-                if scrittura = scrittura_partita_doppia(fattura_cliente, pagamento, descrizione)
+                if scrittura = scrittura_partita_doppia(fattura_fornitore, pagamento, descrizione)
                   relazione_pagamento_scrittura_partita_doppia(scrittura, pagamento)
                 end
               end

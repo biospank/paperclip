@@ -682,7 +682,10 @@ module Controllers
         self.totale_passivita += passivo[2]
       end
 
-      [(attivita_data_matrix.sort.map {|a| a.last}), (passivita_data_matrix.sort.map {|p| p.last})]
+      attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      passivita = passivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      [attivita, passivita]
 
     end
 
@@ -925,7 +928,10 @@ module Controllers
         self.totale_ricavi += dati_corrispettivi.imponibile
       end
 
-      [(costi_data_matrix.sort.map {|c| c.last}), (ricavi_data_matrix.sort.map {|r| r.last})]
+      costi = costi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      ricavi = ricavi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      [costi, ricavi]
 
     end
 

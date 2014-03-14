@@ -8,7 +8,7 @@ module Views
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
 
-      attr_accessor :filtro, :totale_ricavi, :totale_costi, :utile_esercizio
+      attr_accessor :filtro, :totale_ricavi, :totale_costi, :utile_esercizio, :perdita_esercizio
       
       def ui
         controller :prima_nota
@@ -40,10 +40,10 @@ module Views
 
         xrc.find('lbl_totale_ricavi', self)
         xrc.find('lbl_totale_costi', self)
-        xrc.find('cpt_utile_esercizio_costi', self)
-        xrc.find('lbl_utile_esercizio_costi', self)
-        xrc.find('cpt_utile_esercizio_ricavi', self)
-        xrc.find('lbl_utile_esercizio_ricavi', self)
+        xrc.find('cpt_perdita_esercizio', self)
+        xrc.find('lbl_perdita_esercizio', self)
+        xrc.find('cpt_utile_esercizio', self)
+        xrc.find('lbl_utile_esercizio', self)
         xrc.find('lbl_totale_pareggio_costi', self)
         xrc.find('lbl_totale_pareggio_ricavi', self)
 
@@ -74,15 +74,15 @@ module Views
           self.lbl_totale_costi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
           self.lbl_totale_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
           if(Helpers::ApplicationHelper.real(self.totale_costi) >= Helpers::ApplicationHelper.real(self.totale_ricavi))
-            self.utile_esercizio = self.totale_costi - self.totale_ricavi
-            self.cpt_utile_esercizio_ricavi.label = "PERDITA D'ESERCIZIO"
-            self.lbl_utile_esercizio_ricavi.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.perdita_esercizio = self.totale_costi - self.totale_ricavi
+            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO"
+            self.lbl_perdita_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_costi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
             self.lbl_totale_pareggio_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
           else
             self.utile_esercizio = self.totale_ricavi - self.totale_costi
-            self.cpt_utile_esercizio_costi.label = "UTILE D'ESERCIZIO"
-            self.lbl_utile_esercizio_costi.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
             self.lbl_totale_pareggio_costi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
           end
@@ -174,12 +174,13 @@ module Views
         self.totale_ricavi = 0.0
         self.totale_costi = 0.0
         self.utile_esercizio = 0.0
+        self.perdita_esercizio = 0.0
         self.lbl_totale_ricavi.label = ''
         self.lbl_totale_costi.label = ''
-        self.cpt_utile_esercizio_costi.label = ''
-        self.lbl_utile_esercizio_costi.label = ''
-        self.cpt_utile_esercizio_ricavi.label = ''
-        self.lbl_utile_esercizio_ricavi.label = ''
+        self.cpt_utile_esercizio.label = ''
+        self.lbl_utile_esercizio.label = ''
+        self.cpt_perdita_esercizio.label = ''
+        self.lbl_perdita_esercizio.label = ''
         self.lbl_totale_pareggio_costi.label = ''
         self.lbl_totale_pareggio_ricavi.label = ''
       end
