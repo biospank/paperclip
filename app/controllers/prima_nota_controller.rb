@@ -530,6 +530,232 @@ module Controllers
 
       saldi_attivi_data_matrix, saldi_passivi_data_matrix = report_saldi_stato_patrimoniale()
 
+      attivi_data_matrix = {}
+      passivi_data_matrix = {}
+
+      # ATTIVI
+      attivi = ScritturaPd.all(build_attivi_report_conditions())
+
+      attivi.each do |dati_attivi|
+        conto = dati_attivi.codice.to_i
+        attivi_data_matrix[conto] = [conto, dati_attivi.descrizione, dati_attivi.importo]
+      end
+
+      attivi_nc = ScritturaPd.all(build_attivi_nc_report_conditions())
+
+      attivi_nc.each do |dati_attivi_nc|
+        conto = dati_attivi_nc.codice.to_i
+        if attivi_data_matrix[conto]
+          attivi_data_matrix[conto][2] += dati_attivi_nc.importo
+        else
+          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, dati_attivi_nc.importo]
+        end
+      end
+
+      # PASSIVI
+      passivi = ScritturaPd.all(build_passivi_report_conditions())
+
+      passivi.each do |dati_passivi|
+        conto = dati_passivi.codice.to_i
+        passivi_data_matrix[conto] = [conto, dati_passivi.descrizione, dati_passivi.importo]
+      end
+
+      passivi_nc = ScritturaPd.all(build_passivi_nc_report_conditions())
+
+      passivi_nc.each do |dati_passivi_nc|
+        conto = dati_passivi_nc.codice.to_i
+        if passivi_data_matrix[conto]
+          passivi_data_matrix[conto][2] += dati_passivi_nc.importo
+        else
+          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, dati_passivi_nc.importo]
+        end
+      end
+
+      # merge tra attivi, passivi e saldi
+      attivi_data_matrix.each do |conto, attivo|
+        totale_attivo = saldi_attivi_data_matrix.delete(conto)[2] rescue 0.0
+        totale_attivo += attivo[2]
+        totale_passivo = saldi_passivi_data_matrix.delete(conto)[2] rescue 0.0
+        totale_passivo += passivi_data_matrix.delete(conto)[2] rescue 0.0
+
+
+        if(Helpers::ApplicationHelper.real(totale_attivo) >= Helpers::ApplicationHelper.real(totale_passivo))
+          attivita_data_matrix[conto] = [attivo[0], attivo[1], (totale_attivo - totale_passivo)]
+          self.totale_attivita += (totale_attivo - totale_passivo)
+        else
+          passivita_data_matrix[conto] = [attivo[0], attivo[1], (totale_passivo - totale_attivo)]
+          self.totale_passivita += (totale_passivo - totale_attivo)
+        end
+
+      end
+
+      # RESIDUO PASSIVI
+      passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
+        self.totale_passivita += passivo[2]
+      end
+
+      # RESIDUO SALDI ATTIVI
+      saldi_attivi_data_matrix.each do |conto, attivo|
+        attivita_data_matrix[conto] = attivo
+        self.totale_attivita += attivo[2]
+      end
+
+      # RESIDUO SALDI PASSIVI
+      saldi_passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
+        self.totale_passivita += passivo[2]
+      end
+
+      attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      passivita = passivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      [attivita, passivita]
+
+    end
+
+    def report_saldi_stato_patrimoniale()
+      attivita_data_matrix = {}
+      passivita_data_matrix = {}
+
+      attivi_data_matrix = {}
+      passivi_data_matrix = {}
+
+      attivi = ScritturaPd.all(build_attivi_report_conditions(true))
+
+      attivi.each do |dati_attivi|
+        conto = dati_attivi.codice.to_i
+        attivi_data_matrix[conto] = [conto, dati_attivi.descrizione, dati_attivi.importo]
+      end
+
+      attivi_nc = ScritturaPd.all(build_attivi_nc_report_conditions(true))
+
+      attivi_nc.each do |dati_attivi_nc|
+        conto = dati_attivi_nc.codice.to_i
+        if attivi_data_matrix[conto]
+          attivi_data_matrix[conto][2] += dati_attivi_nc.importo
+        else
+          attivi_data_matrix[conto] = [conto, dati_attivi_nc.descrizione, dati_attivi_nc.importo]
+        end
+      end
+
+      passivi = ScritturaPd.all(build_passivi_report_conditions(true))
+
+      passivi.each do |dati_passivi|
+        conto = dati_passivi.codice.to_i
+        passivi_data_matrix[conto] = [conto, dati_passivi.descrizione, dati_passivi.importo]
+      end
+
+      passivi_nc = ScritturaPd.all(build_passivi_nc_report_conditions(true))
+
+      passivi_nc.each do |dati_passivi_nc|
+        conto = dati_passivi_nc.codice.to_i
+        if passivi_data_matrix[conto]
+          passivi_data_matrix[conto][2] += dati_passivi_nc.importo
+        else
+          passivi_data_matrix[conto] = [conto, dati_passivi_nc.descrizione, dati_passivi_nc.importo]
+        end
+      end
+
+      attivi_data_matrix.each do |conto, attivo|
+        if passivo = passivi_data_matrix.delete(conto)
+          if(Helpers::ApplicationHelper.real(attivo[2]) >= Helpers::ApplicationHelper.real(passivo[2]))
+            attivita_data_matrix[conto] = [attivo[0], attivo[1], (attivo[2] - passivo[2])]
+          else
+            passivita_data_matrix[conto] = [passivo[0], passivo[1], (passivo[2] - attivo[2])]
+          end
+        else
+          attivita_data_matrix[conto] = attivo
+        end
+      end
+
+      passivi_data_matrix.each do |conto, passivo|
+        passivita_data_matrix[conto] = passivo
+      end
+
+      [attivita_data_matrix, passivita_data_matrix]
+
+    end
+
+    # gestione report bilancio conto economico
+    def report_conto_economico()
+      costi_data_matrix = {}
+      ricavi_data_matrix = {}
+
+      # COSTI
+      c_data_matrix = {}
+      r_data_matrix = {}
+
+      costi = ScritturaPd.all(build_costi_report_conditions())
+
+      costi.each do |dati_costi|
+        conto = dati_costi.codice.to_i
+        c_data_matrix[conto] = [conto, dati_costi.descrizione, dati_costi.importo]
+        self.totale_costi += dati_costi.importo
+      end
+
+      costi_nc = ScritturaPd.all(build_costi_nc_report_conditions())
+
+      costi_nc.each do |dati_costi_nc|
+        conto = dati_costi_nc.codice.to_i
+        if c_data_matrix[conto]
+          c_data_matrix[conto][2] += dati_costi_nc.importo
+        else
+          c_data_matrix[conto] = [conto, dati_costi_nc.descrizione, dati_costi_nc.importo]
+        end
+        self.totale_costi += dati_costi_nc.importo
+      end
+
+      # RICAVI
+      ricavi = ScritturaPd.all(build_ricavi_report_conditions())
+
+      ricavi.each do |dati_ricavi|
+        conto = dati_ricavi.codice.to_i
+        r_data_matrix[conto] = [conto, dati_ricavi.descrizione, dati_ricavi.importo]
+        self.totale_ricavi += dati_ricavi.importo
+      end
+
+      ricavi_nc = ScritturaPd.all(build_ricavi_nc_report_conditions())
+
+      ricavi_nc.each do |dati_ricavi_nc|
+        conto = dati_ricavi_nc.codice.to_i
+        if r_data_matrix[conto]
+          r_data_matrix[conto][2] += dati_ricavi_nc.importo
+        else
+          r_data_matrix[conto] = [conto, dati_ricavi_nc.descrizione, dati_ricavi_nc.importo]
+        end
+        self.totale_ricavi += dati_ricavi_nc.importo
+      end
+
+      c_data_matrix.each do |conto, costo|
+        if ricavo = r_data_matrix.delete(conto)
+          if(Helpers::ApplicationHelper.real(costo[2]) >= Helpers::ApplicationHelper.real(ricavo[2]))
+            costi_data_matrix[conto] = [costo[0], costo[1], (costo[2] - ricavo[2])]
+          else
+            ricavi_data_matrix[conto] = [ricavo[0], ricavo[1], (ricavo[2] - costo[2])]
+          end
+        else
+          costi_data_matrix[conto] = costo
+        end
+      end
+
+      r_data_matrix.each do |conto, ricavo|
+        ricavi_data_matrix[conto] = ricavo
+      end
+
+      costi = costi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      ricavi = ricavi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      [costi, ricavi]
+
+    end
+
+    def report_stato_patrimoniale_old()
+      attivita_data_matrix = {}
+      passivita_data_matrix = {}
+
+      saldi_attivi_data_matrix, saldi_passivi_data_matrix = report_saldi_stato_patrimoniale()
+
       # ATTIVI
       attivi_data_matrix = {}
       passivi_data_matrix = {}
@@ -689,7 +915,7 @@ module Controllers
 
     end
 
-    def report_saldi_stato_patrimoniale()
+    def report_saldi_stato_patrimoniale_old()
       attivita_data_matrix = {}
       passivita_data_matrix = {}
 
@@ -801,7 +1027,7 @@ module Controllers
     end
 
     # gestione report bilancio conto economico
-    def report_conto_economico()
+    def report_conto_economico_old()
       costi_data_matrix = {}
       ricavi_data_matrix = {}
 
@@ -1075,7 +1301,7 @@ module Controllers
       }
     end
 
-    def build_costi_nc_report_conditions(saldi = false)
+    def build_costi_nc_report_conditions()
       query_str = []
       parametri = []
 

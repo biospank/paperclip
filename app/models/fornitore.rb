@@ -52,7 +52,16 @@ module Models
     end
 
     def before_create
+      cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 460])
       self.conto = Models::ProgressivoFornitore.next_sequence()
+      Models::Pdc.create(
+        :categoria_pdc => cat_pdc,
+        :codice => self.conto,
+        :descrizione => self.denominazione,
+        :attivo => true,
+        :standard => true,
+        :hidden => true
+      )
     end
 
     def modificabile?

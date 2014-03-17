@@ -11,6 +11,7 @@ module Models
     belongs_to :pdc, :foreign_key => 'pdc_id'
     belongs_to :aliquota, :foreign_key => 'aliquota_id'
     belongs_to :norma, :foreign_key => 'norma_id'
+    has_many   :scritture_pd, :through => :dettaglio_fattura_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :dettaglio_fattura_partita_doppia
 
     validates_presence_of :aliquota,
       :message => "Associare un codice aliquota."

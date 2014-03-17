@@ -161,6 +161,7 @@ module Controllers
         end
       end
 
+      elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare) if configatron.bilancio.attivo
       elimina_corrispettivi(corrispettivi_da_eliminare)
 
       # le scritture che ho salvato devono essere immediatamente
@@ -174,11 +175,9 @@ module Controllers
         if scrittura = scrittura_corrispettivo(corrispettivo, descrizione)
           relazione_scrittura_corrispettivo(scrittura, corrispettivo)
         end
-#        if configatron.bilancio.attivo
-#          if scrittura = scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
-#            relazione_scrittura_corrispettivo_partita_doppia(scrittura, corrispettivo)
-#          end
-#        end
+        if configatron.bilancio.attivo
+          scrittura_corrispettivo_partita_doppia(corrispettivo)
+        end
       end
 
       return true
@@ -194,10 +193,6 @@ module Controllers
                 descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
                 storno_scrittura_corrispettivo(corrispettivo, descrizione)
                 CorrispettivoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
-#                if configatron.bilancio.attivo
-#                  storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
-#                  CorrispettivoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura.id}")
-#                end
               else
                   # il destroy direttamente su scrittura non funziona
                 Models::Scrittura.find(scrittura).destroy
@@ -205,14 +200,17 @@ module Controllers
             else
               descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
               storno_scrittura_corrispettivo(corrispettivo, descrizione)
-#              if configatron.bilancio.attivo
-#                storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
-#              end
             end
         end
         corrispettivo.destroy
       end
 
+    end
+
+    def elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare)
+      corrispettivi_da_eliminare.each do |corrispettivo|
+        delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
+      end
     end
 
     # SCRITTURA CORRISPETTIVO
@@ -237,30 +235,54 @@ module Controllers
 
     end
 
-    def scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
-      scrittura = ScritturaPd.new(:azienda => Azienda.current,
-                                :importo => corrispettivo.importo,
-                                :pdc_dare => corrispettivo.pdc_dare,
-                                :descrizione => descrizione,
-                                :data_operazione => corrispettivo.data,
-                                :data_registrazione => Time.now,
-                                :esterna => 1,
-                                :congelata => 0)
+    def scrittura_corrispettivo_partita_doppia(corrispettivo)
 
-      scrittura.save_with_validation(false)
+      conto_iva = Models::Pdc.find_by_codice('30000')
+
+      importo = ScritturaPd.new(:azienda => Azienda.current,
+                              :importo => corrispettivo.importo,
+                              :descrizione => '',
+                              :pdc_dare => corrispettivo.pdc_dare,
+                              :data_operazione => corrispettivo.data,
+                              :data_registrazione => Time.now,
+                              :esterna => 1,
+                              :congelata => 0)
+
+      imponibile = ScritturaPd.new(:azienda => Azienda.current,
+                              :importo => corrispettivo.imponibile,
+                              :descrizione => '',
+                              :pdc_avere => corrispettivo.pdc_avere,
+                              :data_operazione => corrispettivo.data,
+                              :data_registrazione => Time.now,
+                              :esterna => 1,
+                              :congelata => 0)
+
+      iva = ScritturaPd.new(:azienda => Azienda.current,
+                              :importo => corrispettivo.iva,
+                              :descrizione => '',
+                              :pdc_avere => conto_iva,
+                              :data_operazione => corrispettivo.data,
+                              :data_registrazione => Time.now,
+                              :esterna => 1,
+                              :congelata => 0)
+
+      [importo, imponibile, iva].each do |scrittura|
+        scrittura.save_with_validation(false)
+        CorrispettivoPartitaDoppia.create(:partita_doppia_id => scrittura.id,
+                                  :corrispettivo_id => corrispettivo.id)
+      end
+
       corrispettivo.update_attributes(:registrato_in_partita_doppia => 1)
 
-      scrittura
+      scritture = search_scritture_pd()
+
+      # TODO gestire la notifica evt_partita_doppia_changed
+      notify(:evt_partita_doppia_changed, scritture)
 
     end
 
     def relazione_scrittura_corrispettivo(scrittura, corrispettivo)
       CorrispettivoPrimaNota.create(:prima_nota_id => scrittura.id,
-                                :corrispettivo_id => corrispettivo.id)
-    end
-
-    def relazione_scrittura_corrispettivo_partita_doppia(scrittura, corrispettivo)
-      CorrispettivoPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                 :corrispettivo_id => corrispettivo.id)
     end
 
@@ -288,23 +310,12 @@ module Controllers
 
     end
 
-    def storno_scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
-      scrittura = ScritturaPd.new(:azienda => Azienda.current,
-                                :importo => corrispettivo.importo,
-                                :pdc_avere => corrispettivo.pdc_avere,
-                                :descrizione => descrizione,
-                                :data_operazione => Date.today,
-                                :data_registrazione => Time.now,
-                                :esterna => 1,
-                                :congelata => 0)
-
-      scrittura.parent = corrispettivo.scrittura_pd
-
-      scrittura.save_with_validation(false)
-      corrispettivo.update_attributes(:registrato_in_partita_doppia => 1)
-
-      scrittura
-
+    def delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
+      corrispettivi_pd = CorrispettivoPartitaDoppia.all(:conditions => "corrispettivo_id = #{corrispettivo.id}")
+      corrispettivi_pd.each do |corrispettivo_pd|
+        ScritturaPd.delete(corrispettivo_pd.partita_doppia_id)
+        corrispettivo_pd.delete()
+      end
     end
 
     def report_corrispettivi

@@ -405,6 +405,12 @@ module Views
                 scritture = search_scritture()
                 notify(:evt_prima_nota_changed, scritture)
 
+                if configatron.bilancio.attivo
+                  scritture = search_scritture_pd()
+                  # TODO gestire la notifica evt_partita_doppia_changed
+                  notify(:evt_partita_doppia_changed, scritture)
+                end
+
               else
                 Wx::message_box('Utente non autorizzato.',
                   'Info',

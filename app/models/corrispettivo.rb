@@ -16,7 +16,7 @@ module Models
     has_one    :corrispettivo_prima_nota, :class_name => 'Models::CorrispettivoPrimaNota', :foreign_key => 'corrispettivo_id'
     has_one    :scrittura, :through => :corrispettivo_prima_nota
     has_one    :corrispettivo_partita_doppia, :class_name => 'Models::CorrispettivoPartitaDoppia', :foreign_key => 'corrispettivo_id'
-    has_one    :scrittura_pd, :through => :corrispettivo_partita_doppia
+    has_many    :scrittura_pd, :through => :corrispettivo_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :corrispettivo_partita_doppia
 
     validates_presence_of :giorno,
       :message => "Inserire il giorno"
