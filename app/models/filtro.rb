@@ -21,7 +21,8 @@ module Models
                   :descrizione_pdc_dare, # corrispettivi
                   :pdc_avere, # corrispettivi
                   :descrizione_pdc_avere, # corrispettivi
-                  :descrizione_pdc, # corrispettivi
+                  :pdc, # bilancio
+                  :descrizione_pdc, # bilancio
                   :tutti, #corrispettivi dialog
                   :corrispettivi, # viene utilizzato nel report dei corrispettivi
                   :cliente, # viene usato nelle dialog

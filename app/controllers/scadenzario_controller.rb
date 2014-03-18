@@ -77,6 +77,7 @@ module Controllers
         end
 
         elimina_pagamenti_fattura_cliente(fattura_cliente, pagamenti_da_eliminare)
+        create_scrittura_fattura_partita_doppia(fattura_cliente) if configatron.bilancio.attivo
         salva_righe_fattura_pdc_cliente(fattura_cliente)
 
       end
@@ -229,6 +230,7 @@ module Controllers
       elimina_pagamenti_fattura_cliente(fattura_cliente, fattura_cliente.pagamento_fattura_cliente)
       if fattura_cliente.da_fatturazione?
         PagamentoFatturaCliente.delete_all(["fattura_cliente_id = ?", fattura_cliente])
+        delete_scrittura_fattura_partita_doppia(fattura_cliente) if configatron.bilancio.attivo
         # ActiveRecord BUG
         # un bug impedisce ai modelli ereditati (es Models::FatturaClienteScadenzario < Models::FatturaCliente)
         # di utilizzare update_attributes, update_attribute e non so cos'altro
@@ -271,6 +273,7 @@ module Controllers
         end
 
         elimina_pagamenti_fattura_fornitore(fattura_fornitore, pagamenti_da_eliminare)
+        create_scrittura_fattura_partita_doppia(fattura_fornitore) if configatron.bilancio.attivo
         salva_righe_fattura_pdc_fornitore(fattura_fornitore)
 
       end
@@ -428,6 +431,7 @@ module Controllers
 
     def delete_fattura_fornitore()
       elimina_pagamenti_fattura_fornitore(fattura_fornitore, fattura_fornitore.pagamento_fattura_fornitore)
+      delete_scrittura_fattura_partita_doppia(fattura_fornitore) if configatron.bilancio.attivo
       fattura_fornitore.destroy
     end
 
@@ -1053,54 +1057,94 @@ module Controllers
 
     end
 
-    def create_scrittura_dettaglio_fattura_partita_doppia(fattura, dettaglio)
-
-      conto_iva = Models::Pdc.find_by_codice('30000')
-
+    def create_scrittura_fattura_partita_doppia(fattura)
       if fattura.is_a? Models::FatturaFornitore
         conto_fornitore = Models::Pdc.find_by_codice(fattura.fornitore.conto)
         if(fattura.nota_di_credito?)
-          importo = ScritturaPd.new(:azienda => Azienda.current,
+          scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => '',
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => conto_fornitore,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
                                   :congelata => 0)
 
-          imponibile = ScritturaPd.new(:azienda => Azienda.current,
-                                  :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => '',
-                                  :pdc_avere => dettaglio.pdc,
-                                  :data_operazione => fattura.data_registrazione,
-                                  :data_registrazione => Time.now,
-                                  :esterna => 1,
-                                  :congelata => 0)
-
-          iva = ScritturaPd.new(:azienda => Azienda.current,
-                                  :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => '',
-                                  :pdc_avere => conto_iva,
-                                  :data_operazione => fattura.data_registrazione,
-                                  :data_registrazione => Time.now,
-                                  :esterna => 1,
-                                  :congelata => 0)
-
         else
-          importo = ScritturaPd.new(:azienda => Azienda.current,
+          scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => '',
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_avere => conto_fornitore,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
                                   :congelata => 0)
 
+        end
 
+        scrittura.save_with_validation(false)
+        DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
+                                  :fattura_fornitore_id => fattura.id)
+
+      else
+        conto_cliente = Models::Pdc.find_by_codice(fattura.cliente.conto)
+        if(fattura.nota_di_credito?)
+          scrittura = ScritturaPd.new(:azienda => Azienda.current,
+                                  :importo => fattura.importo,
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :pdc_avere => conto_cliente,
+                                  :data_operazione => fattura.data_emissione,
+                                  :data_registrazione => Time.now,
+                                  :esterna => 1,
+                                  :congelata => 0)
+
+        else
+          scrittura = ScritturaPd.new(:azienda => Azienda.current,
+                                  :importo => fattura.importo,
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :pdc_dare => conto_cliente,
+                                  :data_operazione => fattura.data_emissione,
+                                  :data_registrazione => Time.now,
+                                  :esterna => 1,
+                                  :congelata => 0)
+        end
+
+        scrittura.save_with_validation(false)
+        DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
+                                  :fattura_cliente_id => fattura.id)
+
+      end
+
+    end
+
+    def create_scrittura_dettaglio_fattura_partita_doppia(fattura, dettaglio)
+
+      conto_iva = Models::Pdc.find_by_codice('30000')
+
+      if fattura.is_a? Models::FatturaFornitore
+        if(fattura.nota_di_credito?)
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => '',
+                                  :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :pdc_avere => dettaglio.pdc,
+                                  :data_operazione => fattura.data_registrazione,
+                                  :data_registrazione => Time.now,
+                                  :esterna => 1,
+                                  :congelata => 0)
+
+          iva = ScritturaPd.new(:azienda => Azienda.current,
+                                  :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
+                                  :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :pdc_avere => conto_iva,
+                                  :data_operazione => fattura.data_registrazione,
+                                  :data_registrazione => Time.now,
+                                  :esterna => 1,
+                                  :congelata => 0)
+
+        else
+          imponibile = ScritturaPd.new(:azienda => Azienda.current,
+                                  :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
+                                  :descrizione => "Imponibile fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => dettaglio.pdc,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1109,7 +1153,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => '',
+                                  :descrizione => "Iva fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => conto_iva,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1118,27 +1162,17 @@ module Controllers
 
         end
 
-        [importo, imponibile, iva].each do |scrittura|
+        [imponibile, iva].each do |scrittura|
           scrittura.save_with_validation(false)
           DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                     :dettaglio_fattura_fornitore_id => dettaglio.id)
         end
 
       else
-        conto_cliente = Models::Pdc.find_by_codice(fattura.cliente.conto)
         if(fattura.nota_di_credito?)
-          importo = ScritturaPd.new(:azienda => Azienda.current,
-                                  :importo => fattura.importo,
-                                  :descrizione => '',
-                                  :pdc_avere => conto_cliente,
-                                  :data_operazione => fattura.data_emissione,
-                                  :data_registrazione => Time.now,
-                                  :esterna => 1,
-                                  :congelata => 0)
-
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => '',
+                                  :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => dettaglio.pdc,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1147,7 +1181,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => '',
+                                  :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => conto_iva,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1155,18 +1189,9 @@ module Controllers
                                   :congelata => 0)
 
         else
-          importo = ScritturaPd.new(:azienda => Azienda.current,
-                                  :importo => fattura.importo,
-                                  :descrizione => '',
-                                  :pdc_dare => conto_cliente,
-                                  :data_operazione => fattura.data_emissione,
-                                  :data_registrazione => Time.now,
-                                  :esterna => 1,
-                                  :congelata => 0)
-
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => '',
+                                  :descrizione => "Imponibile fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_avere => dettaglio.pdc,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1175,7 +1200,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => '',
+                                  :descrizione => "Iva fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_avere => conto_iva,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1184,7 +1209,7 @@ module Controllers
 
         end
 
-        [importo, imponibile, iva].each do |scrittura|
+        [imponibile, iva].each do |scrittura|
           scrittura.save_with_validation(false)
           DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                     :dettaglio_fattura_cliente_id => dettaglio.id)
@@ -1193,11 +1218,6 @@ module Controllers
 
       end
 
-      scritture = search_scritture_pd()
-
-      # TODO gestire la notifica evt_partita_doppia_changed
-      notify(:evt_partita_doppia_changed, scritture)
-
     end
 
     def update_scrittura_dettaglio_fattura_partita_doppia(fattura, dettaglio)
@@ -1205,9 +1225,20 @@ module Controllers
       create_scrittura_dettaglio_fattura_partita_doppia(fattura, dettaglio)
     end
 
+    def delete_scrittura_fattura_partita_doppia(fattura)
+      if fattura.is_a? Models::FatturaFornitore
+        dettaglio_pd = DettaglioFatturaPartitaDoppia.first(:conditions => "fattura_fornitore_id = #{fattura.id}")
+        ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
+        dettaglio_pd.delete()
+      else
+        dettaglio_pd = DettaglioFatturaPartitaDoppia.all(:conditions => "fattura_cliente_id = #{fattura.id}")
+        ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
+        dettaglio_pd.delete()
+      end
+    end
+
     def delete_scrittura_dettaglio_fattura_partita_doppia(fattura, dettaglio)
       if fattura.is_a? Models::FatturaFornitore
-        logger.debug("dettaglio: #{dettaglio.inspect}")
         dettagli_pd = DettaglioFatturaPartitaDoppia.all(:conditions => "dettaglio_fattura_fornitore_id = #{dettaglio.id}")
         dettagli_pd.each do |dettaglio_pd|
           ScritturaPd.delete(dettaglio_pd.partita_doppia_id)

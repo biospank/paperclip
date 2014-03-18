@@ -7,6 +7,7 @@ module Models
     
     has_many :pagamento_fattura_cliente, :class_name => 'Models::PagamentoFatturaCliente', :foreign_key => 'fattura_cliente_id', :dependent => :delete_all, :order => 'pagamenti_fatture_clienti.id'
     has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_cliente_id', :dependent => :delete_all, :order => 'righe_fattura_pdc.id'
+    has_one  :scrittura_pd, :through => :dettaglio_fattura_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :dettaglio_fattura_partita_doppia
 
     validates_exclusion_of :importo,
       :in => [0],

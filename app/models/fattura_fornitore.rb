@@ -13,6 +13,7 @@ module Models
     belongs_to :azienda
     has_many :pagamento_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'pagamenti_fatture_fornitori.id'
     has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'righe_fattura_pdc.id'
+    has_one  :scrittura_pd, :through => :dettaglio_fattura_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :dettaglio_fattura_partita_doppia
   
     validates_presence_of :data_emissione,
       :message => "Data emissione inesistente o formalmente errata."
