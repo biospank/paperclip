@@ -161,7 +161,7 @@ module Controllers
         end
       end
 
-      elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare) if configatron.bilancio.attivo
+#      elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare) if configatron.bilancio.attivo
       elimina_corrispettivi(corrispettivi_da_eliminare)
 
       # le scritture che ho salvato devono essere immediatamente
@@ -202,16 +202,17 @@ module Controllers
               storno_scrittura_corrispettivo(corrispettivo, descrizione)
             end
         end
+        corrispettivo.corrispettivo_partita_doppia.destroy
         corrispettivo.destroy
       end
 
     end
 
-    def elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare)
-      corrispettivi_da_eliminare.each do |corrispettivo|
-        delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
-      end
-    end
+#    def elimina_scritture_corrispettivi_partita_doppia(corrispettivi_da_eliminare)
+#      corrispettivi_da_eliminare.each do |corrispettivo|
+#        delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
+#      end
+#    end
 
     # SCRITTURA CORRISPETTIVO
     def build_descrizione_scrittura_corrispettivo(corrispettivo)
@@ -274,11 +275,6 @@ module Controllers
 
       corrispettivo.update_attributes(:registrato_in_partita_doppia => 1)
 
-      scritture = search_scritture_pd()
-
-      # TODO gestire la notifica evt_partita_doppia_changed
-      notify(:evt_partita_doppia_changed, scritture)
-
     end
 
     def relazione_scrittura_corrispettivo(scrittura, corrispettivo)
@@ -310,13 +306,13 @@ module Controllers
 
     end
 
-    def delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
-      corrispettivi_pd = CorrispettivoPartitaDoppia.all(:conditions => "corrispettivo_id = #{corrispettivo.id}")
-      corrispettivi_pd.each do |corrispettivo_pd|
-        ScritturaPd.delete(corrispettivo_pd.partita_doppia_id)
-        corrispettivo_pd.delete()
-      end
-    end
+#    def delete_scrittura_corrispettivo_partita_doppia(corrispettivo)
+#      corrispettivi_pd = CorrispettivoPartitaDoppia.all(:conditions => "corrispettivo_id = #{corrispettivo.id}")
+#      corrispettivi_pd.each do |corrispettivo_pd|
+#        ScritturaPd.delete(corrispettivo_pd.partita_doppia_id)
+#        corrispettivo_pd.delete()
+#      end
+#    end
 
     def report_corrispettivi
       data_matrix = []

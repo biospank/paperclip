@@ -13,9 +13,9 @@ module Models
     belongs_to :aliquota, :foreign_key => 'aliquota_id'
     belongs_to :pdc_dare, :class_name => "Models::Pdc", :foreign_key => 'pdc_dare_id'
     belongs_to :pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'pdc_avere_id'
-    has_one    :corrispettivo_prima_nota, :class_name => 'Models::CorrispettivoPrimaNota', :foreign_key => 'corrispettivo_id'
+    has_one    :corrispettivo_prima_nota, :class_name => 'Models::CorrispettivoPrimaNota', :foreign_key => 'corrispettivo_id', :dependent => :destroy
     has_one    :scrittura, :through => :corrispettivo_prima_nota
-    has_one    :corrispettivo_partita_doppia, :class_name => 'Models::CorrispettivoPartitaDoppia', :foreign_key => 'corrispettivo_id'
+    has_many    :corrispettivo_partita_doppia, :class_name => 'Models::CorrispettivoPartitaDoppia', :foreign_key => 'corrispettivo_id', :dependent => :destroy
     has_many    :scrittura_pd, :through => :corrispettivo_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :corrispettivo_partita_doppia
 
     validates_presence_of :giorno,

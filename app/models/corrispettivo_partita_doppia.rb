@@ -7,7 +7,7 @@ module Models
     include Base::Model
 
     set_table_name :corrispettivi_partita_doppia
-    belongs_to :scrittura, :class_name => "Models::ScritturaPd", :foreign_key => 'partita_doppia_id'
+    belongs_to :scrittura, :class_name => "Models::ScritturaPd", :foreign_key => 'partita_doppia_id', :dependent => :destroy
     belongs_to :corrispettivo, :foreign_key => 'corrispettivo_id'
   end
 end
