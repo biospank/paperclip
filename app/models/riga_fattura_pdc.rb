@@ -11,6 +11,8 @@ module Models
     belongs_to :pdc, :foreign_key => 'pdc_id'
     belongs_to :aliquota, :foreign_key => 'aliquota_id'
     belongs_to :norma, :foreign_key => 'norma_id'
+    has_many   :dettaglio_fattura_cliente_partita_doppia, :class_name => 'Models::DettaglioFatturaPartitaDoppia', :foreign_key => 'dettaglio_fattura_cliente_id', :dependent => :destroy
+    has_many   :dettaglio_fattura_fornitore_partita_doppia, :class_name => 'Models::DettaglioFatturaPartitaDoppia', :foreign_key => 'dettaglio_fattura_fornitore_id', :dependent => :destroy
     has_many   :scritture_pd, :through => :dettaglio_fattura_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :dettaglio_fattura_partita_doppia
 
     validates_presence_of :aliquota,

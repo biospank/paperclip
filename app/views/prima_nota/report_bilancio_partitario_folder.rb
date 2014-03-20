@@ -31,6 +31,20 @@ module Views
           )
         )
 
+        subscribe(:evt_cliente_changed) do |data|
+          lku_pdc.load_data(Models::Pdc.search(:all,
+              :joins => :categoria_pdc
+            )
+          )
+        end
+
+        subscribe(:evt_fornitore_changed) do |data|
+          lku_pdc.load_data(Models::Pdc.search(:all,
+              :joins => :categoria_pdc
+            )
+          )
+        end
+
         xrc.find('txt_descrizione_pdc', self, :extends => TextField)
 
         xrc.find('chce_anno', self, :extends => ChoiceStringField)

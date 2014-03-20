@@ -12,9 +12,9 @@ module Models
     belongs_to :pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'pdc_avere_id'
     belongs_to :nc_pdc_dare, :class_name => "Models::Pdc", :foreign_key => 'nc_pdc_dare_id'
     belongs_to :nc_pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'nc_pdc_avere_id'
-    has_many :pagamenti_partita_doppia, :class_name => "Models::PagamentoPartitaDoppia", :foreign_key => "partita_doppia_id", :dependent => :delete_all
-    has_many :corrispettivi_partita_doppia, :class_name => "Models::CorrispettivoPartitaDoppia", :foreign_key => "partita_doppia_id", :dependent => :delete_all
-    has_many :dettaglio_fatture_partita_doppia, :class_name => "Models::DettaglioFatturaPartitaDoppia", :foreign_key => "partita_doppia_id", :dependent => :delete_all
+    has_many :pagamenti_partita_doppia, :class_name => "Models::PagamentoPartitaDoppia", :foreign_key => "partita_doppia_id"
+    has_many :corrispettivi_partita_doppia, :class_name => "Models::CorrispettivoPartitaDoppia", :foreign_key => "partita_doppia_id"
+    has_many :dettaglio_fatture_partita_doppia, :class_name => "Models::DettaglioFatturaPartitaDoppia", :foreign_key => "partita_doppia_id"
     belongs_to :parent, :foreign_key => 'parent_id', :class_name => "Models::ScritturaPd"
     has_one :storno, :foreign_key => 'parent_id', :class_name => "Models::ScritturaPd"
     has_one    :dettaglio_fattura, :through => :dettaglio_fattura_partita_doppia

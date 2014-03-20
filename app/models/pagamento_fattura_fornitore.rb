@@ -10,10 +10,10 @@ module Models
     belongs_to :tipo_pagamento, :foreign_key => 'tipo_pagamento_id'
     belongs_to :banca, :foreign_key => 'banca_id'
     belongs_to :maxi_pagamento_fornitore, :class_name => 'Models::MaxiPagamentoFornitore', :foreign_key => 'maxi_pagamento_fornitore_id'
-    has_one    :pagamento_prima_nota, :class_name => 'Models::PagamentoPrimaNota', :foreign_key => 'pagamento_fattura_fornitore_id'
-    has_one    :pagamento_partita_doppia, :class_name => 'Models::PagamentoPartitaDoppia', :foreign_key => 'pagamento_fattura_fornitore_id'
+    has_one    :pagamento_prima_nota, :class_name => 'Models::PagamentoPrimaNota', :foreign_key => 'pagamento_fattura_fornitore_id', :dependent => :destroy
+    has_one    :pagamento_partita_doppia, :class_name => 'Models::PagamentoPartitaDoppia', :foreign_key => 'pagamento_fattura_fornitore_id', :dependent => :destroy
     has_one    :scrittura, :through => :pagamento_prima_nota
-    has_one    :scrittura_pd, :through => :pagamento_partita_doppia
+    has_one    :scrittura_pd, :through => :pagamento_partita_doppia, :source => :scrittura
 
     validates_exclusion_of :importo,
       :in => [0],

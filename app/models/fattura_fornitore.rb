@@ -11,8 +11,9 @@ module Models
     set_table_name :fatture_fornitori
     belongs_to :fornitore, :foreign_key => 'fornitore_id'
     belongs_to :azienda
-    has_many :pagamento_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'pagamenti_fatture_fornitori.id'
-    has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_fornitore_id', :dependent => :delete_all, :order => 'righe_fattura_pdc.id'
+    has_many :pagamento_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'fattura_fornitore_id', :dependent => :destroy, :order => 'pagamenti_fatture_fornitori.id'
+    has_many :righe_fattura_pdc, :class_name => 'Models::RigaFatturaPdc', :foreign_key => 'fattura_fornitore_id', :dependent => :destroy, :order => 'righe_fattura_pdc.id'
+    has_one  :dettaglio_fattura_partita_doppia, :class_name => 'Models::DettaglioFatturaPartitaDoppia', :foreign_key => 'fattura_fornitore_id', :dependent => :destroy
     has_one  :scrittura_pd, :through => :dettaglio_fattura_partita_doppia, :source => :scrittura # riferimento all'associazione :scrittura di :dettaglio_fattura_partita_doppia
   
     validates_presence_of :data_emissione,
