@@ -987,11 +987,6 @@ module Controllers
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_partita_doppia => 1)
 
-          scritture = search_scritture_pd()
-
-          # TODO gestire la notifica evt_partita_doppia_changed
-          notify(:evt_partita_doppia_changed, scritture)
-
         else
           scrittura = nil
         end
@@ -1019,11 +1014,6 @@ module Controllers
 
           scrittura.save_with_validation(false)
           pagamento.update_attributes(:registrato_in_partita_doppia => 1)
-
-          scritture = search_scritture_pd()
-
-          # TODO gestire la notifica evt_partita_doppia_changed
-          notify(:evt_partita_doppia_changed, scritture)
 
         else
           scrittura = nil
