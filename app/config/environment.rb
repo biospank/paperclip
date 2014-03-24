@@ -253,6 +253,7 @@ module PaperclipConfig
     Models.autoload 'PagamentoPartitaDoppia',  'app/models/pagamento_partita_doppia.rb'
     Models.autoload 'CorrispettivoPartitaDoppia',  'app/models/corrispettivo_partita_doppia.rb'
     Models.autoload 'DettaglioFatturaPartitaDoppia',  'app/models/dettaglio_fattura_partita_doppia.rb'
+    Models.autoload 'PrimaNotaPartitaDoppia',  'app/models/prima_nota_partita_doppia.rb'
 
     ActiveRecord::Base.extend Models::Base::Searchable
     

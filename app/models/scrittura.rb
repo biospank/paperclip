@@ -19,6 +19,8 @@ module Models
     has_one    :pagamento_fattura_fornitore, :through => :pagamenti_prima_nota
     has_one    :maxi_pagamento_cliente, :through => :pagamenti_prima_nota
     has_one    :maxi_pagamento_fornitore, :through => :pagamenti_prima_nota
+    has_many   :prima_nota_partita_doppia, :class_name => 'Models::PrimaNotaPartitaDoppia', :foreign_key => 'prima_nota_id', :dependent => :destroy
+    has_many    :scrittura_pd, :through => :prima_nota_partita_doppia
     
     before_save :nullify_zeros
     

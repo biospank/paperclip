@@ -17,7 +17,17 @@ module Controllers
     end
 
     def save_scrittura()
-      scrittura.save!
+      Scrittura.transaction do
+        scrittura.save!
+
+        logger.debug("scrittura.instance_status: #{scrittura.instance_status}")
+        if scrittura.new_record?
+          create_scrittura_partita_doppia() if configatron.bilancio.attivo
+        else
+          update_scrittura_partita_doppia() if configatron.bilancio.attivo
+        end
+      end
+      
       return true
     end
 
@@ -26,8 +36,53 @@ module Controllers
     end
     
     def delete_scrittura()
+      scrittura.prima_nota_partita_doppia.each do |pnpd|
+        pnpd.destroy
+      end
       scrittura.destroy
     end
+
+
+    def create_scrittura_partita_doppia()
+
+      conto_dare = ScritturaPd.new(:azienda => Azienda.current,
+                              :importo => (scrittura.cassa_dare || scrittura.cassa_avere ||
+                                  scrittura.banca_dare || scrittura.banca_avere ||
+                                  scrittura.fuori_partita_dare || scrittura.fuori_partita_avere),
+                              :descrizione => scrittura.descrizione,
+                              :pdc_dare => scrittura.pdc_dare,
+                              :data_operazione => scrittura.data_operazione,
+                              :data_registrazione => Time.now,
+                              :esterna => 0,
+                              :congelata => 0)
+
+      conto_avere = ScritturaPd.new(:azienda => Azienda.current,
+                              :importo => (scrittura.cassa_dare || scrittura.cassa_avere ||
+                                  scrittura.banca_dare || scrittura.banca_avere ||
+                                  scrittura.fuori_partita_dare || scrittura.fuori_partita_avere),
+                              :descrizione => scrittura.descrizione,
+                              :pdc_avere => scrittura.pdc_avere,
+                              :data_operazione => scrittura.data_operazione,
+                              :data_registrazione => Time.now,
+                              :esterna => 0,
+                              :congelata => 0)
+
+      [conto_dare, conto_avere].each do |scrittura_pd|
+        scrittura_pd.save_with_validation(false)
+        PrimaNotaPartitaDoppia.create(:prima_nota_id => scrittura.id,
+                                      :partita_doppia_id => scrittura_pd.id)
+      end
+
+    end
+
+    def update_scrittura_partita_doppia()
+      logger.debug("update_scrittura_partita_doppia")
+      scrittura.prima_nota_partita_doppia.each do |pnpd|
+        pnpd.destroy
+      end
+      create_scrittura_partita_doppia()
+    end
+
 
     # STORNO SCRITTURA
     def storno_scrittura(scrittura)
@@ -418,8 +473,7 @@ module Controllers
         dati_scrittura << scrittura.descrizione
         dati_scrittura << conto.codice
         dati_scrittura << conto.descrizione
-        if conto.id == scrittura.pdc_dare_id ||
-            conto.id == scrittura.pdc_dare_id
+        if conto.id == scrittura.pdc_dare_id
           self.totale_dare += scrittura.importo
           dati_scrittura << scrittura.importo
           dati_scrittura << ''
@@ -428,8 +482,11 @@ module Controllers
           dati_scrittura << ''
           dati_scrittura << scrittura.importo
         end
-        
-        data_matrix << dati_scrittura
+
+        if(((dati_scrittura[4] != '') && (dati_scrittura[4] > 0)) ||
+              ((dati_scrittura[5] != '') && (dati_scrittura[5] > 0)))
+          data_matrix << dati_scrittura
+        end
       end
 
       self.totale_dare += ripresa_saldo_dare
@@ -609,10 +666,20 @@ module Controllers
         somma_passivo = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto, true))
         somma_passivo += ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
 
+#          conto_ident = IdentModel.new(conto.id, Pdc)
+#          conto_ident << conto.codice
+#          conto_ident << conto.descrizione
+#          conto_ident << (somma_attivo - somma_passivo)
+#          conto_ident << conto.categoria_pdc.codice
+
         if(Helpers::ApplicationHelper.real(somma_attivo) >= Helpers::ApplicationHelper.real(somma_passivo))
+#          attivita_data_matrix[conto.codice.to_i] = conto_ident
+# aggiungere il controllo che se è un conto fornitore/cliente deve essere messo in un conto unico
           attivita_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_attivo - somma_passivo)]
           self.totale_attivita += (somma_attivo - somma_passivo)
         else
+#          passivita_data_matrix[conto.codice.to_i] = conto_ident
+# aggiungere il controllo che se è un conto fornitore/cliente deve essere messo in un conto unico
           passivita_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_passivo - somma_attivo)]
           self.totale_passivita += (somma_passivo - somma_attivo)
         end
@@ -620,6 +687,24 @@ module Controllers
 
       attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
       passivita = passivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+# aggiungere :include => :categoria_pdc alla ricerca dei conti
+# e il codice alla posizione 3 della matrice attivita_data_matrix/passivita_data_matrix
+#      res_attivita = []
+#      res_passivita = []
+#      
+#      attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+#      attivita.group_by { |e|  e[3]}.sort.each do |e|
+#        codice_categoria = e.first
+#        array_conti = e.last
+#        res_attivita.concat(array_conti)
+#        categoria = CategoriaPdc.find_by_codice(codice_categoria)
+#        categoria_ident = IdentModel.new(conto.id, Pdc)
+#        categoria_ident << conto.codice
+#        categoria_ident << conto.descrizione
+#        categoria_ident << (array_conti.inject {|sum, n| sum + n[2]})
+#        res_attivita << categoria_ident
+#      end
 
       [attivita, passivita]
     end
