@@ -488,7 +488,10 @@ module Views
             dlg.center_on_screen(Wx::BOTH)
             answer = dlg.show_modal()
             if answer == Wx::ID_OK
-              lku_pdc_dare.view_data = ctrl.load_pdc(dlg.selected)
+              pdc = ctrl.load_pdc(dlg.selected)
+              # forzo il caricamento della banca se presente
+              pdc.banca
+              lku_pdc_dare.view_data = pdc
               lku_pdc_dare_after_change()
             elsif(answer == dlg.btn_nuovo.get_id)
               evt_new = Views::Base::CustomEvent::NewEvent.new(
@@ -530,7 +533,10 @@ module Views
             dlg.center_on_screen(Wx::BOTH)
             answer = dlg.show_modal()
             if answer == Wx::ID_OK
-              lku_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
+              pdc = ctrl.load_pdc(dlg.selected)
+              # forzo il caricamento della banca se presente
+              pdc.banca
+              lku_pdc_avere.view_data = pdc
               lku_pdc_avere_after_change()
             elsif(answer == dlg.btn_nuovo.get_id)
               evt_new = Views::Base::CustomEvent::NewEvent.new(

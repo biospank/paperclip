@@ -122,10 +122,15 @@ module Views
         @menu_bar.find_item(@mnu_avviso_parcella).check()
       end
       
-      mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio - Liquidazioni')).get_sub_menu()
+      mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio')).get_sub_menu()
         @mnu_bilancio_attivo = mnu_bilancio.find_item('Attivo')
         configatron.bilancio.set_default(:attivo, false)
         @menu_bar.find_item(@mnu_bilancio_attivo).check() if configatron.bilancio.attivo
+
+      mnu_liquidazioni = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Liquidazioni')).get_sub_menu()
+        @mnu_liquidazioni_attivo = mnu_liquidazioni.find_item('Attivo')
+        configatron.liquidazioni.set_default(:attivo, false)
+        @menu_bar.find_item(@mnu_liquidazioni_attivo).check() if configatron.liquidazioni.attivo
 
       @mnu_licenza = menu_bar.find_menu_item('Registra', 'Licenza')
 
@@ -319,6 +324,21 @@ module Views
           write_config()
           listbook_mgr.reset_folders()
           notify(:evt_bilancio_attivo, evt.checked?)
+          logger.debug("configatron.bilancio.attivo: #{configatron.bilancio.attivo}")
+        end
+      rescue Exception => e
+        log_error(self, e)
+      end
+    end
+
+    def mnu_liquidazioni_attivo_click(evt)
+      begin
+        Wx::BusyCursor.busy() do
+          configatron.liquidazioni.attivo = evt.checked?
+          write_config()
+          listbook_mgr.reset_folders()
+          notify(:evt_liquidazioni_attivo, evt.checked?)
+          logger.debug("configatron.liquidazioni.attivo: #{configatron.liquidazioni.attivo}")
         end
       rescue Exception => e
         log_error(self, e)

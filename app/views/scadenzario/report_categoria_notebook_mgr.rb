@@ -22,6 +22,9 @@ module Views
         xrc.find('REPORT_LIQUIDAZIONE_IVA_FOLDER', self, :extends => Views::Scadenzario::ReportLiquidazioneIvaFolder)
         report_liquidazione_iva_folder.ui()
         
+        subscribe(:evt_liquidazioni_attivo) do |data|
+          data ?  enable_widgets([report_liquidazione_iva_folder]) : disable_widgets([report_liquidazione_iva_folder])
+        end
       end
 
       def report_categoria_notebook_mgr_page_changing(evt)

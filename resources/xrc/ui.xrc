@@ -19880,8 +19880,16 @@
 					</object>
 				</object>
 				<object class="wxMenu" name="ID_BILANCIO">
-					<label>Bilancio - Liquidazioni</label>
-					<object class="wxMenuItem" name="attivo">
+					<label>Bilancio</label>
+					<object class="wxMenuItem" name="ID_BILANCIO_ATTIVO">
+						<label>Attivo</label>
+						<help></help>
+						<checkable>1</checkable>
+					</object>
+				</object>
+				<object class="wxMenu" name="ID_LIQUIDAZIONI">
+					<label>Liquidazioni</label>
+					<object class="wxMenuItem" name="ID_LIQUIDAZIONI_ATTIVO">
 						<label>Attivo</label>
 						<help></help>
 						<checkable>1</checkable>

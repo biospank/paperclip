@@ -19,6 +19,9 @@ module Views
         xrc.find('REPORT_BILANCIO_FOLDER', self, :extends => Views::PrimaNota::ReportBilancioFolder)
         report_bilancio_folder.ui()
 
+        subscribe(:evt_bilancio_attivo) do |data|
+          data ?  enable_widgets([report_bilancio_folder]) : disable_widgets([report_bilancio_folder])
+        end
       end
 
       def report_notebook_mgr_page_changing(evt)

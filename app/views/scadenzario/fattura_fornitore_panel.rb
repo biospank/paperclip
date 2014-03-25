@@ -116,7 +116,19 @@ module Views
         end
 
         subscribe(:evt_bilancio_attivo) do |data|
-          data ? enable_widgets([btn_pdc]) : disable_widgets([btn_pdc])
+          if configatron.bilancio.attivo || configatron.liquidazioni.attivo
+            enable_widgets([btn_pdc])
+          else
+            disable_widgets([btn_pdc])
+          end
+        end
+
+        subscribe(:evt_liquidazioni_attivo) do |data|
+          if configatron.bilancio.attivo || configatron.liquidazioni.attivo
+            enable_widgets([btn_pdc])
+          else
+            disable_widgets([btn_pdc])
+          end
         end
 
         subscribe(:evt_azienda_changed) do
@@ -215,7 +227,7 @@ module Views
       
       def on_importo_enter(evt)
         begin
-          if configatron.bilancio.attivo
+          if configatron.bilancio.attivo || configatron.liquidazioni.attivo
             transfer_fattura_fornitore_from_view()
             pagamenti_fattura_fornitore_panel.riepilogo_fattura()
             btn_pdc_click(evt)
@@ -553,7 +565,7 @@ module Views
 
       def pdc_totale_compatibile?
         totale_righe = 0.0
-        if configatron.bilancio.attivo
+        if configatron.bilancio.attivo || configatron.liquidazioni.attivo
 
           self.righe_fattura_pdc.each do |riga|
             if riga.valid_record?

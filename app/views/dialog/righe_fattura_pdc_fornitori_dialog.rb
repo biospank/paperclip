@@ -507,11 +507,13 @@ module Views
       def righe_pdc_ok?
         ok = true
         begin
-          self.result_set_lstrep_righe_fattura_pdc.each do |riga|
-            if riga.valid_record?
-              unless riga.valid?
-                ok = false
-                break
+          if configatron.bilancio.attivo
+            self.result_set_lstrep_righe_fattura_pdc.each do |riga|
+              if riga.valid_record?
+                unless riga.valid?
+                  ok = false
+                  break
+                end
               end
             end
           end
