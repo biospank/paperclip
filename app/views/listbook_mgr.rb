@@ -429,7 +429,10 @@ module Views
 
       # abilito/disabilito i campi relativi al bilancio
       notify(:evt_bilancio_attivo, configatron.bilancio.attivo)
-      
+
+      # abilito/disabilito i campi relativi alla liquidazione iva
+      notify(:evt_liquidazioni_attivo, configatron.liquidazioni.attivo)
+
     end
 
     # viene chiamato dopo la login
