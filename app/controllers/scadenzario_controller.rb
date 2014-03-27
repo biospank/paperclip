@@ -157,28 +157,20 @@ module Controllers
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
                   storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_cliente, descrizione)
                   # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
-                  PagamentoPrimaNota.delete_all("maxi_pagamento_cliente_id = #{pagamento.maxi_pagamento_cliente.id}")
-                  if configatron.bilancio_attivo
-                    if scrittura_pd = pagamento.scrittura_pd
-                      storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_cliente, descrizione)
-                      PagamentoPartitaDoppia.delete_all("maxi_pagamento_cliente_id = #{pagamento.maxi_pagamento_cliente.id}")
-                    end
-                  end
+#                  PagamentoPrimaNota.delete_all("maxi_pagamento_cliente_id = #{pagamento.maxi_pagamento_cliente.id}")
+#                  if configatron.bilancio_attivo
+#                    if scrittura_pd = pagamento.scrittura_pd
+#                      if scrittura_pd.congelata?
+#                        storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_cliente, descrizione)
+#                      end
+#                    end
+#                  end
                 else
-                  # il destroy direttamente su scrittura non funziona
-                  Models::Scrittura.find(scrittura).destroy
+#                  # il destroy direttamente su scrittura non funziona
+#                  Models::Scrittura.find(scrittura).destroy
                   pagamento.maxi_pagamento_cliente.update_attributes(:chiuso => 0)
-                  if configatron.bilancio_attivo
-                    if scrittura_pd = pagamento.scrittura_pd
-                      Models::ScritturaPd.find(scrittura_pd).destroy
-                    end
-                  end
                 end
-              else
-                descrizione = build_descrizione_multipla_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_cliente, descrizione)
               end
-
             end
           else
             # cerco la scrittura associata al pagamento
@@ -186,27 +178,15 @@ module Controllers
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
                 storno_scrittura_prima_nota(fattura, pagamento, descrizione)
-                PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
-                if configatron.bilancio_attivo
-                  if scrittura_pd = pagamento.scrittura_pd
-                    storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
-                    PagamentoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura_pd.id}")
-                  end
-                end
-              else
-                  # il destroy direttamente su scrittura non funziona
-                Models::Scrittura.find(scrittura).destroy
-                if configatron.bilancio_attivo
-                  if scrittura_pd = pagamento.scrittura_pd
-                    Models::ScritturaPd.find(scrittura_pd).destroy
-                  end
-                end
+#                if configatron.bilancio_attivo
+#                  if scrittura_pd = pagamento.scrittura_pd
+#                    if scrittura_pd.congelata?
+#                      storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
+#                    end
+#                  end
+#                end
               end
-            else
-              descrizione = build_descrizione_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
-              storno_scrittura_prima_nota(fattura, pagamento, descrizione)
             end
-            
           end
         end
         pagamento.destroy if destroy
@@ -345,23 +325,23 @@ module Controllers
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
                   storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_fornitore, descrizione)
                   # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
-                  PagamentoPrimaNota.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
-                  if configatron.bilancio_attivo
-                    if scrittura_pd = pagamento.scrittura_pd
-                      storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_fornitore, descrizione)
-                      PagamentoPartitaDoppia.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
-                    end
-                  end
+#                  PagamentoPrimaNota.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
+#                  if configatron.bilancio_attivo
+#                    if scrittura_pd = pagamento.scrittura_pd
+#                      storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_fornitore, descrizione)
+#                      PagamentoPartitaDoppia.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
+#                    end
+#                  end
                 else
-                  # il destroy direttamente su scrittura non funziona
-                  Models::Scrittura.find(scrittura).destroy
+#                  # il destroy direttamente su scrittura non funziona
+#                  Models::Scrittura.find(scrittura).destroy
                   # deve essere riabilitato il maxi_pagamento
                   pagamento.maxi_pagamento_fornitore.update_attributes(:chiuso => 0)
-                  if configatron.bilancio_attivo
-                    if scrittura_pd = pagamento.scrittura_pd
-                      Models::ScritturaPd.find(scrittura_pd).destroy
-                    end
-                  end
+#                  if configatron.bilancio_attivo
+#                    if scrittura_pd = pagamento.scrittura_pd
+#                      Models::ScritturaPd.find(scrittura_pd).destroy
+#                    end
+#                  end
                 end
               else
                 # non esiste per i pagamenti vecchi che non avevano ancora l'associazione con la scrittura
@@ -381,21 +361,21 @@ module Controllers
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
                 storno_scrittura_prima_nota(fattura, pagamento, descrizione)
-                PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
-                if configatron.bilancio_attivo
-                  if scrittura_pd = pagamento.scrittura_pd
-                    storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
-                    PagamentoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura_pd.id}")
-                  end
-                end
+#                PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
+#                if configatron.bilancio_attivo
+#                  if scrittura_pd = pagamento.scrittura_pd
+#                    storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
+#                    PagamentoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura_pd.id}")
+#                  end
+#                end
               else
-                # il destroy direttamente su scrittura non funziona
-                Models::Scrittura.find(scrittura).destroy
-                if configatron.bilancio_attivo
-                  if scrittura_pd = pagamento.scrittura_pd
-                    Models::ScritturaPd.find(scrittura_pd).destroy
-                  end
-                end
+#                # il destroy direttamente su scrittura non funziona
+#                Models::Scrittura.find(scrittura).destroy
+#                if configatron.bilancio_attivo
+#                  if scrittura_pd = pagamento.scrittura_pd
+#                    Models::ScritturaPd.find(scrittura_pd).destroy
+#                  end
+#                end
               end
             else
               # non esiste per i pagamenti vecchi che non avevano ancora l'associazione con la scrittura
@@ -522,11 +502,12 @@ module Controllers
             # associo l'id della fattura cliente alla riga
             pdc.fattura_cliente = fattura
             pdc.save!
-            create_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc) if configatron.bilancio.attivo
+            create_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_UPDATE
             pdc.save!
-            update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc) if configatron.bilancio.attivo
+            update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_DELETE
+#            delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
             pdc.dettaglio_fattura_cliente_partita_doppia.destroy
             pdc.destroy
           end
@@ -542,17 +523,26 @@ module Controllers
             # associo l'id della fattura fornitore alla riga
             pdc.fattura_fornitore = fattura
             pdc.save!
-            create_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc) if configatron.bilancio.attivo
+            create_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_UPDATE
             pdc.save!
-            update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc) if configatron.bilancio.attivo
+            update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_DELETE
+#            delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
             pdc.dettaglio_fattura_fornitore_partita_doppia.destroy
             pdc.destroy
           end
         end
       end
     end
+
+#    def elimina_righe_fattura_pdc()
+#      unless self.righe_fattura_pdc.blank?
+#        self.righe_fattura_pdc.each do |pdc|
+#          delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
+#        end
+#      end
+#    end
 
     ###### GESTIONE PAGAMENTI IN SOSPESO ######
 
@@ -1037,7 +1027,7 @@ module Controllers
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
                                   :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_dare => conto_fornitore,
+                                  :nc_pdc_dare => conto_fornitore,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1065,7 +1055,7 @@ module Controllers
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
                                   :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_avere => conto_cliente,
+                                  :nc_pdc_avere => conto_cliente,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1099,7 +1089,7 @@ module Controllers
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
                                   :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_avere => dettaglio.pdc,
+                                  :nc_pdc_avere => dettaglio.pdc,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1108,7 +1098,7 @@ module Controllers
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
                                   :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_avere => conto_iva,
+                                  :nc_pdc_avere => conto_iva,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1147,7 +1137,7 @@ module Controllers
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
                                   :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_dare => dettaglio.pdc,
+                                  :nc_pdc_dare => dettaglio.pdc,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1156,7 +1146,7 @@ module Controllers
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
                                   :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
-                                  :pdc_dare => conto_iva,
+                                  :nc_pdc_dare => conto_iva,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
                                   :esterna => 1,
@@ -1205,35 +1195,68 @@ module Controllers
     end
 
 #    def delete_scrittura_fattura_partita_doppia(fattura)
-#      if fattura.is_a? Models::FatturaFornitore
-#        if dettaglio_pd = DettaglioFatturaPartitaDoppia.first(:conditions => "fattura_fornitore_id = #{fattura.id}")
-#          ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
-#          dettaglio_pd.delete()
-#        end
-#      else
-#        if dettaglio_pd = DettaglioFatturaPartitaDoppia.first(:conditions => "fattura_cliente_id = #{fattura.id}")
-#          logger.debug("=========== delete_scrittura_fattura_partita_doppia cliente ==========")
-#          ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
-#          dettaglio_pd.delete()
+#      if scrittura = fattura.scrittura_pd
+#        if scrittura.congelata?
+#          storno_scrittura_fattura_partita_doppia(scrittura)
 #        end
 #      end
 #    end
 
-#    def delete_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
-#      if fattura.is_a? Models::FatturaFornitore
-#        dettagli_pd = DettaglioFatturaPartitaDoppia.all(:conditions => "dettaglio_fattura_fornitore_id = #{dettaglio.id}")
-#        dettagli_pd.each do |dettaglio_pd|
-#          ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
-#          dettaglio_pd.delete()
-#        end
-#      else
-#        dettagli_pd = DettaglioFatturaPartitaDoppia.all(:conditions => "dettaglio_fattura_cliente_id = #{dettaglio.id}")
-#        dettagli_pd.each do |dettaglio_pd|
-#          logger.debug("=========== delete_scrittura_dettaglio_fattura_partita_doppia ==========")
-#          ScritturaPd.delete(dettaglio_pd.partita_doppia_id)
-#          dettaglio_pd.delete()
+#    def storno_scrittura_fattura_partita_doppia(old_scrittura)
+#      negativo = (old_scrittura.importo * -1)
+#      descrizione = "** STORNO SCRITTURA del #{old_scrittura.data_operazione.to_s(:italian_date)} ** " + old_scrittura.descrizione
+#
+#      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+#                                :descrizione => descrizione,
+#                                :importo => negativo,
+#                                :pdc_dare => old_scrittura.pdc_dare,
+#                                :pdc_avere => old_scrittura.pdc_avere,
+#                                :nc_pdc_dare => old_scrittura.nc_pdc_dare,
+#                                :nc_pdc_avere => old_scrittura.nc_pdc_avere,
+#                                :data_operazione => Date.today,
+#                                :data_registrazione => Time.now,
+#                                :parent => old_scrittura.id,
+#                                :esterna => 1,
+#                                :congelata => 0)
+#
+#
+#      scrittura.save_with_validation(false)
+#
+#    end
+
+#    def delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
+#      scritture = pdc.scritture_pd
+#
+#      unless scritture.blank?
+#        scritture.each do |scrittura|
+#          if scrittura.congelata?
+#            storno_scrittura_dettaglio_fattura_partita_doppia(scrittura)
+#          end
 #        end
 #      end
+#
+#    end
+
+#    def storno_scrittura_dettaglio_fattura_partita_doppia(old_scrittura)
+#      negativo = (old_scrittura.importo * -1)
+#      descrizione = "** STORNO SCRITTURA del #{old_scrittura.data_operazione.to_s(:italian_date)} ** " + old_scrittura.descrizione
+#
+#      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+#                                :descrizione => descrizione,
+#                                :importo => negativo,
+#                                :pdc_dare => old_scrittura.pdc_dare,
+#                                :pdc_avere => old_scrittura.pdc_avere,
+#                                :nc_pdc_dare => old_scrittura.nc_pdc_dare,
+#                                :nc_pdc_avere => old_scrittura.nc_pdc_avere,
+#                                :data_operazione => Date.today,
+#                                :data_registrazione => Time.now,
+#                                :parent => old_scrittura.id,
+#                                :esterna => 1,
+#                                :congelata => 0)
+#
+#
+#      scrittura.save_with_validation(false)
+#
 #    end
 
     def storno_scrittura_prima_nota(fattura, pagamento, descrizione)
@@ -1359,86 +1382,81 @@ module Controllers
 
     end
 
-    def storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
-      scrittura = ScritturaPd.new(:azienda => Azienda.current,
-                                :descrizione => descrizione,
-                                :data_operazione => Date.today,
-                                :data_registrazione => Time.now,
-                                :esterna => 1,
-                                :congelata => 0)
-
-      negativo = (pagamento.importo * -1)
-
-      if(fattura.nota_di_credito?)
-        if pagamento.tipo_pagamento.nc_pdc_dare || pagamento.tipo_pagamento.nc_pdc_avere
-
-          scrittura.importo = negativo
-
-          scrittura.parent = pagamento.scrittura
-
-          if pagamento.kind_of? Models::PagamentoFatturaCliente
-            if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-              scrittura.nc_pdc_dare = nc_pdc_dare
-            else
-              scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-            end
-            scrittura.nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-          else
-            scrittura.nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-            if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-              scrittura.nc_pdc_avere = nc_pdc_avere
-            else
-              scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-            end
-          end
-
-          scrittura.save_with_validation(false)
-          pagamento.update_attributes(:registrato_in_partita_doppia => 1)
-
-          scritture = search_scritture_pd()
-
-          # TODO gestire la notifica evt_partita_doppia_changed
-          notify(:evt_partita_doppia_changed, scritture)
-
-        else
-          scrittura = nil
-        end
-
-      else
-        if pagamento.tipo_pagamento.pdc_dare || pagamento.tipo_pagamento.pdc_avere
-
-          scrittura.importo = negativo
-
-          scrittura.parent = pagamento.scrittura
-
-          if pagamento.kind_of? Models::PagamentoFatturaCliente
-            scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
-            if pdc_avere = pagamento.tipo_pagamento.pdc_avere
-              scrittura.pdc_avere = pdc_avere
-            else
-              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-            end
-          else
-            if pdc_dare = pagamento.tipo_pagamento.pdc_dare
-              scrittura.pdc_dare = pdc_dare
-            else
-              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-            end
-            scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
-          end
-
-          scrittura.save_with_validation(false)
-          pagamento.update_attributes(:registrato_in_partita_doppia => 1)
-
-        else
-          scrittura = nil
-        end
-
-      end
-
-      scrittura
-
-    end
+#    def storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
+#      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+#                                :descrizione => descrizione,
+#                                :data_operazione => Date.today,
+#                                :data_registrazione => Time.now,
+#                                :esterna => 1,
+#                                :congelata => 0)
+#
+#      negativo = (pagamento.importo * -1)
+#
+#      if(fattura.nota_di_credito?)
+#        if pagamento.tipo_pagamento.nc_pdc_dare || pagamento.tipo_pagamento.nc_pdc_avere
+#
+#          scrittura.importo = negativo
+#
+#          scrittura.parent = pagamento.scrittura_pd
+#
+#          if pagamento.kind_of? Models::PagamentoFatturaCliente
+#            if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+#              scrittura.nc_pdc_dare = nc_pdc_dare
+#            else
+#              scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+#            end
+#            scrittura.nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+#          else
+#            scrittura.nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+#            if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+#              scrittura.nc_pdc_avere = nc_pdc_avere
+#            else
+#              scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+#            end
+#          end
+#
+#          scrittura.save_with_validation(false)
+#          pagamento.update_attributes(:registrato_in_partita_doppia => 1)
+#
+#        else
+#          scrittura = nil
+#        end
+#
+#      else
+#        if pagamento.tipo_pagamento.pdc_dare || pagamento.tipo_pagamento.pdc_avere
+#
+#          scrittura.importo = negativo
+#
+#          scrittura.parent = pagamento.scrittura_pd
+#
+#          if pagamento.kind_of? Models::PagamentoFatturaCliente
+#            scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+#            if pdc_avere = pagamento.tipo_pagamento.pdc_avere
+#              scrittura.pdc_avere = pdc_avere
+#            else
+#              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
+#            end
+#          else
+#            if pdc_dare = pagamento.tipo_pagamento.pdc_dare
+#              scrittura.pdc_dare = pdc_dare
+#            else
+#              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+#            end
+#            scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+#          end
+#
+#          scrittura.save_with_validation(false)
+#          pagamento.update_attributes(:registrato_in_partita_doppia => 1)
+#
+#        else
+#          scrittura = nil
+#        end
+#
+#      end
+#
+#      scrittura
+#
+#    end
 
     def relazione_pagamento_scrittura_prima_nota(scrittura, pagamento)
       if pagamento.kind_of? PagamentoFatturaCliente
@@ -1635,11 +1653,6 @@ module Controllers
           
           maxi_pagamento.update_attributes(:chiuso => 1)
 
-          scritture = search_scritture_pd()
-
-          # TODO gestire la notifica evt_partita_doppia_changed
-          notify(:evt_partita_doppia_changed, scritture)
-
         else
           scrittura = nil
         end
@@ -1674,11 +1687,6 @@ module Controllers
           end
 
           maxi_pagamento.update_attributes(:chiuso => 1)
-
-          scritture = search_scritture_pd()
-
-          # TODO gestire la notifica evt_partita_doppia_changed
-          notify(:evt_partita_doppia_changed, scritture)
 
         else
           scrittura = nil
@@ -1828,95 +1836,95 @@ module Controllers
 
     end
 
-    def storno_scrittura_multipla_partita_doppia(fattura, old_scrittura, maxi_pagamento, descrizione)
-      scrittura = ScritturaPd.new(:azienda => Azienda.current,
-                                :descrizione => descrizione,
-                                :data_operazione => Date.today,
-                                :data_registrazione => Time.now,
-                                :esterna => 1,
-                                :congelata => 0)
-
-      negativo = (maxi_pagamento.importo * -1)
-
-      if(fattura.nota_di_credito?)
-        if maxi_pagamento.tipo_pagamento.nc_pdc_dare || maxi_pagamento.tipo_pagamento.nc_pdc_avere
-
-          scrittura.importo = negativo
-
-          scrittura.parent = old_scrittura
-
-          if maxi_pagamento.kind_of? MaxiPagamentoCliente
-            if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-              scrittura.nc_pdc_dare = nc_pdc_dare
-            else
-              scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-            end
-            scrittura.nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-          else
-            scrittura.nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-            if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-              scrittura.nc_pdc_avere = nc_pdc_avere
-            else
-              scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-            end
-          end
-
-          scrittura.save_with_validation(false)
-
-          if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
-            PagamentoFatturaCliente.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
-          elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)
-            PagamentoFatturaFornitore.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
-          end
-
-          maxi_pagamento.update_attributes(:chiuso => 0)
-
-        else
-          scrittura = nil
-        end
-
-      else
-        if maxi_pagamento.tipo_pagamento.pdc_dare || maxi_pagamento.tipo_pagamento.pdc_avere
-
-          scrittura.importo = negativo
-
-          scrittura.parent = old_scrittura
-
-          if maxi_pagamento.kind_of? MaxiPagamentoCliente
-            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-            if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
-              scrittura.pdc_avere = pdc_avere
-            else
-              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-            end
-          else
-            if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-              scrittura.pdc_dare = pdc_dare
-            else
-              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-            end
-            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
-          end
-
-          scrittura.save_with_validation(false)
-
-          if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
-            PagamentoFatturaCliente.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
-          elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)
-            PagamentoFatturaFornitore.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
-          end
-
-          maxi_pagamento.update_attributes(:chiuso => 0)
-
-        else
-          scrittura = nil
-        end
-
-      end
-
-      scrittura
-
-    end
+#    def storno_scrittura_multipla_partita_doppia(fattura, old_scrittura, maxi_pagamento, descrizione)
+#      scrittura = ScritturaPd.new(:azienda => Azienda.current,
+#                                :descrizione => descrizione,
+#                                :data_operazione => Date.today,
+#                                :data_registrazione => Time.now,
+#                                :esterna => 1,
+#                                :congelata => 0)
+#
+#      negativo = (maxi_pagamento.importo * -1)
+#
+#      if(fattura.nota_di_credito?)
+#        if maxi_pagamento.tipo_pagamento.nc_pdc_dare || maxi_pagamento.tipo_pagamento.nc_pdc_avere
+#
+#          scrittura.importo = negativo
+#
+#          scrittura.parent = old_scrittura
+#
+#          if maxi_pagamento.kind_of? MaxiPagamentoCliente
+#            if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+#              scrittura.nc_pdc_dare = nc_pdc_dare
+#            else
+#              scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+#            end
+#            scrittura.nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+#          else
+#            scrittura.nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+#            if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+#              scrittura.nc_pdc_avere = nc_pdc_avere
+#            else
+#              scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+#            end
+#          end
+#
+#          scrittura.save_with_validation(false)
+#
+#          if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
+#            PagamentoFatturaCliente.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+#          elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)
+#            PagamentoFatturaFornitore.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+#          end
+#
+#          maxi_pagamento.update_attributes(:chiuso => 0)
+#
+#        else
+#          scrittura = nil
+#        end
+#
+#      else
+#        if maxi_pagamento.tipo_pagamento.pdc_dare || maxi_pagamento.tipo_pagamento.pdc_avere
+#
+#          scrittura.importo = negativo
+#
+#          scrittura.parent = old_scrittura
+#
+#          if maxi_pagamento.kind_of? MaxiPagamentoCliente
+#            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+#            if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+#              scrittura.pdc_avere = pdc_avere
+#            else
+#              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
+#            end
+#          else
+#            if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+#              scrittura.pdc_dare = pdc_dare
+#            else
+#              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+#            end
+#            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+#          end
+#
+#          scrittura.save_with_validation(false)
+#
+#          if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
+#            PagamentoFatturaCliente.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+#          elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)
+#            PagamentoFatturaFornitore.update_all(["registrato_in_partita_doppia = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+#          end
+#
+#          maxi_pagamento.update_attributes(:chiuso => 0)
+#
+#        else
+#          scrittura = nil
+#        end
+#
+#      end
+#
+#      scrittura
+#
+#    end
 
     def relazione_multipla_pagamento_scrittura_prima_nota(scrittura, pagamento)
       if pagamento.kind_of? PagamentoFatturaCliente

@@ -20,8 +20,11 @@ module Models
       :in => [0],
       :message => "L'importo deve essere diverso da 0."
 
-    validates_presence_of :data_pagamento, 
+    validates_presence_of :data_pagamento,
       :message => "Data inesistente o formalmente errata."
+
+    validates_presence_of :tipo_pagamento,
+      :message => "Inserire il codice incasso oppure premere F5 per la ricerca."
 
     def before_validation_on_create
       self.data_registrazione = Date.today

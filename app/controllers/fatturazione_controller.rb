@@ -176,7 +176,7 @@ module Controllers
           relazione_scrittura_corrispettivo(scrittura, corrispettivo)
         end
         if configatron.bilancio.attivo
-          scrittura_corrispettivo_partita_doppia(corrispettivo)
+          scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
         end
       end
 
@@ -187,20 +187,13 @@ module Controllers
     def elimina_corrispettivi(corrispettivi_da_eliminare)
       corrispettivi_da_eliminare.each do |corrispettivo|
         if corrispettivo.registrato_in_prima_nota?
-            # cerco la scrittura associata al corrispettivo
-            if scrittura = corrispettivo.scrittura
-              if scrittura.congelata?
-                descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
-                storno_scrittura_corrispettivo(corrispettivo, descrizione)
-                CorrispettivoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
-              else
-                  # il destroy direttamente su scrittura non funziona
-                Models::Scrittura.find(scrittura).destroy
-              end
-            else
+          # cerco la scrittura associata al corrispettivo
+          if scrittura = corrispettivo.scrittura
+            if scrittura.congelata?
               descrizione = build_descrizione_storno_scrittura_corrispettivo(corrispettivo)
               storno_scrittura_corrispettivo(corrispettivo, descrizione)
             end
+          end
         end
         corrispettivo.corrispettivo_partita_doppia.destroy
         corrispettivo.destroy
@@ -236,13 +229,13 @@ module Controllers
 
     end
 
-    def scrittura_corrispettivo_partita_doppia(corrispettivo)
+    def scrittura_corrispettivo_partita_doppia(corrispettivo, descrizione)
 
       conto_iva = Models::Pdc.find_by_codice('30000')
 
       importo = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => corrispettivo.importo,
-                              :descrizione => '',
+                              :descrizione => descrizione,
                               :pdc_dare => corrispettivo.pdc_dare,
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
@@ -251,7 +244,7 @@ module Controllers
 
       imponibile = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => corrispettivo.imponibile,
-                              :descrizione => '',
+                              :descrizione => descrizione,
                               :pdc_avere => corrispettivo.pdc_avere,
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
@@ -260,7 +253,7 @@ module Controllers
 
       iva = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => corrispettivo.iva,
-                              :descrizione => '',
+                              :descrizione => descrizione,
                               :pdc_avere => conto_iva,
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
@@ -289,7 +282,7 @@ module Controllers
 
     def storno_scrittura_corrispettivo(corrispettivo, descrizione)
       scrittura = Scrittura.new(:azienda => Azienda.current,
-                                :cassa_avere => corrispettivo.importo,
+                                :cassa_dare => (corrispettivo.importo * -1),
                                 :banca => nil,
                                 :descrizione => descrizione,
                                 :data_operazione => Date.today,

@@ -22,6 +22,9 @@ module Models
     validates_presence_of :data_pagamento, 
       :message => "Data inesistente o formalmente errata."
 
+    validates_presence_of :tipo_pagamento,
+      :message => "Inserire il codice pagamento oppure premere F5 per la ricerca."
+
     def before_validation_on_create
       self.data_registrazione = Date.today
       self.registrato_in_prima_nota = 0

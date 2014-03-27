@@ -153,6 +153,11 @@ module Models
       return (self.data_operazione and self.data_operazione > Date.today)
     end
 
+    # override per gestire gli storni
+    # evita la cancellazione in cascata se la scrittura è congelata
+    def destroy()
+      super unless self.congelata?
+    end
 #    protected
 #
 #    def validate()
