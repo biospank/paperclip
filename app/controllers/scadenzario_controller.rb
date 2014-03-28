@@ -101,7 +101,6 @@ module Controllers
               end
               if configatron.bilancio_attivo
                 if scrittura = scrittura_pagamento_partita_doppia(fattura_cliente, pagamento, descrizione)
-                  logger.debug("======== relazione scrittura ========")
                   relazione_pagamento_scrittura_partita_doppia(scrittura, pagamento)
                 end
               end
@@ -156,18 +155,7 @@ module Controllers
                 if scrittura.congelata?
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
                   storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_cliente, descrizione)
-                  # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
-#                  PagamentoPrimaNota.delete_all("maxi_pagamento_cliente_id = #{pagamento.maxi_pagamento_cliente.id}")
-#                  if configatron.bilancio_attivo
-#                    if scrittura_pd = pagamento.scrittura_pd
-#                      if scrittura_pd.congelata?
-#                        storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_cliente, descrizione)
-#                      end
-#                    end
-#                  end
                 else
-#                  # il destroy direttamente su scrittura non funziona
-#                  Models::Scrittura.find(scrittura).destroy
                   pagamento.maxi_pagamento_cliente.update_attributes(:chiuso => 0)
                 end
               end
@@ -178,13 +166,6 @@ module Controllers
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_cliente(pagamento, fattura.nota_di_credito?)
                 storno_scrittura_prima_nota(fattura, pagamento, descrizione)
-#                if configatron.bilancio_attivo
-#                  if scrittura_pd = pagamento.scrittura_pd
-#                    if scrittura_pd.congelata?
-#                      storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
-#                    end
-#                  end
-#                end
               end
             end
           end
@@ -196,9 +177,10 @@ module Controllers
 
     def delete_fattura_cliente()
       if fattura_cliente.da_fatturazione?
-        PagamentoFatturaCliente.delete_all(["fattura_cliente_id = ?", fattura_cliente])
-        # il terzo parametro è false perchè il pagamento viene eliminato in cascata da fattura_cliente.destroy
+        # il terzo parametro è true perchè il pagamento viene eliminato direttamente
         elimina_pagamenti_fattura_cliente(fattura_cliente, fattura_cliente.pagamento_fattura_cliente, true)
+        elimina_scritture_dettaglio_fattura_partita_doppia()
+        elimina_scrittura_fattura_partita_doppia()
         # ActiveRecord BUG
         # un bug impedisce ai modelli ereditati (es Models::FatturaClienteScadenzario < Models::FatturaCliente)
         # di utilizzare update_attributes, update_attribute e non so cos'altro
@@ -324,36 +306,11 @@ module Controllers
                   # lo storno viene fatto solo se la scrittura e' congelata
                   descrizione = build_descrizione_multipla_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
                   storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_fornitore, descrizione)
-                  # in caso di pagamenti multipli, devono essere rimossi tutti i riferimenti
-#                  PagamentoPrimaNota.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
-#                  if configatron.bilancio_attivo
-#                    if scrittura_pd = pagamento.scrittura_pd
-#                      storno_scrittura_multipla_partita_doppia(fattura, scrittura_pd, pagamento.maxi_pagamento_fornitore, descrizione)
-#                      PagamentoPartitaDoppia.delete_all("maxi_pagamento_fornitore_id = #{pagamento.maxi_pagamento_fornitore.id}")
-#                    end
-#                  end
                 else
-#                  # il destroy direttamente su scrittura non funziona
-#                  Models::Scrittura.find(scrittura).destroy
                   # deve essere riabilitato il maxi_pagamento
                   pagamento.maxi_pagamento_fornitore.update_attributes(:chiuso => 0)
-#                  if configatron.bilancio_attivo
-#                    if scrittura_pd = pagamento.scrittura_pd
-#                      Models::ScritturaPd.find(scrittura_pd).destroy
-#                    end
-#                  end
                 end
-              else
-                # non esiste per i pagamenti vecchi che non avevano ancora l'associazione con la scrittura
-                # in questo caso lo storno e' necessario per risalire al pagamento
-                # NOTA: non dovrebbe piu' verificarsi
-                descrizione = build_descrizione_multipla_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-                storno_scrittura_multipla_prima_nota(fattura, scrittura, pagamento.maxi_pagamento_fornitore, descrizione)
               end
-
-              # resetto il flag della registrazione in prima nota per tutti i pagamenti associati al maxi pagamento
-              # viene fatto all'interno di storno_scrittura_multipla_prima_nota
-              #PagamentoFatturaFornitore.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_fornitore_id = ?", pagamento.maxi_pagamento_fornitore.id])
             end
           else
             # cerco la scrittura associata al pagamento
@@ -361,30 +318,8 @@ module Controllers
               if scrittura.congelata?
                 descrizione = build_descrizione_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
                 storno_scrittura_prima_nota(fattura, pagamento, descrizione)
-#                PagamentoPrimaNota.delete_all("prima_nota_id = #{scrittura.id}")
-#                if configatron.bilancio_attivo
-#                  if scrittura_pd = pagamento.scrittura_pd
-#                    storno_scrittura_pagamento_partita_doppia(fattura, pagamento, descrizione)
-#                    PagamentoPartitaDoppia.delete_all("partita_doppia_id = #{scrittura_pd.id}")
-#                  end
-#                end
-              else
-#                # il destroy direttamente su scrittura non funziona
-#                Models::Scrittura.find(scrittura).destroy
-#                if configatron.bilancio_attivo
-#                  if scrittura_pd = pagamento.scrittura_pd
-#                    Models::ScritturaPd.find(scrittura_pd).destroy
-#                  end
-#                end
               end
-            else
-              # non esiste per i pagamenti vecchi che non avevano ancora l'associazione con la scrittura
-              # in questo caso lo storno e' necessario per risalire al pagamento
-              # NOTA: non dovrebbe piu' verificarsi
-              descrizione = build_descrizione_storno_pagamento_fattura_fornitore(pagamento, fattura.nota_di_credito?)
-              storno_scrittura_prima_nota(fattura, pagamento, descrizione)
             end
-
           end
         end
         pagamento.destroy if destroy
@@ -536,13 +471,20 @@ module Controllers
       end
     end
 
-#    def elimina_righe_fattura_pdc()
-#      unless self.righe_fattura_pdc.blank?
-#        self.righe_fattura_pdc.each do |pdc|
-#          delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
-#        end
-#      end
-#    end
+    def elimina_scritture_dettaglio_fattura_partita_doppia()
+      unless self.righe_fattura_pdc.blank?
+        self.righe_fattura_pdc.each do |pdc|
+          pdc.dettaglio_fattura_fornitore_partita_doppia.destroy
+          pdc.destroy
+        end
+      end
+    end
+
+    def elimina_scrittura_fattura_partita_doppia()
+      if scrittura = self.fattura_cliente.dettaglio_fattura_partita_doppia
+        scrittura.destroy
+      end
+    end
 
     ###### GESTIONE PAGAMENTI IN SOSPESO ######
 
@@ -554,7 +496,6 @@ module Controllers
               pagamento = PagamentoFatturaCliente.find(incasso.id, :include => [:fattura_cliente, :maxi_pagamento_cliente, :tipo_pagamento])
 
               if pagamento.tipo_pagamento && pagamento.tipo_pagamento.valid?
-                logger.debug("maxi pagamento id: " + pagamento.maxi_pagamento_cliente_id.to_s)
                 if pagamento.maxi_pagamento_cliente_id.nil?
                   descrizione = build_descrizione_pagamento_fattura_cliente(pagamento, pagamento.fattura_cliente.nota_di_credito?)
                   if scrittura = scrittura_prima_nota(pagamento.fattura_cliente, pagamento, descrizione)
@@ -829,10 +770,6 @@ module Controllers
     end
 
     def scrittura_prima_nota(fattura, pagamento, descrizione)
-      logger.debug("tipo pagamento: " + pagamento.tipo_pagamento.descrizione)
-      logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
-
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => pagamento.banca,
                                 :descrizione => descrizione,
@@ -1127,7 +1064,6 @@ module Controllers
 
         [imponibile, iva].each do |scrittura|
           scrittura.save_with_validation(false)
-          logger.debug("======== DettaglioFatturaPartitaDoppia fornitore ========")
           DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                     :dettaglio_fattura_fornitore_id => dettaglio.id)
         end
@@ -1175,7 +1111,6 @@ module Controllers
 
         [imponibile, iva].each do |scrittura|
           scrittura.save_with_validation(false)
-          logger.debug("======== DettaglioFatturaPartitaDoppia cliente ========")
           DettaglioFatturaPartitaDoppia.create(:partita_doppia_id => scrittura.id,
                                     :dettaglio_fattura_cliente_id => dettaglio.id)
         end
@@ -1260,10 +1195,6 @@ module Controllers
 #    end
 
     def storno_scrittura_prima_nota(fattura, pagamento, descrizione)
-      logger.debug("tipo pagamento: " + pagamento.tipo_pagamento.descrizione)
-      logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
-
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => pagamento.banca,
                                 :descrizione => descrizione,
@@ -1481,10 +1412,6 @@ module Controllers
     end
 
     def scrittura_multipla_prima_nota(fattura, maxi_pagamento, descrizione)
-      logger.debug("tipo maxi_pagamento: " + maxi_pagamento.tipo_pagamento.descrizione)
-      logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
-
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => maxi_pagamento.banca,
                                 :descrizione => descrizione,
@@ -1594,7 +1521,6 @@ module Controllers
 
           scrittura.save_with_validation(false)
 
-          logger.debug("maxi pagamento: " + maxi_pagamento.inspect)
           if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
             PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 1], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
           elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)
@@ -1699,10 +1625,6 @@ module Controllers
     end
 
     def storno_scrittura_multipla_prima_nota(fattura, old_scrittura, maxi_pagamento, descrizione)
-      logger.debug("tipo maxi_pagamento: " + maxi_pagamento.tipo_pagamento.descrizione)
-      logger.debug("descrizione: " + descrizione)
-      logger.debug("nota_di_credito: " + fattura.nota_di_credito?.to_s)
-
       scrittura = Scrittura.new(:azienda => Azienda.current,
                                 :banca => maxi_pagamento.banca,
                                 :descrizione => descrizione,
@@ -1818,7 +1740,6 @@ module Controllers
 
           scrittura.save_with_validation(false)
 
-          logger.debug("maxi pagamento: " + maxi_pagamento.inspect)
           if(maxi_pagamento.kind_of? MaxiPagamentoCliente)
             PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
           elsif(maxi_pagamento.kind_of? MaxiPagamentoFornitore)

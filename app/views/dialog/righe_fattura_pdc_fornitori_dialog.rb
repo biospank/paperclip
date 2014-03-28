@@ -217,7 +217,7 @@ module Views
         begin
           lku_aliquota.match_selection()
           transfer_riga_fattura_pdc_from_view
-          calcola_scorporo_residuo()
+          calcola_scorporo_residuo(true)
           transfer_riga_fattura_pdc_to_view
         rescue Exception => e
           log_error(self, e)
@@ -541,11 +541,24 @@ module Views
 
       end
 
-      def calcola_scorporo_residuo()
+      def calcola_scorporo_residuo(force = false)
         if lku_aliquota.view_data
-          if((residuo = (self.importo_fattura - self.totale_importi)) > 0)
-            self.riga_fattura_pdc.calcola_iva(residuo)
-            self.riga_fattura_pdc.calcola_imponibile(residuo)
+          if force
+            residuo = (self.importo_fattura - self.totale_importi)
+            if residuo.zero?
+              if((importo = (self.riga_fattura_pdc.imponibile + self.riga_fattura_pdc.iva)) > 0)
+                self.riga_fattura_pdc.calcola_iva(importo)
+                self.riga_fattura_pdc.calcola_imponibile(importo)
+              end
+            else
+              self.riga_fattura_pdc.calcola_iva(residuo)
+              self.riga_fattura_pdc.calcola_imponibile(residuo)
+            end
+          else
+            if((residuo = (self.importo_fattura - self.totale_importi)) > 0)
+              self.riga_fattura_pdc.calcola_iva(residuo)
+              self.riga_fattura_pdc.calcola_imponibile(residuo)
+            end
           end
         end
         if lku_norma.view_data

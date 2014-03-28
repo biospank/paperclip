@@ -16,6 +16,7 @@ module Models
     belongs_to :banca, :foreign_key => 'banca_id'
     has_many   :pagamenti_fattura_fornitore, :class_name => 'Models::PagamentoFatturaFornitore', :foreign_key => 'maxi_pagamento_fornitore_id'
     has_many   :pagamenti_prima_nota, :class_name => 'Models::PagamentoPrimaNota', :foreign_key => 'maxi_pagamento_fornitore_id'
+    has_many   :pagamenti_partita_doppia, :class_name => 'Models::PagamentoPartitaDoppia', :foreign_key => 'maxi_pagamento_fornitore_id'
   
     validates_exclusion_of :importo,
       :in => [0],
