@@ -107,10 +107,17 @@ module Views
             :joins => :categoria_pdc
           )
         )
-#        subscribe(:evt_pdc_changed) do |data|
-#          lku_pdc_dare.load_data(data)
-#          lku_pdc_avere.load_data(data)
-#        end
+
+        subscribe(:evt_pdc_changed) do |data|
+          lku_pdc_dare.load_data(Models::Pdc.search(:all,
+            :conditions => dare_sql_criteria,
+            :joins => :categoria_pdc
+          ))
+          lku_pdc_avere.load_data(Models::Pdc.search(:all,
+            :conditions => avere_sql_criteria,
+            :joins => :categoria_pdc
+          ))
+        end
 
         subscribe(:evt_bilancio_attivo) do |data|
           data ? enable_widgets([lku_pdc_dare, lku_pdc_avere]) : disable_widgets([lku_pdc_dare, lku_pdc_avere])
@@ -488,10 +495,7 @@ module Views
             dlg.center_on_screen(Wx::BOTH)
             answer = dlg.show_modal()
             if answer == Wx::ID_OK
-              pdc = ctrl.load_pdc(dlg.selected)
-              # forzo il caricamento della banca se presente
-              pdc.banca
-              lku_pdc_dare.view_data = pdc
+              lku_pdc_dare.view_data = ctrl.load_pdc(dlg.selected)
               lku_pdc_dare_after_change()
             elsif(answer == dlg.btn_nuovo.get_id)
               evt_new = Views::Base::CustomEvent::NewEvent.new(
@@ -533,10 +537,7 @@ module Views
             dlg.center_on_screen(Wx::BOTH)
             answer = dlg.show_modal()
             if answer == Wx::ID_OK
-              pdc = ctrl.load_pdc(dlg.selected)
-              # forzo il caricamento della banca se presente
-              pdc.banca
-              lku_pdc_avere.view_data = pdc
+              lku_pdc_avere.view_data = ctrl.load_pdc(dlg.selected)
               lku_pdc_avere_after_change()
             elsif(answer == dlg.btn_nuovo.get_id)
               evt_new = Views::Base::CustomEvent::NewEvent.new(
@@ -966,6 +967,8 @@ module Views
               end
             # se i conti della scrittura non hanno una banca associata
             else
+              logger.debug("///////// conto banca dare: self.scrittura.pdc_dare.banca")
+              logger.debug("///////// conto banca avere: self.scrittura.pdc_avere.banca")
               # ma e' una scrittura di banca
               if self.scrittura.di_banca?
                 Wx::message_box("Importo banca non compatibile:\nuno dei conti selezionati deve avere una banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.",
