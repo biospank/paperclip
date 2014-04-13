@@ -85,8 +85,13 @@ module Views
       def btn_pulisci_click(evt)
         logger.debug("Cliccato sul bottone pulisci!")
         begin
-          reset_folder()
-          bilancio_di_verifica_notebook_mgr.reset_folder
+#          reset_folder()
+#          bilancio_di_verifica_notebook_mgr.reset_folder
+          Wx::BusyCursor.busy() do
+            transfer_filtro_from_view()
+            bilancio_di_verifica_notebook_mgr.ricerca_aggregata(filtro)
+            transfer_filtro_to_view()
+          end
         rescue Exception => e
           log_error(self, e)
         end

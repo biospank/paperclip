@@ -3,6 +3,7 @@
 require 'app/helpers/prima_nota_helper'
 require 'app/views/prima_nota/stato_patrimoniale_folder'
 require 'app/views/prima_nota/conto_economico_folder'
+require 'app/views/prima_nota/dettaglio_clienti_fornitori_folder'
 
 module Views
   module PrimaNota
@@ -18,6 +19,8 @@ module Views
         stato_patrimoniale_folder.ui()
         xrc.find('CONTO_ECONOMICO_FOLDER', self, :extends => Views::PrimaNota::ContoEconomicoFolder)
         conto_economico_folder.ui()
+        xrc.find('DETTAGLIO_CLIENTI_FORNITORI_FOLDER', self, :extends => Views::PrimaNota::DettaglioClientiFornitoriFolder)
+        dettaglio_clienti_fornitori_folder.ui()
         
       end
 
@@ -31,6 +34,8 @@ module Views
           stato_patrimoniale_folder().init_folder()
         when Helpers::PrimaNotaHelper::WXBRA_CONTO_ECONOMICO_FOLDER
           conto_economico_folder().init_folder()
+        when Helpers::PrimaNotaHelper::WXBRA_DETTAGLIO_CLIENTI_FORNITORI_FOLDER
+          dettaglio_clienti_fornitori_folder().init_folder()
           
         end
         evt.skip()
@@ -40,6 +45,17 @@ module Views
         begin
           stato_patrimoniale_folder.ricerca(filtro)
           conto_economico_folder.ricerca(filtro)
+          dettaglio_clienti_fornitori_folder.ricerca(filtro)
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
+      def ricerca_aggregata(filtro)
+        begin
+          stato_patrimoniale_folder.ricerca_aggregata(filtro)
+          conto_economico_folder.ricerca_aggregata(filtro)
+          dettaglio_clienti_fornitori_folder.ricerca(filtro)
         rescue Exception => e
           log_error(self, e)
         end
@@ -50,6 +66,7 @@ module Views
 
           stato_patrimoniale_folder.stampa(filtro)
           conto_economico_folder.stampa(filtro)
+          dettaglio_clienti_fornitori_folder.stampa(filtro)
 
           merge_all([
               :report_stato_patrimoniale,
@@ -69,6 +86,7 @@ module Views
       def reset_folder()
         stato_patrimoniale_folder.reset_folder
         conto_economico_folder.reset_folder
+        dettaglio_clienti_fornitori_folder.reset_folder
       end
 
     end

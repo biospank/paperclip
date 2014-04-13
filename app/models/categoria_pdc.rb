@@ -22,6 +22,9 @@ module Models
 #    -------------------
 #
 
+    CLIENTI = '220'
+    FORNITORI = '460'
+
     set_table_name :categorie_pdc
 
     validates_presence_of :codice,
@@ -72,6 +75,14 @@ module Models
 
     def passivo?()
       self.type == PASSIVO
+    end
+
+    def clienti?
+      self.codice == CLIENTI
+    end
+
+    def fornitori?
+      self.codice == FORNITORI
     end
 
   end

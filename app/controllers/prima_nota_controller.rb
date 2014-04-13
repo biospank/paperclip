@@ -666,47 +666,133 @@ module Controllers
         somma_passivo = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto, true))
         somma_passivo += ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
 
-#          conto_ident = IdentModel.new(conto.id, Pdc)
-#          conto_ident << conto.codice
-#          conto_ident << conto.descrizione
-#          conto_ident << (somma_attivo - somma_passivo)
-#          conto_ident << conto.categoria_pdc.codice
+        conto_ident = IdentModel.new(conto.id, Pdc)
 
         if(Helpers::ApplicationHelper.real(somma_attivo) >= Helpers::ApplicationHelper.real(somma_passivo))
-#          attivita_data_matrix[conto.codice.to_i] = conto_ident
-# aggiungere il controllo che se è un conto fornitore/cliente deve essere messo in un conto unico
-          attivita_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_attivo - somma_passivo)]
-          self.totale_attivita += (somma_attivo - somma_passivo)
+          attivo = (somma_attivo - somma_passivo)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << attivo
+
+          attivita_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_attivita += attivo
         else
-#          passivita_data_matrix[conto.codice.to_i] = conto_ident
-# aggiungere il controllo che se è un conto fornitore/cliente deve essere messo in un conto unico
-          passivita_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_passivo - somma_attivo)]
-          self.totale_passivita += (somma_passivo - somma_attivo)
+          passivo = (somma_passivo - somma_attivo)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << passivo
+
+          passivita_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_passivita += passivo
         end
       end
 
       attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
       passivita = passivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
 
-# aggiungere :include => :categoria_pdc alla ricerca dei conti
-# e il codice alla posizione 3 della matrice attivita_data_matrix/passivita_data_matrix
-#      res_attivita = []
-#      res_passivita = []
-#      
-#      attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
-#      attivita.group_by { |e|  e[3]}.sort.each do |e|
-#        codice_categoria = e.first
-#        array_conti = e.last
-#        res_attivita.concat(array_conti)
-#        categoria = CategoriaPdc.find_by_codice(codice_categoria)
-#        categoria_ident = IdentModel.new(conto.id, Pdc)
-#        categoria_ident << conto.codice
-#        categoria_ident << conto.descrizione
-#        categoria_ident << (array_conti.inject {|sum, n| sum + n[2]})
-#        res_attivita << categoria_ident
-#      end
-
       [attivita, passivita]
+    end
+
+    def report_stato_patrimoniale_aggregato()
+      attivita_data_matrix = {}
+      passivita_data_matrix = {}
+
+      tipo_conti = %w('Attivo' 'Passivo')
+
+      conti_ids = seleziona_conti(:pdc_dare_id, tipo_conti)
+      conti_ids << seleziona_conti(:nc_pdc_dare_id, tipo_conti)
+      conti_ids << seleziona_conti(:pdc_avere_id, tipo_conti)
+      conti_ids << seleziona_conti(:nc_pdc_avere_id, tipo_conti)
+
+      conti = Pdc.find(conti_ids.flatten.uniq, :include => :categoria_pdc)
+
+      conti.each do |conto|
+        somma_attivo = ScritturaPd.sum(:importo, build_attivi_report_conditions(conto, true))
+        somma_attivo += ScritturaPd.sum(:importo, build_attivi_report_conditions(conto))
+        somma_passivo = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto, true))
+        somma_passivo += ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
+
+        conto_ident = IdentModel.new(conto.id, Pdc)
+
+        categoria = conto.categoria_pdc
+
+        if(Helpers::ApplicationHelper.real(somma_attivo) >= Helpers::ApplicationHelper.real(somma_passivo))
+
+          attivo = (somma_attivo - somma_passivo)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << attivo
+          conto_ident << categoria.codice.to_i
+
+          attivita_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_attivita += attivo
+        else
+          passivo = (somma_passivo - somma_attivo)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << passivo
+          conto_ident << categoria.codice.to_i
+
+          passivita_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_passivita += passivo
+        end
+
+        conto_ident << categoria.codice
+      end
+
+      res_attivita = []
+      res_passivita = []
+
+      attivita = attivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      attivita.group_by { |e|  e[3]}.each do |e|
+        codice_categoria = e.first
+        array_conti = e.last
+        categoria = CategoriaPdc.find_by_codice(codice_categoria)
+        case codice_categoria
+        when Models::CategoriaPdc::FORNITORI.to_i
+          #res_attivita << [Models::Pdc::Categoria::FORNITORI, categoria.descrizione, array_conti.sum {|e| e[2]}]
+        when Models::CategoriaPdc::CLIENTI.to_i
+          #res_attivita << [Models::Pdc::Categoria::CLIENTI, categoria.descrizione, array_conti.sum {|e| e[2]}]
+        else
+          res_attivita.concat(array_conti)
+        end
+        categoria_ident = IdentModel.new(categoria.id, CategoriaPdc)
+        categoria_ident << categoria.codice
+        categoria_ident << categoria.descrizione
+        categoria_ident << (array_conti.map {|c| c[2]}.inject {|sum, n| sum + n})
+        res_attivita << categoria_ident
+      end
+
+      passivita = passivita_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      passivita.group_by { |e|  e[3]}.each do |e|
+        codice_categoria = e.first
+        array_conti = e.last
+        categoria = CategoriaPdc.find_by_codice(codice_categoria)
+        case codice_categoria
+        when Models::CategoriaPdc::FORNITORI.to_i
+          #res_passivita << [Models::Pdc::Categoria::FORNITORI, categoria.descrizione, array_conti.sum {|e| e[2]}]
+        when Models::CategoriaPdc::CLIENTI.to_i
+          #res_passivita << [Models::Pdc::Categoria::CLIENTI, categoria.descrizione, array_conti.sum {|e| e[2]}]
+        else
+          res_passivita.concat(array_conti)
+        end
+        categoria_ident = IdentModel.new(categoria.id, CategoriaPdc)
+        categoria_ident << categoria.codice
+        categoria_ident << categoria.descrizione
+        categoria_ident << (array_conti.map {|c| c[2]}.inject {|sum, n| sum + n})
+        res_passivita << categoria_ident
+      end
+
+      [res_attivita, res_passivita]
     end
 
     def report_conto_economico()
@@ -741,12 +827,145 @@ module Controllers
       [costi, ricavi]
     end
 
-    def seleziona_conti(partita, tipo)
-      ScritturaPd.connection.select_values("select distinct(pd.#{partita})
-        from partita_doppia pd
-        inner join pdc p on pd.#{partita} = p.id
-        inner join categorie_pdc cp on p.categoria_pdc_id = cp.id
-        where pd.azienda_id = #{Azienda.current.id} and  pd.#{partita} is not null and cp.type in(#{tipo.join(',')})")
+    def report_conto_economico_aggregato()
+      costi_data_matrix = {}
+      ricavi_data_matrix = {}
+
+      tipo_conti = %w('Costo' 'Ricavo')
+
+      conti_ids = seleziona_conti(:pdc_dare_id, tipo_conti)
+      conti_ids << seleziona_conti(:nc_pdc_dare_id, tipo_conti)
+      conti_ids << seleziona_conti(:pdc_avere_id, tipo_conti)
+      conti_ids << seleziona_conti(:nc_pdc_avere_id, tipo_conti)
+
+      conti = Pdc.find(conti_ids.flatten.uniq)
+
+      conti.each do |conto|
+        somma_costi = ScritturaPd.sum(:importo, build_costi_report_conditions(conto))
+        somma_ricavi = ScritturaPd.sum(:importo, build_ricavi_report_conditions(conto))
+
+        conto_ident = IdentModel.new(conto.id, Pdc)
+
+        categoria = conto.categoria_pdc
+
+        if(Helpers::ApplicationHelper.real(somma_costi) >= Helpers::ApplicationHelper.real(somma_ricavi))
+
+          costo = (somma_costi - somma_ricavi)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << costo
+          conto_ident << categoria.codice.to_i
+
+          costi_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_costi += costo
+        else
+          ricavo = (somma_ricavi - somma_costi)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << ricavo
+          conto_ident << categoria.codice.to_i
+
+          ricavi_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_ricavi += ricavo
+        end
+
+        conto_ident << categoria.codice
+      end
+
+      res_costi = []
+      res_ricavi = []
+
+      costi = costi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      costi.group_by { |e|  e[3]}.each do |e|
+        codice_categoria = e.first
+        array_conti = e.last
+        categoria = CategoriaPdc.find_by_codice(codice_categoria)
+        res_costi.concat(array_conti)
+        categoria_ident = IdentModel.new(categoria.id, CategoriaPdc)
+        categoria_ident << categoria.codice
+        categoria_ident << categoria.descrizione
+        categoria_ident << (array_conti.map {|c| c[2]}.inject {|sum, n| sum + n})
+        res_costi << categoria_ident
+      end
+
+      ricavi = ricavi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      
+      ricavi.group_by { |e|  e[3]}.each do |e|
+        codice_categoria = e.first
+        array_conti = e.last
+        categoria = CategoriaPdc.find_by_codice(codice_categoria)
+        res_ricavi.concat(array_conti)
+        categoria_ident = IdentModel.new(categoria.id, CategoriaPdc)
+        categoria_ident << categoria.codice
+        categoria_ident << categoria.descrizione
+        categoria_ident << (array_conti.map {|c| c[2]}.inject {|sum, n| sum + n})
+        res_ricavi << categoria_ident
+      end
+
+      [res_costi, res_ricavi]
+    end
+
+    def report_dettaglio_clienti_fornitori()
+      clienti_data_matrix = {}
+      fornitori_data_matrix = {}
+
+      tipo_conti = %w('Attivo' 'Passivo')
+      codici_categoria = %W('#{Models::CategoriaPdc::CLIENTI}' '#{Models::CategoriaPdc::FORNITORI}')
+
+      conti_ids = seleziona_conti(:pdc_dare_id, tipo_conti, codici_categoria)
+      conti_ids << seleziona_conti(:nc_pdc_dare_id, tipo_conti, codici_categoria)
+      conti_ids << seleziona_conti(:pdc_avere_id, tipo_conti, codici_categoria)
+      conti_ids << seleziona_conti(:nc_pdc_avere_id, tipo_conti, codici_categoria)
+
+      conti = Pdc.find(conti_ids.flatten.uniq)
+
+      conti.each do |conto|
+        somma_clienti = ScritturaPd.sum(:importo, build_attivi_report_conditions(conto))
+        somma_fornitori = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
+
+        conto_ident = IdentModel.new(conto.id, Pdc)
+
+        conto_ident << conto.codice
+        conto_ident << conto.descrizione
+        conto_ident << somma_clienti
+
+        if(conto.cliente?)
+          clienti_data_matrix[conto.codice.to_i] = conto_ident
+          self.totale_clienti += somma_clienti
+        else
+          fornitori_data_matrix[conto.codice.to_i] = conto_ident
+          self.totale_fornitori += somma_fornitori
+        end
+      end
+
+      clienti = clienti_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+      fornitori = fornitori_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
+
+      [clienti, fornitori]
+    end
+
+    def seleziona_conti(partita, tipo, codici_categoria = nil)
+      if codici_categoria
+        ScritturaPd.connection.select_values("select distinct(pd.#{partita})
+          from partita_doppia pd
+          inner join pdc p on pd.#{partita} = p.id
+          inner join categorie_pdc cp on p.categoria_pdc_id = cp.id
+          where pd.azienda_id = #{Azienda.current.id} and
+            pd.#{partita} is not null and cp.type in(#{tipo.join(',')}) and
+            cp.codice in(#{codici_categoria.join(',')})")
+      else
+        ScritturaPd.connection.select_values("select distinct(pd.#{partita})
+          from partita_doppia pd
+          inner join pdc p on pd.#{partita} = p.id
+          inner join categorie_pdc cp on p.categoria_pdc_id = cp.id
+          where pd.azienda_id = #{Azienda.current.id} and
+            pd.#{partita} is not null and cp.type in(#{tipo.join(',')})")
+      end
     end
 
     def build_attivi_report_conditions(conto, saldi = false)

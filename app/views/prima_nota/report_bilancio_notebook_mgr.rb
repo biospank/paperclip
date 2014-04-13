@@ -19,6 +19,10 @@ module Views
         xrc.find('REPORT_BILANCIO_PARTITARIO_FOLDER', self, :extends => Views::PrimaNota::ReportBilancioPartitarioFolder)
         report_bilancio_partitario_folder.ui()
         
+        evt_dettaglio_report_partitario_bilancio do | evt |
+          set_selection(Helpers::PrimaNotaHelper::WXBRA_REPORT_BILANCIO_PARTITARIO_FOLDER)
+          notify(:evt_dettaglio_report_partitario_bilancio, evt)
+        end
       end
 
       def report_bilancio_notebook_mgr_page_changing(evt)

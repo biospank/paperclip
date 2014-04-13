@@ -7,6 +7,11 @@ module Models
 
     set_table_name :pdc
 
+    module Categoria
+      CLIENTI = '220000'
+      FORNITORI = '460000'
+    end
+
     belongs_to :categoria_pdc, :foreign_key => 'categoria_pdc_id'
     belongs_to :banca, :foreign_key => 'banca_id'
 
@@ -61,6 +66,14 @@ module Models
 
     def passivo?()
       self.categoria_pdc.passivo?
+    end
+
+    def cliente?
+      self.categoria_pdc.clienti?
+    end
+
+    def fornitore?
+      self.categoria_pdc.fornitori?
     end
 
   end

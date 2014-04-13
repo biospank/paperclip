@@ -91,6 +91,34 @@ module Views
         end
       end
 
+      def ricerca_aggregata(filtro)
+        logger.debug("calling ricerca_aggregata..")
+        begin
+          reset_totali()
+          self.filtro = filtro
+          self.result_set_lstrep_attivita, self.result_set_lstrep_passivita = ctrl.report_stato_patrimoniale_aggregato()
+          lstrep_attivita.display_matrix(result_set_lstrep_attivita)
+          lstrep_passivita.display_matrix(result_set_lstrep_passivita)
+          self.lbl_totale_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+          self.lbl_totale_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+          if(Helpers::ApplicationHelper.real(self.totale_attivita) >= Helpers::ApplicationHelper.real(self.totale_passivita))
+            self.utile_esercizio = self.totale_attivita - self.totale_passivita
+            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+            self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
+          else
+            self.perdita_esercizio = self.totale_passivita - self.totale_attivita
+            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO"
+            self.lbl_perdita_esercizio.label = Helpers::ApplicationHelper.currency(self.perdita_esercizio)
+            self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+            self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
       def stampa(filtro)
         self.filtro = filtro
         Wx::BusyCursor.busy() do
@@ -149,24 +177,45 @@ module Views
         end
       end
 
-#      def lstrep_attivita_item_activated(evt)
-#        if ident = evt.get_item().get_data()
-#          begin
-#            fattura = ctrl.load_fattura_fornitore(ident[:id])
-#          rescue ActiveRecord::RecordNotFound
-#            Wx::message_box('Fattura eliminata: aggiornare il report.',
-#              'Info',
-#              Wx::OK | Wx::ICON_INFORMATION, self)
-#
-#            return
-#          end
-#
-#          # lancio l'evento per la richiesta di dettaglio fattura
-#          evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaScadenzarioEvent.new(fattura)
-#          # This sends the event for processing by listeners
-#          process_event(evt_dettaglio_fattura)
-#        end
-#      end
+      def lstrep_passivita_item_activated(evt)
+        if data = evt.get_item().get_data()
+          if(data[:type] == Models::Pdc)
+            begin
+              pdc = ctrl.load_pdc(data[:id])
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Conto inesistente: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+            evt_dettaglio_report_partitario_bilancio = Views::Base::CustomEvent::DettagliorReportPartitarioBilancioEvent.new(pdc, self.filtro)
+            # This sends the event for processing by listeners
+            process_event(evt_dettaglio_report_partitario_bilancio)
+          end
+        end
+      end
+
+      def lstrep_attivita_item_activated(evt)
+        if data = evt.get_item().get_data()
+          if(data[:type] == Models::Pdc)
+            begin
+              pdc = ctrl.load_pdc(data[:id])
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Conto inesistente: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+            evt_dettaglio_report_partitario_bilancio = Views::Base::CustomEvent::DettagliorReportPartitarioBilancioEvent.new(pdc, self.filtro)
+            # This sends the event for processing by listeners
+            process_event(evt_dettaglio_report_partitario_bilancio)
+          end
+        end
+      end
 
       private
 

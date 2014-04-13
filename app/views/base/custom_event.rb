@@ -607,6 +607,29 @@ module Views
         end
       end
 
+      class DettagliorReportPartitarioBilancioEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_DETTAGLIO_REPORT_PARTITARIO_BILANCIO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_report_partitario_bilancio', 0)
+
+        def initialize(pdc, filtro)
+          # The constant id is the arg to super
+          super(EVT_DETTAGLIO_REPORT_PARTITARIO_BILANCIO)
+          self.client_data = { :pdc => pdc, :filtro => filtro }
+
+        end
+
+        # Returns data associated with this event
+        def pdc
+          client_data[:pdc]
+        end
+
+        def filtro
+          client_data[:filtro]
+        end
+      end
+
       class AziendaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'

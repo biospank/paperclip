@@ -91,6 +91,73 @@ module Views
         end
       end
 
+      def ricerca_aggregata(filtro)
+        begin
+          reset_totali()
+          self.filtro = filtro
+          self.result_set_lstrep_costi, self.result_set_lstrep_ricavi  = ctrl.report_conto_economico_aggregato()
+          lstrep_costi.display_matrix(result_set_lstrep_costi)
+          lstrep_ricavi.display_matrix(result_set_lstrep_ricavi)
+          self.lbl_totale_costi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
+          self.lbl_totale_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
+          if(Helpers::ApplicationHelper.real(self.totale_costi) >= Helpers::ApplicationHelper.real(self.totale_ricavi))
+            self.perdita_esercizio = self.totale_costi - self.totale_ricavi
+            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO"
+            self.lbl_perdita_esercizio.label = Helpers::ApplicationHelper.currency(self.perdita_esercizio)
+            self.lbl_totale_pareggio_costi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
+            self.lbl_totale_pareggio_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_costi)
+          else
+            self.utile_esercizio = self.totale_ricavi - self.totale_costi
+            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO"
+            self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
+            self.lbl_totale_pareggio_ricavi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
+            self.lbl_totale_pareggio_costi.label = Helpers::ApplicationHelper.currency(self.totale_ricavi)
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
+      def lstrep_ricavi_item_activated(evt)
+        if data = evt.get_item().get_data()
+          if(data[:type] == Models::Pdc)
+            begin
+              pdc = ctrl.load_pdc(data[:id])
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Conto inesistente: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+            evt_dettaglio_report_partitario_bilancio = Views::Base::CustomEvent::DettagliorReportPartitarioBilancioEvent.new(pdc, self.filtro)
+            # This sends the event for processing by listeners
+            process_event(evt_dettaglio_report_partitario_bilancio)
+          end
+        end
+      end
+
+      def lstrep_costi_item_activated(evt)
+        if data = evt.get_item().get_data()
+          if(data[:type] == Models::Pdc)
+            begin
+              pdc = ctrl.load_pdc(data[:id])
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Conto inesistente: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+            evt_dettaglio_report_partitario_bilancio = Views::Base::CustomEvent::DettagliorReportPartitarioBilancioEvent.new(pdc, self.filtro)
+            # This sends the event for processing by listeners
+            process_event(evt_dettaglio_report_partitario_bilancio)
+          end
+        end
+      end
+
       def stampa(filtro)
         self.filtro = filtro
         Wx::BusyCursor.busy() do
@@ -148,25 +215,6 @@ module Views
           log_error(self, e)
         end
       end
-
-#      def lstrep_attivita_item_activated(evt)
-#        if ident = evt.get_item().get_data()
-#          begin
-#            fattura = ctrl.load_fattura_fornitore(ident[:id])
-#          rescue ActiveRecord::RecordNotFound
-#            Wx::message_box('Fattura eliminata: aggiornare il report.',
-#              'Info',
-#              Wx::OK | Wx::ICON_INFORMATION, self)
-#
-#            return
-#          end
-#
-#          # lancio l'evento per la richiesta di dettaglio fattura
-#          evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaScadenzarioEvent.new(fattura)
-#          # This sends the event for processing by listeners
-#          process_event(evt_dettaglio_fattura)
-#        end
-#      end
 
       private
 

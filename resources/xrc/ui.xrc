@@ -15364,7 +15364,7 @@
 																													<border>3</border>
 																													<object class="wxButton" name="btn_pulisci">
 																														<size>100,-1</size>
-																														<label>Pulisci</label>
+																														<label>Calcola b</label>
 																														<default>0</default>
 																													</object>
 																												</object>
@@ -15952,6 +15952,174 @@
 																																				<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 																																				<border>3</border>
 																																				<object class="wxStaticText" name="lbl_totale_pareggio_ricavi">
+																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
+																																					<fg>#004e98</fg>
+																																					<font>
+																																						<family>default</family>
+																																						<style>normal</style>
+																																						<weight>bold</weight>
+																																						<underlined>0</underlined>
+																																					</font>
+																																					<label></label>
+																																				</object>
+																																			</object>
+																																		</object>
+																																	</object>
+																																</object>
+																															</object>
+																														</object>
+																													</object>
+																												</object>
+																											</object>
+																										</object>
+																										<object class="notebookpage">
+																											<label>Dettaglio</label>
+																											<selected>0</selected>
+																											<object class="wxPanel" name="DETTAGLIO_CLIENTI_FORNITORI_FOLDER">
+																												<style>wxTAB_TRAVERSAL</style>
+																												<object class="wxBoxSizer">
+																													<orient>wxHORIZONTAL</orient>
+																													<object class="sizeritem">
+																														<option>1</option>
+																														<flag>wxEXPAND</flag>
+																														<border>5</border>
+																														<object class="wxBoxSizer">
+																															<orient>wxVERTICAL</orient>
+																															<object class="sizeritem">
+																																<option>1</option>
+																																<flag>wxEXPAND|wxALL</flag>
+																																<border>3</border>
+																																<object class="wxStaticBoxSizer">
+																																	<orient>wxVERTICAL</orient>
+																																	<label>Clienti</label>
+																																	<object class="sizeritem">
+																																		<option>1</option>
+																																		<flag>wxEXPAND|wxALL</flag>
+																																		<border>3</border>
+																																		<object class="wxListCtrl" name="lstrep_clienti">
+																																			<style>wxLC_HRULES|wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_VRULES</style>
+																																			<size>100,100</size>
+																																		</object>
+																																	</object>
+																																</object>
+																															</object>
+																															<object class="sizeritem">
+																																<option>0</option>
+																																<flag>wxEXPAND|wxALL</flag>
+																																<border>3</border>
+																																<object class="wxStaticBoxSizer">
+																																	<orient>wxVERTICAL</orient>
+																																	<label>Riepilogo</label>
+																																	<object class="sizeritem">
+																																		<option>1</option>
+																																		<flag>wxEXPAND</flag>
+																																		<border>5</border>
+																																		<object class="wxFlexGridSizer">
+																																			<rows>2</rows>
+																																			<cols>2</cols>
+																																			<vgap>0</vgap>
+																																			<hgap>0</hgap>
+																																			<growablecols>1</growablecols>
+																																			<growablerows></growablerows>
+																																			<object class="sizeritem">
+																																				<option>0</option>
+																																				<flag>wxALL</flag>
+																																				<border>3</border>
+																																				<object class="wxStaticText" name="wxID_STATIC9611311">
+																																					<fg>#004e98</fg>
+																																					<font>
+																																						<family>default</family>
+																																						<style>normal</style>
+																																						<weight>bold</weight>
+																																						<underlined>0</underlined>
+																																					</font>
+																																					<label>TOTALE CLIENTI:</label>
+																																				</object>
+																																			</object>
+																																			<object class="sizeritem">
+																																				<option>0</option>
+																																				<flag>wxALL|wxALIGN_RIGHT|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+																																				<border>3</border>
+																																				<object class="wxStaticText" name="lbl_totale_clienti">
+																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
+																																					<fg>#004e98</fg>
+																																					<font>
+																																						<family>default</family>
+																																						<style>normal</style>
+																																						<weight>bold</weight>
+																																						<underlined>0</underlined>
+																																					</font>
+																																					<label></label>
+																																				</object>
+																																			</object>
+																																		</object>
+																																	</object>
+																																</object>
+																															</object>
+																														</object>
+																													</object>
+																													<object class="sizeritem">
+																														<option>1</option>
+																														<flag>wxEXPAND</flag>
+																														<border>5</border>
+																														<object class="wxBoxSizer">
+																															<orient>wxVERTICAL</orient>
+																															<object class="sizeritem">
+																																<option>1</option>
+																																<flag>wxEXPAND|wxALL</flag>
+																																<border>3</border>
+																																<object class="wxStaticBoxSizer">
+																																	<orient>wxVERTICAL</orient>
+																																	<label>Fornitori</label>
+																																	<object class="sizeritem">
+																																		<option>1</option>
+																																		<flag>wxEXPAND|wxALL</flag>
+																																		<border>3</border>
+																																		<object class="wxListCtrl" name="lstrep_fornitori">
+																																			<style>wxLC_HRULES|wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_VRULES</style>
+																																			<size>100,100</size>
+																																		</object>
+																																	</object>
+																																</object>
+																															</object>
+																															<object class="sizeritem">
+																																<option>0</option>
+																																<flag>wxEXPAND|wxALL</flag>
+																																<border>3</border>
+																																<object class="wxStaticBoxSizer">
+																																	<orient>wxVERTICAL</orient>
+																																	<label>Riepilogo</label>
+																																	<object class="sizeritem">
+																																		<option>1</option>
+																																		<flag>wxEXPAND</flag>
+																																		<border>5</border>
+																																		<object class="wxFlexGridSizer">
+																																			<rows>2</rows>
+																																			<cols>2</cols>
+																																			<vgap>0</vgap>
+																																			<hgap>0</hgap>
+																																			<growablecols>1</growablecols>
+																																			<growablerows></growablerows>
+																																			<object class="sizeritem">
+																																				<option>0</option>
+																																				<flag>wxALL</flag>
+																																				<border>3</border>
+																																				<object class="wxStaticText" name="wxID_STATIC961141">
+																																					<fg>#004e98</fg>
+																																					<font>
+																																						<family>default</family>
+																																						<style>normal</style>
+																																						<weight>bold</weight>
+																																						<underlined>0</underlined>
+																																					</font>
+																																					<label>TOTALE FORNITORI:</label>
+																																				</object>
+																																			</object>
+																																			<object class="sizeritem">
+																																				<option>0</option>
+																																				<flag>wxALL|wxALIGN_RIGHT|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+																																				<border>3</border>
+																																				<object class="wxStaticText" name="lbl_totale_fornitori">
 																																					<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
 																																					<fg>#004e98</fg>
 																																					<font>

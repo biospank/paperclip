@@ -963,7 +963,7 @@ module Controllers
         if(fattura.nota_di_credito?)
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)} #{fattura.fornitore.denominazione}",
                                   :nc_pdc_dare => conto_fornitore,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -973,7 +973,7 @@ module Controllers
         else
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)} #{fattura.fornitore.denominazione}",
                                   :pdc_avere => conto_fornitore,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -991,7 +991,7 @@ module Controllers
         if(fattura.nota_di_credito?)
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)} #{fattura.cliente.denominazione}",
                                   :nc_pdc_avere => conto_cliente,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1001,7 +1001,7 @@ module Controllers
         else
           scrittura = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => fattura.importo,
-                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)} #{fattura.cliente.denominazione}",
                                   :pdc_dare => conto_cliente,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1025,7 +1025,7 @@ module Controllers
         if(fattura.nota_di_credito?)
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :nc_pdc_avere => dettaglio.pdc,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1034,7 +1034,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :nc_pdc_avere => conto_iva,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1044,7 +1044,7 @@ module Controllers
         else
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => "Imponibile fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => dettaglio.pdc,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1053,7 +1053,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => "Iva fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_dare => conto_iva,
                                   :data_operazione => fattura.data_registrazione,
                                   :data_registrazione => Time.now,
@@ -1072,7 +1072,7 @@ module Controllers
         if(fattura.nota_di_credito?)
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => "Imponibile nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :nc_pdc_dare => dettaglio.pdc,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1081,7 +1081,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => "Iva nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Nota di credito n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :nc_pdc_dare => conto_iva,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1091,7 +1091,7 @@ module Controllers
         else
           imponibile = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.imponibile + dettaglio.detrazione) : (dettaglio.imponibile)),
-                                  :descrizione => "Imponibile fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_avere => dettaglio.pdc,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,
@@ -1100,7 +1100,7 @@ module Controllers
 
           iva = ScritturaPd.new(:azienda => Azienda.current,
                                   :importo => (dettaglio.norma ? (dettaglio.iva - dettaglio.detrazione) : (dettaglio.iva)),
-                                  :descrizione => "Iva fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
+                                  :descrizione => "Fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}",
                                   :pdc_avere => conto_iva,
                                   :data_operazione => fattura.data_emissione,
                                   :data_registrazione => Time.now,

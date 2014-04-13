@@ -86,6 +86,25 @@ module Views
           reset_folder()
         end
 
+        subscribe(:evt_dettaglio_report_partitario_bilancio) do |evt|
+          reset_folder()
+          lku_pdc.view_data = evt.pdc
+          chce_anno.view_data = evt.filtro.anno
+          txt_dal.view_data = evt.filtro.dal
+          txt_al.view_data = evt.filtro.al
+          transfer_filtro_from_view()
+          self.result_set_lstrep_scritture = ctrl.report_partitario_bilancio()
+          lstrep_scritture.display_matrix(result_set_lstrep_scritture)
+          if(Helpers::ApplicationHelper.real(self.totale_dare) >= Helpers::ApplicationHelper.real(self.totale_avere))
+            self.cpt_totale.label = "Totale Dare:"
+            self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
+          else
+            self.cpt_totale.label = "Totale Avere"
+            self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
+          end
+          transfer_filtro_to_view()
+        end
+
         # accelerator table
         acc_table = Wx::AcceleratorTable[
           [ Wx::ACCEL_NORMAL, Wx::K_F9, btn_stampa.get_id ],

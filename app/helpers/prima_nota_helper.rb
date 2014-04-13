@@ -22,7 +22,8 @@ module Helpers
     # subfolder bilancio di verifica
     WXBRA_STATO_PATRIMONIALE_FOLDER = 0
     WXBRA_CONTO_ECONOMICO_FOLDER = 1
-
+    WXBRA_DETTAGLIO_CLIENTI_FORNITORI_FOLDER = 2
+    
     CASSA = 'CASSA'
     BANCA = 'BANCA'
     FUORI_PARTITA = 'FUORI PARTITA'
