@@ -467,12 +467,22 @@ module Controllers
         scritture.concat(ScritturaPd.all(build_ricavi_report_conditions(conto)))
       end
 
-      scritture.sort_by {|obj| obj.id}.each do |scrittura|
+      scritture.sort_by {|obj| obj.data_operazione}.each do |scrittura|
         dati_scrittura = []
         dati_scrittura << scrittura.data_operazione
         dati_scrittura << scrittura.descrizione
-        dati_scrittura << conto.codice
-        dati_scrittura << conto.descrizione
+        if codice_conto_scrittura = [scrittura.pdc_dare_id,
+                            scrittura.pdc_avere_id,
+                            scrittura.nc_pdc_dare_id,
+                            scrittura.pdc_avere_id
+                          ].compact.find {|id_conto| id_conto != conto.id}
+          conto_scrittura = Pdc.find(codice_conto_scrittura)
+          dati_scrittura << conto_scrittura.codice
+          dati_scrittura << conto_scrittura.descrizione
+        else
+          dati_scrittura << conto.codice
+          dati_scrittura << conto.descrizione
+        end
         if conto.id == scrittura.pdc_dare_id
           self.totale_dare += scrittura.importo
           dati_scrittura << scrittura.importo
@@ -925,21 +935,24 @@ module Controllers
       conti = Pdc.find(conti_ids.flatten.uniq)
 
       conti.each do |conto|
-        somma_clienti = ScritturaPd.sum(:importo, build_attivi_report_conditions(conto))
-        somma_fornitori = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
+        somma_attivo = ScritturaPd.sum(:importo, build_attivi_report_conditions(conto))
+        somma_passivo = ScritturaPd.sum(:importo, build_passivi_report_conditions(conto))
 
         conto_ident = IdentModel.new(conto.id, Pdc)
 
         conto_ident << conto.codice
         conto_ident << conto.descrizione
-        conto_ident << somma_clienti
+        
+        differenza = (somma_attivo - somma_passivo)
+
+        conto_ident << differenza
 
         if(conto.cliente?)
           clienti_data_matrix[conto.codice.to_i] = conto_ident
-          self.totale_clienti += somma_clienti
+          self.totale_clienti += differenza
         else
           fornitori_data_matrix[conto.codice.to_i] = conto_ident
-          self.totale_fornitori += somma_fornitori
+          self.totale_fornitori += differenza
         end
       end
 
