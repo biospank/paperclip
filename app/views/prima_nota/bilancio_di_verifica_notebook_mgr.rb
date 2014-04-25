@@ -70,7 +70,8 @@ module Views
 
           merge_all([
               :report_stato_patrimoniale,
-              :report_conto_economico
+              :report_conto_economico,
+              :report_dettaglio
             ],
             :output => :bilancio
           )

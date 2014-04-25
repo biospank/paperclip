@@ -106,27 +106,6 @@ module Views
 
       end
 
-      def render_header(opts={})
-        dati_azienda = opts[:dati_azienda]
-
-        header.write(
-          ERB.new(
-            IO.read(Helpers::ScadenzarioHelper::LiquidazioneIvaHeaderTemplatePath)
-          ).result(binding)
-        )
-
-
-      end
-
-      def render_body(opts={})
-        body.write(
-          ERB.new(
-            IO.read(Helpers::ScadenzarioHelper::LiquidazioneIvaBodyTemplatePath)
-          ).result(binding)
-        )
-
-      end
-
     end
   end
 end

@@ -164,9 +164,9 @@ module Views
 
           dati_azienda = Models::Azienda.current.dati_azienda
 
-          generate(:report_acquisti,
+          generate(:report_conto_economico,
             :margin_top => 40,
-            :margin_bottom => margin_bottom,
+            :margin_bottom => 40,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
             :preview => false
@@ -183,7 +183,7 @@ module Views
         begin
           header.write(
             ERB.new(
-              IO.read(Helpers::ScadenzarioHelper::AcquistiHeaderTemplatePath)
+              IO.read(Helpers::PrimaNotaHelper::BilancioContoEconomicoHeaderTemplatePath)
             ).result(binding)
           )
         rescue Exception => e
@@ -196,7 +196,7 @@ module Views
         begin
           body.write(
             ERB.new(
-              IO.read(Helpers::ScadenzarioHelper::AcquistiBodyTemplatePath)
+              IO.read(Helpers::PrimaNotaHelper::BilancioContoEconomicoBodyTemplatePath)
             ).result(binding)
           )
         rescue Exception => e
@@ -206,11 +206,11 @@ module Views
 
       def render_footer(opts={})
         begin
-          footer.write(
-            ERB.new(
-              IO.read(Helpers::ScadenzarioHelper::AcquistiFooterTemplatePath)
-            ).result(binding)
-          )
+#          footer.write(
+#            ERB.new(
+#              IO.read(Helpers::PrimaNotaHelper::BilancioContoEconomicoFooterTemplatePath)
+#            ).result(binding)
+#          )
         rescue Exception => e
           log_error(self, e)
         end

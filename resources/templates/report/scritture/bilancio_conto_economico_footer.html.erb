@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Acuisti</title>
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet" />
+    <script src="../resources/javascripts/jquery-min.js"></script>
+    <script src="../resources/javascripts/common.js"></script>
+    <script>
+      var page = new Page();
+      $(document).ready(function () {
+        page.footerOnLastPage();
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <hr />
+      <div id="segue" class="segue12">
+        <div class="row">
+          <p class="pull-right">
+            <em>SEGUE...</em>
+          </p>
+        </div>
+      </div>
+      <div id="totali">
+        <div class="well well-small">
+          <div class="row">
+            <div class="span7">
+              <table class="table table-condensed" id="riepilogo">
+                <thead>
+                  <tr>
+                    <th style="width: 15%" class="left">Aliquota</th>
+                    <th style="width: 15%" class="left">Norma</th>
+                    <th style="width: 20%" class="right">Imponibile</th>
+                    <th style="width: 20%" class="right">Iva</th>
+                    <th style="width: 15%" class="right">Iva detraibile</th>
+                    <th style="width: 15%" class="right">Iva indetraibile</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% result_set_lstrep_iva.each do |riga| %>
+                    <tr>
+                      <td style="width: 15%" class="left"><%= riga[0] %></td>
+                      <td style="width: 15%" class="left"><%= riga[1] %></td>
+                      <td style="width: 20%" class="right"><%= Helpers::ApplicationHelper.currency(riga[2]) %></td>
+                      <td style="width: 20%" class="right"><%= Helpers::ApplicationHelper.currency(riga[3]) %></td>
+                      <td style="width: 15%" class="right"><%= Helpers::ApplicationHelper.currency(riga[4]) %></td>
+                      <td style="width: 15%" class="right"><%= Helpers::ApplicationHelper.currency(riga[5]) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+            <div class="span4">
+              <dl class="dl-horizontal">
+                <dt>Imponibile</dt>
+                <dd class="right"><%= Helpers::ApplicationHelper.currency(self.totale_imponibile) %></dd>
+                <dt>Iva</dt>
+                <dd class="right"><%= Helpers::ApplicationHelper.currency(self.totale_iva) %></dd>
+                <dt>Iva detraibile</dt>
+                <dd class="right"><%= Helpers::ApplicationHelper.currency(self.totale_iva_detraibile) %></dd>
+                <dt>Iva indetraibile</dt>
+                <dd class="right"><%= Helpers::ApplicationHelper.currency(self.totale_iva_indetraibile) %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

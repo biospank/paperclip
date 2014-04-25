@@ -796,25 +796,25 @@ module Controllers
           if configatron.bilancio.attivo
             return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
             if pagamento.kind_of? Models::PagamentoFatturaCliente
-              if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.nc_pdc_dare = nc_pdc_dare
+              if pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+                scrittura.pdc_avere = pdc_dare
               else
 #                if !pagamento.tipo_pagamento.nc_cassa_dare? &&
 #                    !pagamento.tipo_pagamento.nc_banca_dare? &&
 #                    !pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
 #                end
               end
-              scrittura.nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_avere
             else
-              scrittura.nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.nc_pdc_avere = nc_pdc_avere
+              scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_dare
+              if pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+                scrittura.pdc_dare = pdc_avere
               else
 #                if !pagamento.tipo_pagamento.nc_cassa_avere? &&
 #                    !pagamento.tipo_pagamento.nc_banca_avere? &&
 #                    !pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
 #                end
               end
             end
@@ -1225,20 +1225,20 @@ module Controllers
           if configatron.bilancio.attivo
             return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
             if pagamento.kind_of? Models::PagamentoFatturaCliente
-              if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.nc_pdc_dare = nc_pdc_dare
+              if pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+                scrittura.pdc_dare = pdc_dare
               else
 #                if !pagamento.tipo_pagamento.nc_cassa_dare? &&
 #                    !pagamento.tipo_pagamento.nc_banca_dare? &&
 #                    !pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
 #                end
               end
-              scrittura.nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
             else
-              scrittura.nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.nc_pdc_avere = nc_pdc_avere
+              scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+              if pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+                scrittura.pdc_avere = pdc_avere
               else
 #                if !pagamento.tipo_pagamento.nc_cassa_avere? &&
 #                    !pagamento.tipo_pagamento.nc_banca_avere? &&
@@ -1438,25 +1438,25 @@ module Controllers
           if configatron.bilancio.attivo
             return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
             if maxi_pagamento.kind_of? MaxiPagamentoCliente
-              if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.nc_pdc_dare = nc_pdc_dare
+              if pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+                scrittura.pdc_avere = pdc_dare
               else
 #                if !maxi_pagamento.tipo_pagamento.nc_cassa_dare? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_banca_dare? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
 #                end
               end
-              scrittura.nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_avere
             else
-              scrittura.nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.nc_pdc_avere = nc_pdc_avere
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+              if pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+                scrittura.pdc_dare = pdc_avere
               else
 #                if !maxi_pagamento.tipo_pagamento.nc_cassa_avere? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_banca_avere? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
 #                end
               end
             end
@@ -1655,25 +1655,25 @@ module Controllers
           if configatron.bilancio.attivo
             return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
             if maxi_pagamento.kind_of? MaxiPagamentoCliente
-              if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.nc_pdc_dare = nc_pdc_dare
+              if pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+                scrittura.pdc_dare = pdc_dare
               else
 #                if !maxi_pagamento.tipo_pagamento.nc_cassa_dare? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_banca_dare? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.nc_pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
 #                end
               end
-              scrittura.nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
             else
-              scrittura.nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.nc_pdc_avere = nc_pdc_avere
+              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+              if pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+                scrittura.pdc_avere = pdc_avere
               else
 #                if !maxi_pagamento.tipo_pagamento.nc_cassa_avere? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_banca_avere? &&
 #                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.nc_pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
 #                end
               end
             end

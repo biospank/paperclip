@@ -943,14 +943,14 @@ module Controllers
         conto_ident << conto.codice
         conto_ident << conto.descrizione
         
-        differenza = (somma_attivo - somma_passivo)
-
-        conto_ident << differenza
-
         if(conto.cliente?)
+          differenza = (somma_attivo - somma_passivo)
+          conto_ident << differenza
           clienti_data_matrix[conto.codice.to_i] = conto_ident
           self.totale_clienti += differenza
         else
+          differenza = (somma_passivo - somma_attivo)
+          conto_ident << differenza
           fornitori_data_matrix[conto.codice.to_i] = conto_ident
           self.totale_fornitori += differenza
         end

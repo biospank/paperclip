@@ -40,6 +40,15 @@ module Helpers
     StampeBodyTemplatePath = 'resources/templates/report/scritture/stampe_body.html.erb'
     PartitarioHeaderTemplatePath = 'resources/templates/report/scritture/partitario_header.html.erb'
     PartitarioBodyTemplatePath = 'resources/templates/report/scritture/partitario_body.html.erb'
+    BilancioStatoPatrimonialeHeaderTemplatePath = 'resources/templates/report/scritture/bilancio_stato_patrimoniale_header.html.erb'
+    BilancioStatoPatrimonialeBodyTemplatePath = 'resources/templates/report/scritture/bilancio_stato_patrimoniale_body.html.erb'
+    BilancioStatoPatrimonialeFooterTemplatePath = 'resources/templates/report/scritture/bilancio_stato_patrimoniale_footer.html.erb'
+    BilancioContoEconomicoHeaderTemplatePath = 'resources/templates/report/scritture/bilancio_conto_economico_header.html.erb'
+    BilancioContoEconomicoBodyTemplatePath = 'resources/templates/report/scritture/bilancio_conto_economico_body.html.erb'
+    BilancioContoEconomicoFooterTemplatePath = 'resources/templates/report/scritture/bilancio_conto_economico_footer.html.erb'
+    BilancioDettaglioHeaderTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_header.html.erb'
+    BilancioDettaglioBodyTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_body.html.erb'
+    BilancioDettaglioFooterTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_footer.html.erb'
 
   end
 end
