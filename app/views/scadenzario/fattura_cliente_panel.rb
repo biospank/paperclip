@@ -67,6 +67,7 @@ module Views
         subscribe(:evt_dettaglio_incasso) do |incasso|
           self.fattura_cliente = incasso.fattura_cliente_scadenzario # importante deve essere di tipo fattura_cliente_scadenzario
           self.cliente = self.fattura_cliente.cliente
+          carica_righe_fattura_pdc()
           transfer_cliente_to_view()
           transfer_fattura_cliente_to_view()
           incassi_fattura_cliente_panel.display_incassi_fattura_cliente(self.fattura_cliente, incasso)
@@ -88,6 +89,7 @@ module Views
           reset_panel()
           self.fattura_cliente = fattura # importante deve essere di tipo fattura_cliente_scadenzario
           self.cliente = self.fattura_cliente.cliente
+          carica_righe_fattura_pdc()
           transfer_cliente_to_view()
           transfer_fattura_cliente_to_view()
           incassi_fattura_cliente_panel.display_incassi_fattura_cliente(self.fattura_cliente)

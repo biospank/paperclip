@@ -96,10 +96,10 @@ module Views
           self.result_set_lstrep_scritture = ctrl.report_partitario_bilancio()
           lstrep_scritture.display_matrix(result_set_lstrep_scritture)
           if(Helpers::ApplicationHelper.real(self.totale_dare) >= Helpers::ApplicationHelper.real(self.totale_avere))
-            self.cpt_totale.label = "Totale Dare:"
+            self.cpt_totale.label = "Saldo Dare:"
             self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
           else
-            self.cpt_totale.label = "Totale Avere"
+            self.cpt_totale.label = "Saldo Avere"
             self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
           end
           transfer_filtro_to_view()

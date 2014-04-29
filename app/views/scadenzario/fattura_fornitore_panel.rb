@@ -73,6 +73,7 @@ module Views
         subscribe(:evt_dettaglio_pagamento) do |pagamento|
           self.fattura_fornitore = pagamento.fattura_fornitore
           self.fornitore = self.fattura_fornitore.fornitore
+          self.righe_fattura_pdc = ctrl.search_righe_fattura_pdc_fornitori(self.fattura_fornitore)
           transfer_fornitore_to_view()
           transfer_fattura_fornitore_to_view()
           pagamenti_fattura_fornitore_panel.display_pagamenti_fattura_fornitore(self.fattura_fornitore, pagamento)
@@ -96,6 +97,7 @@ module Views
           reset_panel()
           self.fattura_fornitore = fattura
           self.fornitore = self.fattura_fornitore.fornitore
+          self.righe_fattura_pdc = ctrl.search_righe_fattura_pdc_fornitori(self.fattura_fornitore)
           transfer_fornitore_to_view()
           transfer_fattura_fornitore_to_view()
           pagamenti_fattura_fornitore_panel.display_pagamenti_fattura_fornitore(self.fattura_fornitore)

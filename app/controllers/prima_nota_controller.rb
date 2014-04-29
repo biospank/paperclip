@@ -822,12 +822,32 @@ module Controllers
         somma_costi = ScritturaPd.sum(:importo, build_costi_report_conditions(conto))
         somma_ricavi = ScritturaPd.sum(:importo, build_ricavi_report_conditions(conto))
 
+        conto_ident = IdentModel.new(conto.id, Pdc)
+
         if(Helpers::ApplicationHelper.real(somma_costi) >= Helpers::ApplicationHelper.real(somma_ricavi))
-          costi_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_costi - somma_ricavi)]
-          self.totale_costi += (somma_costi - somma_ricavi)
+          costo = (somma_costi - somma_ricavi)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << costo
+
+          costi_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_costi += costo
+#          costi_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_costi - somma_ricavi)]
+#          self.totale_costi += (somma_costi - somma_ricavi)
         else
-          ricavi_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_ricavi - somma_costi)]
-          self.totale_ricavi += (somma_ricavi - somma_costi)
+          ricavo = (somma_ricavi - somma_costi)
+
+          conto_ident << conto.codice
+          conto_ident << conto.descrizione
+          conto_ident << ricavo
+
+          ricavi_data_matrix[conto.codice.to_i] = conto_ident
+
+          self.totale_ricavi += ricavo
+#          ricavi_data_matrix[conto.codice.to_i] = [conto.codice, conto.descrizione, (somma_ricavi - somma_costi)]
+#          self.totale_ricavi += (somma_ricavi - somma_costi)
         end
       end
 
