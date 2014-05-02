@@ -13,20 +13,20 @@
         <div class="span12">
           <table id="report" class="table table-striped table-bordered table-condensed">
             <tbody>
-              <% limit = (self.result_set_lstrep_attivita.size >= self.result_set_lstrep_passivita.size) ? self.result_set_lstrep_attivita.size : self.result_set_lstrep_passivita.size %>
+              <% limit = (self.result_set_lstrep_clienti.size >= self.result_set_lstrep_fornitori.size) ? self.result_set_lstrep_clienti.size : self.result_set_lstrep_fornitori.size %>
               <% 0.upto(limit -1) do |indice| %>
                 <tr>
-                  <% if attivita = self.result_set_lstrep_attivita[indice] %>
-                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= attivita[0] %></div></td>
-                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= attivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= attivita[2] %></div></td>
+                  <% if clienti = self.result_set_lstrep_clienti[indice] %>
+                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= clienti[0] %></div></td>
+                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= clienti[1] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(clienti[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>
-                  <% if passivita = self.result_set_lstrep_passivita[indice] %>
-                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= passivita[0] %></div></td>
-                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= passivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= passivita[2] %></div></td>
+                  <% if fornitori = self.result_set_lstrep_fornitori[indice] %>
+                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= fornitori[0] %></div></td>
+                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= fornitori[1] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(fornitori[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>

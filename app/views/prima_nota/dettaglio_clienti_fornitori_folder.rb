@@ -119,7 +119,7 @@ module Views
           dati_azienda = Models::Azienda.current.dati_azienda
 
           generate(:report_dettaglio,
-            :margin_top => 40,
+            :margin_top => 50,
             :margin_bottom => 40,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
@@ -150,7 +150,7 @@ module Views
         begin
           body.write(
             ERB.new(
-              IO.read(Helpers::PrimaNotaHelper::BilancioContoEconomicoBodyTemplatePath)
+              IO.read(Helpers::PrimaNotaHelper::BilancioDettaglioBodyTemplatePath)
             ).result(binding)
           )
         rescue Exception => e

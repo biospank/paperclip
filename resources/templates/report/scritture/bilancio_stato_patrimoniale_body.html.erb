@@ -19,14 +19,14 @@
                   <% if attivita = self.result_set_lstrep_attivita[indice] %>
                     <td style="width: 10%;" class="left"><div class="dontsplit"><%= attivita[0] %></div></td>
                     <td style="width: 30%;" class="left"><div class="dontsplit"><%= attivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= attivita[2] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(attivita[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>
                   <% if passivita = self.result_set_lstrep_passivita[indice] %>
                     <td style="width: 10%;" class="left"><div class="dontsplit"><%= passivita[0] %></div></td>
                     <td style="width: 30%;" class="left"><div class="dontsplit"><%= passivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= passivita[2] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(passivita[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>

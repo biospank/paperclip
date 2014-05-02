@@ -45,33 +45,22 @@ module Controllers
 
     def create_scrittura_partita_doppia()
 
-      conto_dare = ScritturaPd.new(:azienda => Azienda.current,
+      scrittura_pd = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => (scrittura.cassa_dare || scrittura.cassa_avere ||
                                   scrittura.banca_dare || scrittura.banca_avere ||
                                   scrittura.fuori_partita_dare || scrittura.fuori_partita_avere),
                               :descrizione => scrittura.descrizione,
                               :pdc_dare => scrittura.pdc_dare,
-                              :data_operazione => scrittura.data_operazione,
-                              :data_registrazione => Time.now,
-                              :esterna => 0,
-                              :congelata => 0)
-
-      conto_avere = ScritturaPd.new(:azienda => Azienda.current,
-                              :importo => (scrittura.cassa_dare || scrittura.cassa_avere ||
-                                  scrittura.banca_dare || scrittura.banca_avere ||
-                                  scrittura.fuori_partita_dare || scrittura.fuori_partita_avere),
-                              :descrizione => scrittura.descrizione,
                               :pdc_avere => scrittura.pdc_avere,
                               :data_operazione => scrittura.data_operazione,
                               :data_registrazione => Time.now,
                               :esterna => 0,
-                              :congelata => 0)
+                              :congelata => 0,
+                              :tipo => 'Models::Scrittura')
 
-      [conto_dare, conto_avere].each do |scrittura_pd|
-        scrittura_pd.save_with_validation(false)
-        PrimaNotaPartitaDoppia.create(:prima_nota_id => scrittura.id,
-                                      :partita_doppia_id => scrittura_pd.id)
-      end
+      scrittura_pd.save_with_validation(false)
+      PrimaNotaPartitaDoppia.create(:prima_nota_id => scrittura.id,
+                                    :partita_doppia_id => scrittura_pd.id)
 
     end
 
@@ -474,16 +463,32 @@ module Controllers
         if codice_conto_scrittura = [scrittura.pdc_dare_id,
                             scrittura.pdc_avere_id,
                             scrittura.nc_pdc_dare_id,
-                            scrittura.pdc_avere_id
+                            scrittura.nc_pdc_avere_id
                           ].compact.find {|id_conto| id_conto != conto.id}
           conto_scrittura = Pdc.find(codice_conto_scrittura)
           dati_scrittura << conto_scrittura.codice
           dati_scrittura << conto_scrittura.descrizione
         else
-          dati_scrittura << conto.codice
-          dati_scrittura << conto.descrizione
+          case scrittura.tipo
+          when 'Pdc::DettaglioImponibileFatturaCliente',
+              'Pdc::DettaglioIvaFatturaCliente'
+            dfpd = DettaglioFatturaPartitaDoppia.find_by_partita_doppia_id(scrittura.id)
+            cliente = dfpd.dettaglio_fattura_cliente.fattura_cliente.cliente
+            dati_scrittura << cliente.conto
+            dati_scrittura << cliente.denominazione
+          when 'Pdc::DettaglioImponibileFatturaFornitore',
+              'Pdc::DettaglioIvaFatturaFornitore'
+            dfpd = DettaglioFatturaPartitaDoppia.find_by_partita_doppia_id(scrittura.id)
+            fornitore = dfpd.dettaglio_fattura_fornitore.fattura_fornitore.fornitore
+            dati_scrittura << fornitore.conto
+            dati_scrittura << fornitore.denominazione
+          else
+            dati_scrittura << conto.codice
+            dati_scrittura << conto.descrizione
+          end
         end
-        if conto.id == scrittura.pdc_dare_id
+        if((conto.id == scrittura.pdc_dare_id) ||
+          (conto.id == scrittura.nc_pdc_dare_id))
           self.totale_dare += scrittura.importo
           dati_scrittura << scrittura.importo
           dati_scrittura << ''

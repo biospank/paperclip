@@ -101,6 +101,7 @@ module Views
 
       def btn_stampa_click(evt)
         Wx::BusyCursor.busy() do
+          logger.debug("bilancio_di_verifica_folder.btn_stampa_click")
           bilancio_di_verifica_notebook_mgr.stampa(filtro)
         end
 

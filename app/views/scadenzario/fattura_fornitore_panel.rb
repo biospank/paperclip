@@ -419,9 +419,15 @@ module Views
         begin
           if btn_elimina.enabled?
             if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
-              res = Wx::message_box("Confermi la cancellazione della fattura e tutti gli pagamenti collegati?",
-                'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              if self.fattura_fornitore.nota_di_credito?
+                res = Wx::message_box("Confermi la cancellazione della nota di credito?",
+                  'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              else
+                res = Wx::message_box("Confermi la cancellazione della fattura e tutti gli pagamenti collegati?",
+                  'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              end
 
               Wx::BusyCursor.busy() do
                 if res == Wx::YES

@@ -10,6 +10,7 @@ module Views
     module BilancioDiVerificaNotebookMgr
       include Views::Base::View
       include Helpers::MVCHelper
+      include Helpers::Wk::HtmlToPdf
       
       def ui
         
@@ -61,7 +62,7 @@ module Views
         end
       end
 
-      def stampa()
+      def stampa(filtro)
         Wx::BusyCursor.busy() do
 
           stato_patrimoniale_folder.stampa(filtro)

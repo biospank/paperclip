@@ -16345,7 +16345,7 @@
 																													<border>3</border>
 																													<object class="wxStaticText" name="cpt_totale">
 																														<size>100,-1</size>
-																														<label>Totale:</label>
+																														<label>Saldo:</label>
 																													</object>
 																												</object>
 																												<object class="sizeritem">

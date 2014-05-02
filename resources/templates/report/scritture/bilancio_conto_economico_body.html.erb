@@ -13,20 +13,20 @@
         <div class="span12">
           <table id="report" class="table table-striped table-bordered table-condensed">
             <tbody>
-              <% limit = (self.result_set_lstrep_attivita.size >= self.result_set_lstrep_passivita.size) ? self.result_set_lstrep_attivita.size : self.result_set_lstrep_passivita.size %>
+              <% limit = (self.result_set_lstrep_costi.size >= self.result_set_lstrep_ricavi.size) ? self.result_set_lstrep_costi.size : self.result_set_lstrep_ricavi.size %>
               <% 0.upto(limit -1) do |indice| %>
                 <tr>
-                  <% if attivita = self.result_set_lstrep_attivita[indice] %>
-                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= attivita[0] %></div></td>
-                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= attivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= attivita[2] %></div></td>
+                  <% if costi = self.result_set_lstrep_costi[indice] %>
+                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= costi[0] %></div></td>
+                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= costi[1] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(costi[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>
-                  <% if passivita = self.result_set_lstrep_passivita[indice] %>
-                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= passivita[0] %></div></td>
-                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= passivita[1] %></div></td>
-                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= passivita[2] %></div></td>
+                  <% if ricavi = self.result_set_lstrep_ricavi[indice] %>
+                    <td style="width: 10%;" class="left"><div class="dontsplit"><%= ricavi[0] %></div></td>
+                    <td style="width: 30%;" class="left"><div class="dontsplit"><%= ricavi[1] %></div></td>
+                    <td style="width: 10%;" class="right"><div class="dontsplit"><%= Helpers::ApplicationHelper.currency(ricavi[2]) %></div></td>
                   <% else %>
                     <%= "<td />" * 3 %>
                   <% end %>

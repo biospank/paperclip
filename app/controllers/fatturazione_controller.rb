@@ -240,7 +240,8 @@ module Controllers
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
                               :esterna => 1,
-                              :congelata => 0)
+                              :congelata => 0,
+                              :tipo => 'Pdc::DettaglioImportoCorrispettivo')
 
       imponibile = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => corrispettivo.imponibile,
@@ -249,7 +250,8 @@ module Controllers
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
                               :esterna => 1,
-                              :congelata => 0)
+                              :congelata => 0,
+                              :tipo => 'Pdc::DettaglioImponibileCorrispettivo')
 
       iva = ScritturaPd.new(:azienda => Azienda.current,
                               :importo => corrispettivo.iva,
@@ -258,7 +260,9 @@ module Controllers
                               :data_operazione => corrispettivo.data,
                               :data_registrazione => Time.now,
                               :esterna => 1,
-                              :congelata => 0)
+                              :congelata => 0,
+                              :tipo => 'Pdc::DettaglioIvaCorrispettivo')
+
 
       [importo, imponibile, iva].each do |scrittura|
         scrittura.save_with_validation(false)

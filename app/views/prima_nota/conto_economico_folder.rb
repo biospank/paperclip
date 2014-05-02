@@ -165,7 +165,7 @@ module Views
           dati_azienda = Models::Azienda.current.dati_azienda
 
           generate(:report_conto_economico,
-            :margin_top => 40,
+            :margin_top => 50,
             :margin_bottom => 40,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
