@@ -73,8 +73,10 @@ module Views
 
         end
 
-        xrc.find('cpt_totale', self)
-        xrc.find('lbl_totale', self)
+        xrc.find('lbl_totale_dare', self)
+        xrc.find('lbl_totale_avere', self)
+        xrc.find('cpt_saldo', self)
+        xrc.find('lbl_saldo', self)
 
         xrc.find('btn_ricerca', self)
         xrc.find('btn_pulisci', self)
@@ -95,12 +97,14 @@ module Views
           transfer_filtro_from_view()
           self.result_set_lstrep_scritture = ctrl.report_partitario_bilancio()
           lstrep_scritture.display_matrix(result_set_lstrep_scritture)
+          lbl_totale_dare.label = Helpers::ApplicationHelper.currency(self.totale_dare)
+          lbl_totale_avere.label = Helpers::ApplicationHelper.currency(self.totale_avere)
           if(Helpers::ApplicationHelper.real(self.totale_dare) >= Helpers::ApplicationHelper.real(self.totale_avere))
-            self.cpt_totale.label = "Saldo Dare:"
-            self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
+            self.cpt_saldo.label = "Saldo dare:"
+            self.lbl_saldo.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
           else
-            self.cpt_totale.label = "Saldo Avere"
-            self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
+            self.cpt_saldo.label = "Saldo avere:"
+            self.lbl_saldo.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
           end
           transfer_filtro_to_view()
         end
@@ -141,12 +145,14 @@ module Views
             end
             self.result_set_lstrep_scritture = ctrl.report_partitario_bilancio()
             lstrep_scritture.display_matrix(result_set_lstrep_scritture)
+            lbl_totale_dare.label = Helpers::ApplicationHelper.currency(self.totale_dare)
+            lbl_totale_avere.label = Helpers::ApplicationHelper.currency(self.totale_avere)
             if(Helpers::ApplicationHelper.real(self.totale_dare) >= Helpers::ApplicationHelper.real(self.totale_avere))
-              self.cpt_totale.label = "Totale Dare:"
-              self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
+              self.cpt_saldo.label = "Saldo dare:"
+              self.lbl_saldo.label = Helpers::ApplicationHelper.currency(self.totale_dare - self.totale_avere)
             else
-              self.cpt_totale.label = "Totale Avere"
-              self.lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
+              self.cpt_saldo.label = "Saldo avere:"
+              self.lbl_saldo.label = Helpers::ApplicationHelper.currency(self.totale_avere - self.totale_dare)
             end
             transfer_filtro_to_view()
             self.active_filter = true
@@ -169,21 +175,25 @@ module Views
       end
 
       def btn_stampa_click(evt)
+        unless filtro.pdc
+            Wx::message_box('Selezionare un conto.',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+          lku_pdc.activate()
+          return
+        end
+
         Wx::BusyCursor.busy() do
 
           dati_azienda = Models::Azienda.current.dati_azienda
 
-          generate(:report_partitario,
-            :layout => 'Landscape',
-            :margin_top => 40,
-            :footer => false,
+          generate(:report_bilancio_partitario,
+            :layout => "Landscape",
+            :margin_top => 50,
+            :margin_bottom => 30,
             :dati_azienda => dati_azienda
           )
-
-          if filtro.stampa_residuo
-            Models::Scrittura.update_all("congelata = 1, data_residuo = '#{Date.today.to_s(:db)}'", "congelata = 0 and azienda_id = #{Models::Azienda.current.id}")
-          end
-
+          
         end
 
       end
@@ -193,7 +203,7 @@ module Views
 
         header.write(
           ERB.new(
-            IO.read(Helpers::PrimaNotaHelper::PartitarioHeaderTemplatePath)
+            IO.read(Helpers::PrimaNotaHelper::BilancioPartitarioHeaderTemplatePath)
           ).result(binding)
         )
 
@@ -201,77 +211,101 @@ module Views
       end
 
       def render_body(opts={})
-        body.write(
-          ERB.new(
-            IO.read(Helpers::PrimaNotaHelper::PartitarioBodyTemplatePath)
-          ).result(binding)
-        )
+        begin
+          body.write(
+            ERB.new(
+              IO.read(Helpers::PrimaNotaHelper::BilancioPartitarioBodyTemplatePath)
+            ).result(binding)
+          )
+        rescue Exception => e
+          log_error(self, e)
+        end
 
       end
 
-#      def lstrep_scritture_item_activated(evt)
-#        if ident = evt.get_item().get_data()
-#          begin
-#            scrittura = ctrl.load_scrittura(ident[:id])
-#            if scrittura.esterna? # and not scrittura.stornata? le scritture stornate non vengono visualizzate
-#              if pfc = scrittura.pagamento_fattura_cliente
-#                if mpc = scrittura.maxi_pagamento_cliente
-#                  incassi = mpc.pagamenti_fattura_cliente
-#                  rif_incassi_dlg = Views::Dialog::RifMaxiIncassiDialog.new(self, incassi)
-#                  rif_incassi_dlg.center_on_screen(Wx::BOTH)
-#                  answer = rif_incassi_dlg.show_modal()
-#                  if answer == Wx::ID_OK
-#                    pfc = ctrl.load_incasso(rif_incassi_dlg.selected)
-#                    rif_incassi_dlg.destroy()
-#                    # lancio l'evento per la richiesta di dettaglio fattura
-#                    evt_dettaglio_incasso = Views::Base::CustomEvent::DettaglioIncassoEvent.new(pfc)
-#                    # This sends the event for processing by listeners
-#                    process_event(evt_dettaglio_incasso)
-#                  end
-#                else
-#                  # lancio l'evento per la richiesta di dettaglio fattura
-#                  evt_dettaglio_incasso = Views::Base::CustomEvent::DettaglioIncassoEvent.new(pfc)
-#                  # This sends the event for processing by listeners
-#                  process_event(evt_dettaglio_incasso)
-#                end
-#              elsif pff = scrittura.pagamento_fattura_fornitore
-#                if mpf = scrittura.maxi_pagamento_fornitore
-#                  pagamenti = mpf.pagamenti_fattura_fornitore
-#                  rif_pagamenti_dlg = Views::Dialog::RifMaxiPagamentiDialog.new(self, pagamenti)
-#                  rif_pagamenti_dlg.center_on_screen(Wx::BOTH)
-#                  answer = rif_pagamenti_dlg.show_modal()
-#                  if answer == Wx::ID_OK
-#                    pff = ctrl.load_pagamento(rif_pagamenti_dlg.selected)
-#                    rif_pagamenti_dlg.destroy()
-#                    # lancio l'evento per la richiesta di dettaglio fattura
-#                    evt_dettaglio_pagamento = Views::Base::CustomEvent::DettaglioPagamentoEvent.new(pff)
-#                    # This sends the event for processing by listeners
-#                    process_event(evt_dettaglio_pagamento)
-#                  end
-#                else
-#                  # lancio l'evento per la richiesta di dettaglio fattura
-#                  evt_dettaglio_pagamento = Views::Base::CustomEvent::DettaglioPagamentoEvent.new(pff)
-#                  # This sends the event for processing by listeners
-#                  process_event(evt_dettaglio_pagamento)
-#                end
-#              end
-#
-#            else
-#              # lancio l'evento per la richiesta di dettaglio scrittura
-#              evt_dettaglio_scrittura = Views::Base::CustomEvent::DettaglioScritturaEvent.new(scrittura)
-#              # This sends the event for processing by listeners
-#              process_event(evt_dettaglio_scrittura)
-#            end
-#          rescue ActiveRecord::RecordNotFound
-#            Wx::message_box('Nessuna incasso/pagamento associato alla scrittura selezionata.',
-#              'Info',
-#              Wx::OK | Wx::ICON_INFORMATION, self)
-#
-#            return
-#          end
-#
-#        end
-#      end
+      def render_footer(opts={})
+        begin
+          footer.write(
+            ERB.new(
+              IO.read(Helpers::PrimaNotaHelper::BilancioPartitarioFooterTemplatePath)
+            ).result(binding)
+          )
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
+      def lstrep_scritture_item_activated(evt)
+        if data = evt.get_item().get_data()
+          logger.debug("data type: #{data[:type]}")
+          logger.debug("data id #{data[:id]}")
+          if data[:type] == Models::FatturaClienteScadenzario
+            begin
+              fattura = ctrl.load_fattura_cliente_scadenzario(data[:id])
+              # lancio l'evento per la richiesta di dettaglio fattura
+              evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaScadenzarioEvent.new(fattura)
+              # This sends the event for processing by listeners
+              process_event(evt_dettaglio_fattura)
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Fattura non presente in scadenzario: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+          elsif data[:type] == Models::FatturaFornitore
+
+            begin
+              fattura = ctrl.load_fattura_fornitore(data[:id])
+              # lancio l'evento per la richiesta di dettaglio fattura
+              evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaScadenzarioEvent.new(fattura)
+              # This sends the event for processing by listeners
+              process_event(evt_dettaglio_fattura)
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Fattura non presente in scadenzario: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+            
+          elsif data[:type] == Models::Scrittura
+
+            begin
+              scrittura = ctrl.load_scrittura(data[:id])
+              # lancio l'evento per la richiesta di dettaglio fattura
+              evt_dettaglio_scrittura = Views::Base::CustomEvent::DettaglioScritturaEvent.new(scrittura)
+              # This sends the event for processing by listeners
+              process_event(evt_dettaglio_scrittura)
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Scrittura eliminata: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+          elsif data[:type] == Models::Corrispettivo
+
+            begin
+              corrispettivo = ctrl.load_corrispettivo(data[:id])
+              # lancio l'evento per la richiesta di dettaglio fattura
+              evt_dettaglio_corrispettivo = Views::Base::CustomEvent::DettaglioCorrispettivoEvent.new(corrispettivo)
+              # This sends the event for processing by listeners
+              process_event(evt_dettaglio_corrispettivo)
+            rescue ActiveRecord::RecordNotFound
+              Wx::message_box('Corrispettivo eliminato: aggiornare il report.',
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
+
+              return
+            end
+
+          else
+            return
+          end
+        end
+      end
 
       def include_hidden_pdc()
         true
@@ -282,8 +316,10 @@ module Views
       def reset_totali()
         self.totale_dare = 0.0
         self.totale_avere = 0.0
-        self.cpt_totale.label = 'Totale:'
-        self.lbl_totale.label = ''
+        lbl_totale_dare.label = ''
+        lbl_totale_avere.label = ''
+        cpt_saldo.label = 'Saldo:'
+        lbl_saldo.label = ''
       end
 
     end

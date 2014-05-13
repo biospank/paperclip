@@ -31,10 +31,6 @@ module Controllers
       return true
     end
 
-    def load_scrittura(id)
-      Scrittura.find(id)
-    end
-    
     def delete_scrittura()
       scrittura.prima_nota_partita_doppia.each do |pnpd|
         pnpd.destroy
@@ -56,7 +52,9 @@ module Controllers
                               :data_registrazione => Time.now,
                               :esterna => 0,
                               :congelata => 0,
-                              :tipo => 'Models::Scrittura')
+                              :tipo => {:model => 'Models::Scrittura',
+                                :id => scrittura.id
+                               })
 
       scrittura_pd.save_with_validation(false)
       PrimaNotaPartitaDoppia.create(:prima_nota_id => scrittura.id,
@@ -457,7 +455,32 @@ module Controllers
       end
 
       scritture.sort_by {|obj| obj.data_operazione}.each do |scrittura|
-        dati_scrittura = []
+        case (scrittura.tipo[:model] rescue nil)
+        when 'Models::FatturaClienteScadenzario',
+            'Models::FatturaFornitore',
+            'Models::Corrispettivo',
+            'Models::Scrittura'
+
+          dati_scrittura = IdentModel.new(scrittura.tipo[:id], scrittura.tipo[:model].constantize)
+
+        when 'Pdc::DettaglioImponibileFatturaCliente',
+              'Pdc::DettaglioIvaFatturaCliente',
+              'Models::PagamentoFatturaCliente',
+              'Models::MaxiPagamentoCliente'
+            
+          dati_scrittura = IdentModel.new(scrittura.tipo[:owner], FatturaClienteScadenzario)
+
+        when 'Pdc::DettaglioImponibileFatturaFornitore',
+              'Pdc::DettaglioIvaFatturaFornitore',
+              'Models::PagamentoFatturaFornitore',
+              'Models::MaxiPagamentoFornitore'
+
+          dati_scrittura = IdentModel.new(scrittura.tipo[:owner], FatturaFornitore)
+
+        else
+          dati_scrittura = []
+        end
+        
         dati_scrittura << scrittura.data_operazione
         dati_scrittura << scrittura.descrizione
         if codice_conto_scrittura = [scrittura.pdc_dare_id,
@@ -469,7 +492,7 @@ module Controllers
           dati_scrittura << conto_scrittura.codice
           dati_scrittura << conto_scrittura.descrizione
         else
-          case scrittura.tipo
+          case (scrittura.tipo[:model] rescue nil)
           when 'Pdc::DettaglioImponibileFatturaCliente',
               'Pdc::DettaglioIvaFatturaCliente'
             dfpd = DettaglioFatturaPartitaDoppia.find_by_partita_doppia_id(scrittura.id)
@@ -487,6 +510,7 @@ module Controllers
             dati_scrittura << conto.descrizione
           end
         end
+
         if((conto.id == scrittura.pdc_dare_id) ||
           (conto.id == scrittura.nc_pdc_dare_id))
           self.totale_dare += scrittura.importo

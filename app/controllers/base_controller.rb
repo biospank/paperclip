@@ -77,6 +77,10 @@ module Controllers
       Cliente.find(id)
     end
     
+    def load_fattura_cliente_scadenzario(id)
+      FatturaClienteScadenzario.find(id)
+    end
+
     def load_cliente_by_p_iva(p_iva)
       Cliente.search(:first, :conditions => {:p_iva => p_iva})
     end
@@ -85,10 +89,22 @@ module Controllers
       Fornitore.find(id)
     end
     
+    def load_fattura_fornitore(id)
+      FatturaFornitore.find(id)
+    end
+
     def load_incasso(id)
       PagamentoFatturaCliente.find(id)
     end
     
+    def load_scrittura(id)
+      Scrittura.find(id)
+    end
+
+    def load_corrispettivo(id)
+      Corrispettivo.find(id)
+    end
+
     def load_pagamento(id)
       PagamentoFatturaFornitore.find(id)
     end

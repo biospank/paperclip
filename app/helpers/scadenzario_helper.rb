@@ -287,10 +287,6 @@ module Helpers
       end
 
       # gestione report corrispettivi
-      def load_corrispettivo(id)
-        Corrispettivo.find(id)
-      end
-
       def report_corrispettivi(filtro)
         data_matrix = []
         riepilogo_iva_data_matrix = []

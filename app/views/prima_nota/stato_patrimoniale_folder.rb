@@ -103,13 +103,13 @@ module Views
           self.lbl_totale_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
           if(Helpers::ApplicationHelper.real(self.totale_attivita) >= Helpers::ApplicationHelper.real(self.totale_passivita))
             self.utile_esercizio = self.totale_attivita - self.totale_passivita
-            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO"
+            self.cpt_utile_esercizio.label = "UTILE D'ESERCIZIO:"
             self.lbl_utile_esercizio.label = Helpers::ApplicationHelper.currency(self.utile_esercizio)
             self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_attivita)
           else
             self.perdita_esercizio = self.totale_passivita - self.totale_attivita
-            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO"
+            self.cpt_perdita_esercizio.label = "PERDITA D'ESERCIZIO:"
             self.lbl_perdita_esercizio.label = Helpers::ApplicationHelper.currency(self.perdita_esercizio)
             self.lbl_totale_pareggio_passivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
             self.lbl_totale_pareggio_attivo.label = Helpers::ApplicationHelper.currency(self.totale_passivita)
@@ -167,11 +167,11 @@ module Views
 
       def render_footer(opts={})
         begin
-#          footer.write(
-#            ERB.new(
-#              IO.read(Helpers::PrimaNotaHelper::BilancioStatoPatrimonialeFooterTemplatePath)
-#            ).result(binding)
-#          )
+          footer.write(
+            ERB.new(
+              IO.read(Helpers::PrimaNotaHelper::BilancioStatoPatrimonialeFooterTemplatePath)
+            ).result(binding)
+          )
         rescue Exception => e
           log_error(self, e)
         end

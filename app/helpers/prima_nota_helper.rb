@@ -49,6 +49,9 @@ module Helpers
     BilancioDettaglioHeaderTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_header.html.erb'
     BilancioDettaglioBodyTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_body.html.erb'
     BilancioDettaglioFooterTemplatePath = 'resources/templates/report/scritture/bilancio_dettaglio_footer.html.erb'
+    BilancioPartitarioHeaderTemplatePath = 'resources/templates/report/scritture/bilancio_partitario_header.html.erb'
+    BilancioPartitarioBodyTemplatePath = 'resources/templates/report/scritture/bilancio_partitario_body.html.erb'
+    BilancioPartitarioFooterTemplatePath = 'resources/templates/report/scritture/bilancio_partitario_footer.html.erb'
 
   end
 end

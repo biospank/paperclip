@@ -309,7 +309,7 @@ module Views
         end
       end
 
-      evt_dettaglio_scrittura do | evt | 
+      evt_dettaglio_scrittura do | evt |
         begin
           scrittura = evt.scrittura
           set_selection(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW)

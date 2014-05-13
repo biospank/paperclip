@@ -478,7 +478,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_SCRITTURA = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_scrittura', 0) 
+        EVT_DETTAGLIO_SCRITTURA = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_scrittura', 0)
 
         def initialize(scrittura)
           # The constant id is the arg to super
@@ -492,7 +492,7 @@ module Views
           client_data[:scrittura]
         end
       end
-      
+
       class DettaglioFatturaPrimaNotaEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'

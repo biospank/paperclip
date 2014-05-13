@@ -22,6 +22,8 @@ module Models
     has_one    :pagamento_fattura_fornitore, :through => :pagamenti_partita_doppia
     has_one    :maxi_pagamento_cliente, :through => :pagamenti_partita_doppia
     has_one    :maxi_pagamento_fornitore, :through => :pagamenti_partita_doppia
+
+    serialize :tipo
     
     validates_presence_of :data_operazione, 
       :message => "Data inesistente o formalmente errata."

@@ -6714,7 +6714,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Clienti</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="SCADENZARIO_CLIENTI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -7282,7 +7282,7 @@
 																					<hgap>0</hgap>
 																					<object class="sizeritem">
 																						<option>0</option>
-																						<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 																						<border>3</border>
 																						<object class="wxStaticText" name="wxID_STATIC113">
 																							<label>Totale incassi:</label>
@@ -7290,7 +7290,7 @@
 																					</object>
 																					<object class="sizeritem">
 																						<option>0</option>
-																						<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
+																						<flag>wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
 																						<border>3</border>
 																						<object class="wxStaticText" name="lbl_totale_incassi">
 																							<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
@@ -9687,7 +9687,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -16343,17 +16343,53 @@
 																													<option>0</option>
 																													<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
 																													<border>3</border>
-																													<object class="wxStaticText" name="cpt_totale">
-																														<size>100,-1</size>
-																														<label>Saldo:</label>
+																													<object class="wxStaticText" name="cpt_totale_dare">
+																														<label>Totale dare:</label>
 																													</object>
 																												</object>
 																												<object class="sizeritem">
 																													<option>0</option>
 																													<flag>wxALL|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 																													<border>3</border>
-																													<object class="wxStaticText" name="lbl_totale">
-																														<style>wxALIGN_RIGHT|wxST_NO_AUTORESIZE</style>
+																													<object class="wxStaticText" name="lbl_totale_dare">
+																														<style>wxALIGN_LEFT</style>
+																														<size>100,-1</size>
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="cpt_totale_avere">
+																														<label>Totale avere:</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="lbl_totale_avere">
+																														<style>wxALIGN_LEFT</style>
+																														<size>100,-1</size>
+																														<label></label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="cpt_saldo">
+																														<size>70,-1</size>
+																														<label>Saldo:</label>
+																													</object>
+																												</object>
+																												<object class="sizeritem">
+																													<option>0</option>
+																													<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																													<border>3</border>
+																													<object class="wxStaticText" name="lbl_saldo">
+																														<style>wxALIGN_LEFT</style>
 																														<size>100,-1</size>
 																														<label></label>
 																													</object>

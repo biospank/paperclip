@@ -120,7 +120,7 @@ module Views
 
           generate(:report_dettaglio,
             :margin_top => 50,
-            :margin_bottom => 40,
+            :margin_bottom => 30,
             :dati_azienda => dati_azienda,
             :filtro => filtro,
             :preview => false
@@ -160,11 +160,11 @@ module Views
 
       def render_footer(opts={})
         begin
-#          footer.write(
-#            ERB.new(
-#              IO.read(Helpers::PrimaNotaHelper::BilancioDettaglioFooterTemplatePath)
-#            ).result(binding)
-#          )
+          footer.write(
+            ERB.new(
+              IO.read(Helpers::PrimaNotaHelper::BilancioDettaglioFooterTemplatePath)
+            ).result(binding)
+          )
         rescue Exception => e
           log_error(self, e)
         end
