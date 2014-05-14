@@ -2,15 +2,15 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=Paperclip
+AppName=Paperclip3
 AppVerName=Paperclip 3
 AppPublisher=bra-tech
 AppPublisherURL=http://www.bra-tech.net/
 AppSupportURL=http://www.bra-tech.net/
 AppUpdatesURL=http://www.bra-tech.net/
-DefaultDirName={pf}\Paperclip
+DefaultDirName={pf}\Paperclip3
 DisableDirPage=yes
-DefaultGroupName=Paperclip
+DefaultGroupName=Paperclip3
 AllowNoIcons=yes
 OutputBaseFilename=Paperclip-3.0-update
 Compression=lzma
@@ -32,11 +32,11 @@ Source: ".\pkg\paperclip\paperclip.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\Paperclip"; Filename: "{app}\paperclip.exe"; WorkingDir: "{app}";
-Name: "{group}\{cm:UninstallProgram,Paperclip}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\Paperclip"; Filename: "{app}\paperclip.exe"; Tasks: desktopicon; WorkingDir: "{app}";
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Paperclip"; Filename: "{app}\paperclip.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}";
+Name: "{group}\Paperclip3"; Filename: "{app}\paperclip.exe"; WorkingDir: "{app}";
+Name: "{group}\{cm:UninstallProgram,Paperclip3}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\Paperclip3"; Filename: "{app}\paperclip.exe"; Tasks: desktopicon; WorkingDir: "{app}";
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Paperclip3"; Filename: "{app}\paperclip.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}";
 
 [Run]
-Filename: "{app}\paperclip.exe"; Description: "{cm:LaunchProgram,Paperclip}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\paperclip.exe"; Description: "{cm:LaunchProgram,Paperclip3}"; Flags: nowait postinstall skipifsilent
 
