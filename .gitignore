@@ -4,6 +4,7 @@
 /tmp/*.html
 /tmp/*.pdf
 /db/backup/*.backup
+/db/development/bra.db
 /nbproject
 /updates/
 /web/

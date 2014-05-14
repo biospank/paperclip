@@ -3,6 +3,7 @@
 require 'app/versione'
 require 'active_record'
 require 'pg'
+require 'yaml'
 require 'configatron'
 require 'app/helpers/logger_helper'
 require 'app/helpers/authorization_helper'
@@ -110,7 +111,7 @@ module PaperclipConfig
   end
 
   module Db
-    
+
     def connect_local()
       ActiveRecord::Base.establish_connection(
         :adapter => 'sqlite3',
@@ -149,7 +150,8 @@ module PaperclipConfig
     cattr_accessor :info
     cattr_accessor :error
 
-    configatron.configure_from_yaml('conf/paperclip.yml')
+    configatron.configure_from_hash(YAML.load_file('conf/paperclip.yml'))
+
     # begin to remove
 #    unless configatron.configure_from_yaml('conf/paperclip.yml')
 #    # end to remove
@@ -256,7 +258,7 @@ module PaperclipConfig
     Models.autoload 'PrimaNotaPartitaDoppia',  'app/models/prima_nota_partita_doppia.rb'
 
     ActiveRecord::Base.extend Models::Base::Searchable
-    
+
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(
       :italian_date => "%d/%m/%Y",
       :italian_short_date => "%d/%m/%y",
@@ -280,7 +282,7 @@ module PaperclipConfig
 #      unless PaperclipConfig.update_version!
 #        raise "Aggiornare Paperclip: versione obsoleta."
 #      end
-      
+
       # avvio il processo di migrazione
       if configatron.env == 'production'
         if File.directory? 'db/migrations'
@@ -290,7 +292,7 @@ module PaperclipConfig
           ActiveRecord::Migration.verbose = false
           ActiveRecord::Migrator.migrate('db/migrations', nil)
         end
-        
+
         unless PaperclipConfig.update_version!
           self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.")
         end
@@ -302,13 +304,13 @@ module PaperclipConfig
 
       end
 
-      # insert into db_server (id, adapter, host, port, username, password, 'database', encoding) values (1, 'postgresql', 'Fabio-thinkpad', 5432, 'postgres', 'paperclip', 'paperclip', 'utf-8')    
+      # insert into db_server (id, adapter, host, port, username, password, 'database', encoding) values (1, 'postgresql', 'Fabio-thinkpad', 5432, 'postgres', 'paperclip', 'paperclip', 'utf-8')
       if configatron.connection.mode == :remote
 #        db_server = Models::DbServer.first() || PaperclipConfig::RindaServer.db_server
         db_server = Models::DbServer.first() || PaperclipConfig::UDPClient.query_db_server()
 
         if db_server
-          
+
           PaperclipConfig::Db.connect_remote(db_server)
 
           self.info = "Connesso al server #{db_server.host}"
@@ -370,4 +372,3 @@ module PaperclipConfig
     end
   end
 end
-    

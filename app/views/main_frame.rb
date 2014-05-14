@@ -1,9 +1,7 @@
 # encoding: utf-8
 
-#require 'win32/process' if PaperclipConfig::Boot.windows_platform?
 require 'erb'
 require 'app/helpers/printer_helper'
-#require 'app/helpers/odf_helper'
 require 'app/helpers/wk_helper'
 require 'app/controllers/base_controller'
 require 'app/views/tool_bar'
@@ -18,7 +16,7 @@ module Views
     include Helpers::MVCHelper
     include Models
     include ERB::Util
-  
+
     def initialize
       super()
 
@@ -26,7 +24,7 @@ module Views
       screen = Wx::Display.new
       configatron.screen.width = screen.geometry.width
       configatron.screen.height = screen.geometry.height
-      
+
       res = Xrc.instance().resource
       res.load_frame_subclass(self, nil, "wxBra")
       set_icon(Wx::Icon.new('resources/images/paperclip.ico', Wx::BITMAP_TYPE_ICO))
@@ -37,7 +35,7 @@ module Views
         exit(1)
       end
     end
-  
+
     def ui()
       controller :base
 
@@ -64,20 +62,20 @@ module Views
         end
       end
 
-      evt_force_exit do | evt | 
+      evt_force_exit do | evt |
         Wx::get_app.exit_main_loop()
       end
 
       splash.destroy()
-      
+
 #      evt_menu(Wx::ID_EXIT) do
 #        Wx::get_app.exit_main_loop()
 #      end
-      
+
 #      evt_idle() do
 #        logger.debug("********* EVENTO IDLE *********")
 #      end
-      
+
       map_events(self)
 
       evt_config_changed do | evt |
@@ -88,7 +86,7 @@ module Views
    end
 
     # menu
-    def setup_menu_bar()  
+    def setup_menu_bar()
       @menu_bar = self.get_menu_bar()
       @mnu_esci = @menu_bar.find_menu_item('File', 'Esci')
       @mnu_cambia_utente = @menu_bar.find_menu_item('File', 'Cambia utente')
@@ -100,7 +98,7 @@ module Views
         @menu_bar.find_item(@mnu_iva_per_cassa).check() if configatron.fatturazione.iva_per_cassa
         @mnu_commercio = mnu_fattura.find_item('Commercio')
         @mnu_servizi = mnu_fattura.find_item('Servizi')
-        
+
       case configatron.attivita
       when Models::Azienda::ATTIVITA[:commercio]
         @menu_bar.find_item(@mnu_commercio).check()
@@ -112,7 +110,7 @@ module Views
         @mnu_nota_spese = mnu_prefattura.find_item('Nota spese')
         @mnu_avviso_fattura = mnu_prefattura.find_item('Avviso fattura')
         @mnu_avviso_parcella = mnu_prefattura.find_item('Avviso parcella')
-        
+
       case configatron.pre_fattura.intestazione
       when 1
         @menu_bar.find_item(@mnu_nota_spese).check()
@@ -121,7 +119,7 @@ module Views
       when 3
         @menu_bar.find_item(@mnu_avviso_parcella).check()
       end
-      
+
       mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio')).get_sub_menu()
         @mnu_bilancio_attivo = mnu_bilancio.find_item('Attivo')
         configatron.bilancio.set_default(:attivo, false)
@@ -136,8 +134,8 @@ module Views
 
       @mnu_versione = menu_bar.find_menu_item('Info', 'Versione')
 
-    end      
-    
+    end
+
     def login(exit_main=true, old_azienda=nil)
       login_dlg = Views::Dialog::LoginDialog.new(self)
       login_dlg.center_on_screen(Wx::BOTH)
@@ -171,7 +169,7 @@ module Views
       end
 
     end
-    
+
     def mnu_esci_click(evt)
       Wx::get_app.exit_main_loop()
     end
@@ -196,7 +194,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_avviso_fattura_click(evt)
       begin
         Wx::BusyCursor.busy() do
@@ -213,7 +211,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_avviso_parcella_click(evt)
       begin
         Wx::BusyCursor.busy() do
@@ -230,7 +228,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_carta_intestata_click(evt)
       begin
         Wx::BusyCursor.busy() do
@@ -284,7 +282,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_servizi_click(evt)
       begin
         Wx::BusyCursor.busy() do
@@ -316,7 +314,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_bilancio_attivo_click(evt)
       begin
         Wx::BusyCursor.busy() do
@@ -361,7 +359,7 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     def mnu_versione_click(evt)
       begin
         Wx::about_box( :name => 'Paperclip',
@@ -375,9 +373,9 @@ module Views
         log_error(self, e)
       end
     end
-    
+
     private
-    
+
     def write_config()
       # begin to remove
       begin
@@ -398,6 +396,6 @@ module Views
 #      end
 
     end
-  
+
   end
 end
