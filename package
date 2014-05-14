@@ -34,7 +34,7 @@ module Paperclip
         FileUtils.cp_r "bin/win", "pkg/paperclip/src/bin"
         FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
         purge! :dev
-        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip.exe"
+        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip3.exe"
         run "iscc.exe paperclip3.dist.iss", :verbose => false
       when 'osx'
         app_name = 'Paperclip.app'
@@ -84,7 +84,7 @@ module Paperclip
         FileUtils.cp_r "bin/win", "pkg/paperclip/src/bin"
         FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
         purge! :all
-        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip.exe"
+        FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip3.exe"
         run "iscc.exe paperclip3.update.iss", :verbose => false
       when 'osx'
 

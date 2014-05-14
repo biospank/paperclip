@@ -7,12 +7,12 @@ require 'app/helpers/http_helper'
 module Helpers
   module ApplicationHelper
     extend NumberHelper
-    
-    WXBRA_APP_NAME = 'PaperClip'
+
+    WXBRA_APP_NAME = 'Paperclip3'
     WXBRA_CONF_PATH = 'conf/paperclip.yml'
     PAPERCLIP_CONF_PATH = 'conf/paperclip.rb'
     WXBRA_IMAGES_PATH = 'resources/images'
-      
+
     # Costanti delle viste
     WXBRA_ANAGRAFICA_VIEW = 0
     WXBRA_FATTURAZIONE_VIEW = 1
@@ -38,10 +38,10 @@ module Helpers
       WXBRA_MAGAZZINO_VIEW => Modulo::MAGAZZINO,
       WXBRA_CONFIGURAZIONE_VIEW => Modulo::CONFIGURAZIONE
     }
-    
+
     # colore dei report
     WXBRA_EVEN_ROW_COLOR = Wx::Colour.new(215, 235, 245)
-    
+
     # colore dei campi con focus
     WXBRA_FOCUS_FIELD_COLOR = Wx::Colour.new(255, 255, 210)
 
@@ -118,31 +118,31 @@ module Helpers
     # formattazione dei campi
 
     module_function
-    
+
     def currency(x)
-      if x.nil? 
+      if x.nil?
         ''
       else
         number_to_currency(x, :unit => '€', :separator => ',', :delimiter => '.')
       end
     end
-  
+
     def percentage(x, precision=2)
-      if x.nil? 
+      if x.nil?
         ''
       else
         number_to_percentage(x, {:precision => precision, :separator => ',', :delimiter => '.'})
       end
     end
-  
+
     def number(x, precision = 2)
-      if x.nil? or x.zero? 
+      if x.nil? or x.zero?
         ''
       else
         number_with_delimiter(number_with_precision(x, precision), '.', ',')
       end
     end
-  
+
     def number_text(x)
       if x.nil?
         ''
@@ -151,40 +151,40 @@ module Helpers
         #number_with_precision(x, {:precision => 2, :separator => '.', :delimiter => ','}) # ritorna un numero
       end
     end
-  
+
     def real(x)
-      if x.nil? or x.zero? 
+      if x.nil? or x.zero?
         0.0
       else
         number_with_precision(x, 2).to_f
       end
     end
-  
+
     def truncate(text, *args)
       options = args.extract_options!
       unless args.empty?
         ActiveSupport::Deprecation.warn('truncate takes an option hash instead of separate ' +
             'length and omission arguments', caller)
-        
+
         options[:length] = args[0] || 30
         options[:omission] = args[1] || "..."
       end
       options.reverse_merge!(:length => 30, :omission => "...")
-      
+
       if text
         l = options[:length] - options[:omission].mb_chars.length
         chars = text.mb_chars
         (chars.length > options[:length] ? chars[0...l] + options[:omission] : text).to_s
       end
     end
-    
+
 #    def real(x)
-#      if x.nil? or x.zero? 
+#      if x.nil? or x.zero?
 #        '0,0'
 #      else
 #        number_with_delimiter(number_with_precision(x, 2), '.', ',')
 #      end
 #    end
-  
+
   end
 end

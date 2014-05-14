@@ -28,15 +28,14 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: ".\pkg\paperclip\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ".\pkg\paperclip\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ".\pkg\paperclip\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: ".\pkg\paperclip\paperclip.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\pkg\paperclip\paperclip3.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\Paperclip3"; Filename: "{app}\paperclip.exe"; WorkingDir: "{app}";
+Name: "{group}\Paperclip3"; Filename: "{app}\paperclip3.exe"; WorkingDir: "{app}";
 Name: "{group}\{cm:UninstallProgram,Paperclip3}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\Paperclip3"; Filename: "{app}\paperclip.exe"; Tasks: desktopicon; WorkingDir: "{app}";
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Paperclip3"; Filename: "{app}\paperclip.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}";
+Name: "{commondesktop}\Paperclip3"; Filename: "{app}\paperclip3.exe"; Tasks: desktopicon; WorkingDir: "{app}";
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Paperclip3"; Filename: "{app}\paperclip3.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}";
 
 [Run]
-Filename: "{app}\paperclip.exe"; Description: "{cm:LaunchProgram,Paperclip3}"; Flags: nowait postinstall skipifsilent
-
+Filename: "{app}\paperclip3.exe"; Description: "{cm:LaunchProgram,Paperclip3}"; Flags: nowait postinstall skipifsilent

@@ -5,6 +5,7 @@
 /tmp/*.pdf
 /db/backup/*.backup
 /db/development/bra.db
+/db/production/bra.db
 /nbproject
 /updates/
 /web/
