@@ -3,9 +3,10 @@
 /pkg/
 /tmp/*.html
 /tmp/*.pdf
-/db/backup/*.backup
-/db/development/bra.db
-/db/production/bra.db
+/db/*.yml
+/db/backup/*
+/db/development/*
+/db/production/*
 /nbproject
 /updates/
 /web/

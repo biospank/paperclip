@@ -46,12 +46,12 @@ ActiveRecord::Schema.define(:version => 97) do
   create_table "categorie_pdc", :force => true do |t|
     t.string   "codice",       :limit => 10,                 :null => false
     t.string   "descrizione",  :limit => 100
-    t.integer  "attiva",       :limit => 1,   :default => 1, :null => false
+    t.integer  "attiva",       :limit => 2,   :default => 1, :null => false
     t.integer  "lock_version",                :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "type"
-    t.integer  "standard",     :limit => 1,   :default => 0, :null => false
+    t.integer  "standard",     :limit => 2,   :default => 0, :null => false
   end
 
   add_index "categorie_pdc", ["codice"], :name => "CATEGORIE_PDC_CODICE_IDX"
@@ -106,7 +106,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.decimal  "importo",                                   :default => 0.0, :null => false
     t.decimal  "imponibile",                                :default => 0.0, :null => false
     t.decimal  "iva",                                       :default => 0.0, :null => false
-    t.integer  "registrato_in_prima_nota",     :limit => 1, :default => 0
+    t.integer  "registrato_in_prima_nota",     :limit => 2, :default => 0
     t.integer  "azienda_id",                                                 :null => false
     t.integer  "aliquota_id",                                                :null => false
     t.integer  "pdc_dare_id"
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.integer  "lock_version",                              :default => 0,   :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "registrato_in_partita_doppia", :limit => 1, :default => 0
+    t.integer  "registrato_in_partita_doppia", :limit => 2, :default => 0
   end
 
   add_index "corrispettivi", ["aliquota_id"], :name => "CORRISPETTIVI_ALIQUOTA_FK_IDX"
@@ -158,7 +158,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.binary  "logo"
     t.string  "logo_tipo",        :limit => 5
     t.string  "iban",             :limit => 27
-    t.integer "liquidazione_iva", :limit => 1,   :default => 1, :null => false
+    t.integer "liquidazione_iva", :limit => 2,   :default => 1, :null => false
   end
 
   create_table "db_server", :force => true do |t|
@@ -377,7 +377,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.string  "codice",      :limit => 50,                 :null => false
     t.decimal "percentuale",                               :null => false
     t.string  "descrizione", :limit => 100,                :null => false
-    t.integer "attiva",      :limit => 1,   :default => 1, :null => false
+    t.integer "attiva",      :limit => 2,   :default => 1, :null => false
   end
 
   create_table "nota_spese", :force => true do |t|
@@ -424,7 +424,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.integer "registrato_in_prima_nota"
     t.string  "note",                         :limit => 100
     t.integer "lock_version",                                :default => 0, :null => false
-    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
+    t.integer "registrato_in_partita_doppia", :limit => 2,   :default => 0
   end
 
   add_index "pagamenti_fatture_clienti", ["banca_id"], :name => "pfc_banca_fk_idx"
@@ -446,7 +446,7 @@ ActiveRecord::Schema.define(:version => 97) do
     t.integer "registrato_in_prima_nota"
     t.string  "note",                         :limit => 100
     t.integer "lock_version",                                :default => 0, :null => false
-    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
+    t.integer "registrato_in_partita_doppia", :limit => 2,   :default => 0
   end
 
   add_index "pagamenti_fatture_fornitori", ["banca_id"], :name => "pff_banca_fk_idx"
@@ -494,8 +494,8 @@ ActiveRecord::Schema.define(:version => 97) do
     t.text     "descrizione",                                      :null => false
     t.date     "data_operazione",                                  :null => false
     t.datetime "data_registrazione",                               :null => false
-    t.integer  "esterna",            :limit => 1,   :default => 0
-    t.integer  "congelata",          :limit => 1,   :default => 0
+    t.integer  "esterna",            :limit => 2,   :default => 0
+    t.integer  "congelata",          :limit => 2,   :default => 0
     t.decimal  "importo"
     t.string   "note",               :limit => 300
     t.date     "data_residuo"
@@ -516,14 +516,14 @@ ActiveRecord::Schema.define(:version => 97) do
   create_table "pdc", :force => true do |t|
     t.string   "codice",           :limit => 50,                 :null => false
     t.string   "descrizione",      :limit => 100
-    t.integer  "attivo",           :limit => 1,   :default => 1, :null => false
+    t.integer  "attivo",           :limit => 2,   :default => 1, :null => false
     t.integer  "lock_version",                    :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "categoria_pdc_id"
     t.integer  "banca_id"
-    t.integer  "standard",         :limit => 1,   :default => 0, :null => false
-    t.integer  "hidden",           :limit => 1,   :default => 0, :null => false
+    t.integer  "standard",         :limit => 2,   :default => 0, :null => false
+    t.integer  "hidden",           :limit => 2,   :default => 0, :null => false
   end
 
   add_index "pdc", ["categoria_pdc_id"], :name => "PDC_CATEGORIE_PDC_FK_IDX"

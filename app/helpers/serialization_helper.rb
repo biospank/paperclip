@@ -13,9 +13,7 @@ module SerializationHelper
 
     def dump(filename)
       disable_logger
-      File.open(filename, "w") do |f|
-        @dumper.dump(f)
-      end
+      @dumper.dump(File.new(filename, "w"))
       reenable_logger
     end
 
@@ -26,7 +24,7 @@ module SerializationHelper
         io = File.new "#{dirname}/#{table}.#{@extension}", "w"
         @dumper.before_table(io, table)
         @dumper.dump_table io, table
-        @dumper.after_table(io, table)         
+        @dumper.after_table(io, table)
       end
     end
 
@@ -42,7 +40,7 @@ module SerializationHelper
           next
         end
         @loader.load(File.new("#{dirname}/#{filename}", "r"), truncate)
-      end   
+      end
     end
 
     def disable_logger
@@ -54,7 +52,7 @@ module SerializationHelper
       ActiveRecord::Base.logger = @@old_logger
     end
   end
-  
+
   class Load
     def self.load(io, truncate = true)
       ActiveRecord::Base.connection.transaction do
@@ -96,9 +94,9 @@ module SerializationHelper
       if ActiveRecord::Base.connection.respond_to?(:reset_pk_sequence!)
         ActiveRecord::Base.connection.reset_pk_sequence!(table_name)
       end
-    end    
+    end
 
-      
+
   end
 
   module Utils
@@ -119,10 +117,14 @@ module SerializationHelper
       records.each do |record|
         columns.each do |column|
           next if is_boolean(record[column])
-          record[column] = (record[column] == 't' or record[column] == '1')
+          record[column] = convert_boolean(record[column])
         end
       end
       records
+    end
+
+    def self.convert_boolean(value)
+      ['t', '1', true, 1].include?(value)
     end
 
     def self.boolean_columns(table)
@@ -182,7 +184,7 @@ module SerializationHelper
 
       (0..pages).to_a.each do |page|
         sql = ActiveRecord::Base.connection.add_limit_offset!("SELECT * FROM #{quoted_table_name} ORDER BY #{id}",
-                                                              :limit => records_per_page, :offset => records_per_page * page
+                                                  :limit => records_per_page, :offset => records_per_page * page
         )
         records = ActiveRecord::Base.connection.select_all(sql)
         records = SerializationHelper::Utils.convert_booleans(records, boolean_columns)

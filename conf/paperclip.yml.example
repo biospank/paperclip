@@ -1,0 +1,18 @@
+---
+pre_fattura: 0
+env: "development"
+connection:
+  mode: :local
+logging_config:
+  format_as: :yaml
+  level: :info
+  filename: 'log/paperclip.log'
+pre_fattura:
+  intestazione: 1
+fatturazione:
+  iva_per_cassa: false
+  carta_intestata: false
+attivita: 1
+screen:
+  width: 1280
+  height: 800

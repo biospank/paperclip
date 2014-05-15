@@ -1,18 +1,60 @@
 ---
-pre_fattura: 0
-env: "development"
-connection:
-  mode: :local
-logging_config:
-  format_as: :yaml
-  level: :info
-  filename: 'log/paperclip.log'
-pre_fattura:
-  intestazione: 1
-fatturazione:
-  iva_per_cassa: false
-  carta_intestata: false
-attivita: 1
-screen:
-  width: 1280
-  height: 800
+:pre_fattura: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :intestazione: 1
+:env: development
+:connection: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :mode: :local
+    :set_default: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+:logging_config: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :format_as: :yaml
+    :level: :info
+    :filename: log/paperclip.log
+:fatturazione: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :iva_per_cassa: false
+    :carta_intestata: false
+    :set_default: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+:attivita: 1
+:screen: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :width: 1920
+    :height: 1011
+:bilancio: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :set_default: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+    :attivo: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+:liquidazioni: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :set_default: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+    :attivo: !ruby/object:Configatron::Store
+      __locked: false
+      attributes: {}
+:corrispettivi: !ruby/object:Configatron::Store
+  __locked: false
+  attributes:
+    :retrieve: !ruby/object:Configatron::Store
+      __locked: false
+      attributes:
+        :to_ary: !ruby/object:Configatron::Store
+          __locked: false
+          attributes: {}

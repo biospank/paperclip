@@ -1,20 +1,39 @@
 # encoding: utf-8
-require 'zip/zip'
+if Running.ruby_18?
+  require 'zip/zip'
+else
+  require 'zip'
+end
 
 module Helpers
   module ZipHelper
     IGNORE = ['lib/sqlite.dll']
 
     def create_archive(file_name, *entries)
-      Zip::ZipOutputStream.open(file_name) do |zos|
-        entries.each do |e|
-          if File.directory? e
-            Dir.glob("#{e}/**/*") do |filename|
-              next if File.directory? filename
-              add_new_entry(zos, filename) unless IGNORE.include? filename
+      if Running.ruby_18?
+        Zip::ZipOutputStream.open(file_name) do |zos|
+          entries.each do |e|
+            if File.directory? e
+              Dir.glob("#{e}/**/*") do |filename|
+                next if File.directory? filename
+                add_new_entry(zos, filename) unless IGNORE.include? filename
+              end
+            else
+              add_new_entry(zos, e) unless IGNORE.include? e
             end
-          else
-            add_new_entry(zos, e) unless IGNORE.include? e
+          end
+        end
+      else
+        Zip::OutputStream.open(file_name) do |zos|
+          entries.each do |e|
+            if File.directory? e
+              Dir.glob("#{e}/**/*") do |filename|
+                next if File.directory? filename
+                add_new_entry(zos, filename) unless IGNORE.include? filename
+              end
+            else
+              add_new_entry(zos, e) unless IGNORE.include? e
+            end
           end
         end
       end
@@ -57,12 +76,12 @@ module Helpers
     end
 
     private
-    
+
     def add_new_entry(zos, e)
       zos.put_next_entry(e)
       zos.print IO.read(e)
     end
 
   end
-  
+
 end

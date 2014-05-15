@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'app/helpers/running'
 require 'app/helpers/number_helper'
 require 'app/helpers/zip_helper'
 require 'app/helpers/http_helper'
@@ -8,7 +9,7 @@ module Helpers
   module ApplicationHelper
     extend NumberHelper
 
-    WXBRA_APP_NAME = 'Paperclip3'
+    WXBRA_APP_NAME = 'Paperclip'
     WXBRA_CONF_PATH = 'conf/paperclip.yml'
     PAPERCLIP_CONF_PATH = 'conf/paperclip.rb'
     WXBRA_IMAGES_PATH = 'resources/images'
