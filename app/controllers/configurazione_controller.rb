@@ -1,14 +1,14 @@
 # encoding: utf-8
 
 module Controllers
-  module ConfigurazioneController 
+  module ConfigurazioneController
     include Controllers::BaseController
     include Helpers::ConfigurazioneHelper
 
     def load_dati_azienda()
       Azienda.current.dati_azienda.reload
     end
-    
+
     def save_dati_azienda()
       dati_azienda.save!
       Azienda.current.dati_azienda.reload
@@ -16,15 +16,15 @@ module Controllers
 
     # gestione banche
 
-# implementato nel base    
+# implementato nel base
 #    def load_banca(id)
 #      Banca.find(id)
 #    end
-    
+
     def load_banca_by_codice(codice)
       Banca.search(:first, :conditions => {:codice => codice})
     end
-    
+
     def save_banca()
       banca.save
     end
@@ -34,23 +34,23 @@ module Controllers
     end
 
     def search_for_banche()
-      Banca.search_for(filtro.ricerca, 
-        [:codice, :descrizione], 
+      Banca.search_for(filtro.ricerca,
+        [:codice, :descrizione],
         build_banche_dialog_conditions())
     end
 
     def build_banche_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
        :order => 'codice'}
     end
 
     # gestione utenti
-    
+
     def save_utente()
       utente.save!
       permessi.each_pair do |key, p|
@@ -69,7 +69,7 @@ module Controllers
     end
 
     # gestione progressivi
-    
+
     def save_progressivo()
       begin
         progressivo.save!
@@ -84,26 +84,26 @@ module Controllers
     end
 
     # gestione base dati
-    
+
     def save_db_server()
       db_server.save
     end
-    
+
     def load_db_server()
-      DbServer.first() || PaperclipConfig::RindaServer.db_server
+      DbServer.first() || PaperclipConfig::UDPClient.query_db_server()
     end
-    
+
     # Dump schema and data to db/schema.rb and db/data.yml
     def dump()
       Db::Schema.dump()
       Db::Data.dump()
     end
-    
+
     # Load schema and data from db/schema.rb and db/data.yml
     def restore()
       Db::Schema.restore()
       Db::Data.restore()
     end
-    
+
   end
 end

@@ -1,5 +1,6 @@
 require "socket"
 require "timeout"
+require 'yaml'
 
 # call from command line: ruby app\udp_server.rb
 
