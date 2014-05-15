@@ -63,7 +63,7 @@ module PaperclipConfig
       s.close
     end
 
-    def self.start_server_listener(time_out=3, &code)
+    def self.start_server_listener(time_out=5, &code)
       Thread.fork do
         s = UDPSocket.new
         s.bind('0.0.0.0', UDP_CLIENT_PORT)
@@ -85,13 +85,17 @@ module PaperclipConfig
     def self.query_db_server(time_out=3)
       db_server = nil
 
+      # puts "starting server listener..."
       thread = UDPClient::start_server_listener(time_out) do |conf, server_ip|
+        puts "response: #{conf} from server #{server_ip}"
         db_server = Models::DbServer.new(conf.merge({:host => server_ip}))
       end
 
+      # puts "broadcast to potential servers..."
       UDPClient::broadcast_to_potential_servers!()
 
       begin
+        # puts "waiting for response..."
         thread.join
       rescue Timeout::Error, RuntimeError
         db_server = Models::PostgresDbServer.new(

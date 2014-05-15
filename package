@@ -15,9 +15,10 @@ module Paperclip
     BINARY_GEMS = %w[gosu texplay chipmunk]
 
     desc "new", "Create brand new paperclip installation"
-    method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx"
+    method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx|server"
     method_option :preserve_db, :type => :boolean, :default => false, :aliases => '-d', :banner => "true"
     def new()
+      puts "platform: #{options.platform}"
       case options.platform
       when 'win'
         invoke :new_schema unless options.preserve_db?
@@ -36,6 +37,21 @@ module Paperclip
         purge! :dev
         FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip3.exe"
         run "iscc.exe paperclip3.dist.iss", :verbose => false
+      when 'server'
+        ENV['PAPERCLIP_ENV'] = options.platform
+        ENV['OCRA_BUILD'] = 'true'
+        remove_dir 'pkg', :verbose => false
+        empty_directory 'pkg', :verbose => false
+        run ocra_server_command, :verbose => false
+
+        inside 'pkg' do
+          run 'pserver.exe', :verbose => false
+          remove_file 'pserver.exe', :verbose => false
+        end
+
+        FileUtils.mv Dir["pkg/ocr*.tmp"].first, "pkg/pserver"
+        FileUtils.cp "pserver.exe", "pkg/pserver/pserver.exe"
+#        run "iscc.exe pserver.dist.iss", :verbose => false
       when 'osx'
         app_name = 'Paperclip.app'
         folder = 'pkg'
@@ -181,6 +197,13 @@ module Paperclip
       command
     end
 
+    def ocra_server_command
+      command = "bundle exec ocra '#{executable}' --console --no-enc --icon 'resources/images/pserver.ico' "
+      command += (server_files - [executable]).map {|f| %["#{f}"]}.join(" ")
+      command += " --output 'pkg/pserver.exe' --debug-extract"
+      command
+    end
+
     def executable
       'start.rb'
     end
@@ -276,6 +299,12 @@ module Paperclip
         "db/patch.rb",
         "tmp/tmp.txt",
         "log/paperclip.log"
+      ]
+    end
+
+    def server_files
+      [
+        "app/config/udp.yml"
       ]
     end
 
