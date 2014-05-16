@@ -7,7 +7,7 @@
 :connection: !ruby/object:Configatron::Store
   __locked: false
   attributes:
-    :mode: :remote
+    :mode: :local
     :set_default: !ruby/object:Configatron::Store
       __locked: false
       attributes: {}
