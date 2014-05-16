@@ -82,12 +82,12 @@ module PaperclipConfig
       end
     end
 
-    def self.query_db_server(time_out=3)
+    def self.query_db_server(time_out=5)
       db_server = nil
 
       # puts "starting server listener..."
       thread = UDPClient::start_server_listener(time_out) do |conf, server_ip|
-        puts "response: #{conf} from server #{server_ip}"
+        #puts "response: #{conf} from server #{server_ip}"
         db_server = Models::DbServer.new(conf.merge({:host => server_ip}))
       end
 
@@ -156,13 +156,6 @@ module PaperclipConfig
 
     configatron.configure_from_hash(YAML.load_file('conf/paperclip.yml'))
 
-    # begin to remove
-#    unless configatron.configure_from_yaml('conf/paperclip.yml')
-#    # end to remove
-#      require 'conf/paperclip.rb'
-#    end
-
-    #configatron.set_default(:env, (ENV['PAPERCLIP_ENV'] || 'development'))
     configatron.env = (ENV['PAPERCLIP_ENV'] || 'development')
 
     # modalita di connessione al db

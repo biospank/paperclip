@@ -1,7 +1,8 @@
+# encoding: utf-8
+
 require "socket"
 require "timeout"
 require 'yaml'
-
 # call from command line: ruby app\udp_server.rb
 
 module UDPServer
@@ -34,6 +35,7 @@ module UDPServer
           answer_client(client_ip, UDP_CLIENT_PORT, db_conf)
         rescue
           # Make sure thread does not crash
+
         end
 
       end
@@ -44,10 +46,10 @@ end
 
 UDP_SERVER_PORT = 1759
 
-# puts "Starting Server..."
+puts "Starting Server..."
 
 thread = UDPServer.start_service_announcer(UDP_SERVER_PORT)
 
-# puts "Server running on port #{UDP_SERVER_PORT}."
+puts "Server running on port #{UDP_SERVER_PORT}."
 
-thread.join #unless ENV['OCRA_BUILD']
+thread.join unless defined?(Ocra)

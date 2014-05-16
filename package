@@ -51,6 +51,7 @@ module Paperclip
 
         FileUtils.mv Dir["pkg/ocr*.tmp"].first, "pkg/pserver"
         FileUtils.cp "pserver.exe", "pkg/pserver/pserver.exe"
+        FileUtils.cp "register.rb", "pkg/pserver/register.rb"
 #        run "iscc.exe pserver.dist.iss", :verbose => false
       when 'osx'
         app_name = 'Paperclip.app'
@@ -304,7 +305,7 @@ module Paperclip
 
     def server_files
       [
-        "app/config/udp.yml"
+        "app/config/udp.yml",
       ]
     end
 
