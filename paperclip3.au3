@@ -2,4 +2,10 @@
 #NoTrayIcon
 
 EnvSet("PAPERCLIP_ENV", "production")
-RunWait("bin\rubyw.exe -C .\src start.rb")
+
+Local $val = 0
+Do
+  $val = RunWait(".\bin\rubyw.exe -C .\src start.rb")
+Until $val <> 8
+
+;RunWait(".\bin\rubyw.exe -C .\src start.rb")
