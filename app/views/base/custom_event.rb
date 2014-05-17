@@ -66,7 +66,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_FORNITORE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_fornitore_changed', 0) 
+        EVT_FORNITORE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_fornitore_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -83,7 +83,7 @@ module Views
         end
 
       end
-      
+
       class AliquotaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -132,7 +132,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_RITENUTA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_ritenuta_changed', 0) 
+        EVT_RITENUTA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_ritenuta_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -149,12 +149,12 @@ module Views
         end
 
       end
-      
+
       class IncassoRicorrenteChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_INCASSO_RICORRENTE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_incasso_ricorrente_changed', 0) 
+        EVT_INCASSO_RICORRENTE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_incasso_ricorrente_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -171,12 +171,12 @@ module Views
         end
 
       end
-      
+
       class CausaleChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_CAUSALE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_causale_changed', 0) 
+        EVT_CAUSALE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_causale_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -193,7 +193,7 @@ module Views
         end
 
       end
-      
+
       class BancaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -264,7 +264,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_TIPO_PAGAMENTO_CLIENTE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_tipo_pagamento_cliente_changed', 0) 
+        EVT_TIPO_PAGAMENTO_CLIENTE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_tipo_pagamento_cliente_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -281,12 +281,12 @@ module Views
         end
 
       end
-      
+
       class TipoPagamentoFornitoreChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_TIPO_PAGAMENTO_FORNITORE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_tipo_pagamento_fornitore_changed', 0) 
+        EVT_TIPO_PAGAMENTO_FORNITORE_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_tipo_pagamento_fornitore_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -303,12 +303,12 @@ module Views
         end
 
       end
-      
+
       class ProdottoChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_PRODOTTO_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_prodotto_changed', 0) 
+        EVT_PRODOTTO_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_prodotto_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -325,12 +325,12 @@ module Views
         end
 
       end
-      
+
       class AnniContabiliNsChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_ANNI_CONTABILI_NS_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_anni_contabili_ns_changed', 0) 
+        EVT_ANNI_CONTABILI_NS_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_anni_contabili_ns_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -347,12 +347,12 @@ module Views
         end
 
       end
-      
+
       class AnniContabiliFatturaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_ANNI_CONTABILI_FATTURA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_anni_contabili_fattura_changed', 0) 
+        EVT_ANNI_CONTABILI_FATTURA_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_anni_contabili_fattura_changed', 0)
 
         def initialize(result_set)
           # The constant id is the arg to super
@@ -369,7 +369,7 @@ module Views
         end
 
       end
-      
+
       class AnniContabiliScritturaChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -417,7 +417,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_SCADENZA_IN_SOSPESO = Wx::EvtHandler.register_class(self, nil, 'evt_scadenza_in_sospeso', 0) 
+        EVT_SCADENZA_IN_SOSPESO = Wx::EvtHandler.register_class(self, nil, 'evt_scadenza_in_sospeso', 0)
 
         # reload indica se i pagamenti/incassi devono essere ricaricati
         def initialize(reload=true)
@@ -435,12 +435,12 @@ module Views
         end
 
       end
-      
+
       class DettaglioIncassoEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_INCASSO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_incasso', 0) 
+        EVT_DETTAGLIO_INCASSO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_incasso', 0)
 
         def initialize(incasso)
           # The constant id is the arg to super
@@ -454,12 +454,12 @@ module Views
           client_data[:incasso]
         end
       end
-      
+
       class DettaglioPagamentoEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_PAGAMENTO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_pagamento', 0) 
+        EVT_DETTAGLIO_PAGAMENTO = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_pagamento', 0)
 
         def initialize(pagamento)
           # The constant id is the arg to super
@@ -473,7 +473,7 @@ module Views
           client_data[:pagamento]
         end
       end
-      
+
       class DettaglioScritturaEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -497,7 +497,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_FATTURA_PRIMA_NOTA = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_prima_nota', 0) 
+        EVT_DETTAGLIO_FATTURA_PRIMA_NOTA = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_prima_nota', 0)
 
         def initialize(fattura)
           # The constant id is the arg to super
@@ -511,7 +511,7 @@ module Views
           client_data[:fattura]
         end
       end
-      
+
       class DettaglioCorrispettivoEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -554,7 +554,7 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_DETTAGLIO_FATTURA_FATTURAZIONE = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_fatturazione', 0) 
+        EVT_DETTAGLIO_FATTURA_FATTURAZIONE = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_fattura_fatturazione', 0)
 
         def initialize(fattura)
           # The constant id is the arg to super
@@ -568,7 +568,7 @@ module Views
           client_data[:fattura]
         end
       end
-      
+
       class DettaglioNotaSpeseEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
@@ -698,15 +698,20 @@ module Views
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'
         # method for setting up this handler.
-        EVT_FORCE_EXIT = Wx::EvtHandler.register_class(self, nil, 'evt_force_exit', 0) 
+        EVT_FORCE_EXIT = Wx::EvtHandler.register_class(self, nil, 'evt_force_exit', 0)
 
-        def initialize()
+        def initialize(restart = false)
           # The constant id is the arg to super
           super(EVT_FORCE_EXIT)
+          self.client_data = { :restart => restart }
         end
 
+        # Returns data associated with this event
+        def restart?
+          client_data[:restart]
+        end
       end
-      
+
     end
   end
 end

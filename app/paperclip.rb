@@ -13,7 +13,9 @@ include Wx
 
 class PaperclipApp < App
   include Views::Base::View
-  
+
+  $exit_code = 0
+
   def on_init
     begin
       logger.info("Environment: #{configatron.env}")
@@ -24,21 +26,21 @@ class PaperclipApp < App
       main.show
       main.request_user_attention
       main.login
+    # rescue SystemExit => se
+    #   exit(se.status)
     rescue Exception => e
       logger.fatal('Unrecoverable Error: ' + e.message)
       logger.fatal('Backtrace: ' + "\n" + e.backtrace.join("\n")) if e.backtrace
       exit(1)
     end
   end
-  
-#  def on_exit
-#    logger.info('Exiting..')
-#    non funziona il fork sotto windows
-#    utilizzo win32-process
-#    exec("ruby init.rb")
-#    logger.info('Exited!')
-#  end
-  
+
+  # def on_run
+  #   super
+  #   logger.info("Exit code: #{$exit_code}")
+  #   return $exit_code
+  # end
+
 end
 
 PaperclipApp.new.main_loop

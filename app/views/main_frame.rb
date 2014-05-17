@@ -63,6 +63,9 @@ module Views
       end
 
       evt_force_exit do | evt |
+        if evt.restart?
+          $exit_code = Helpers::ApplicationHelper::RESTART_EXIT_CODE
+        end
         Wx::get_app.exit_main_loop()
       end
 
@@ -255,7 +258,7 @@ module Views
       begin
         Wx::BusyCursor.busy() do
           if evt.checked?
-            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio manuale.\nConfermi le nuove impostazioni?",
+            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
               'Avvertenza',
                   Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
@@ -270,7 +273,9 @@ module Views
 #                # linea di comando per avviare l'applicazione su macosx/linux
 #                exec("paperclip.exe")
 #              end
-              Wx::get_app.exit_main_loop()
+              # Wx::get_app.exit_main_loop()
+              evt_f_exit = Views::Base::CustomEvent::ForceExitEvent.new(true)
+              process_event(evt_f_exit)
             else
               @menu_bar.find_item(@mnu_commercio).check(false)
               @menu_bar.find_item(@mnu_servizi).check()
@@ -287,7 +292,7 @@ module Views
       begin
         Wx::BusyCursor.busy() do
           if evt.checked?
-            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio manuale.\nConfermi le nuove impostazioni?",
+            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
               'Avvertenza',
               Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
@@ -302,7 +307,9 @@ module Views
 #                # linea di comando per avviare l'applicazione su macosx/linux
 #                exec("paperclip.exe")
 #              end
-              Wx::get_app.exit_main_loop()
+              # Wx::get_app.exit_main_loop()
+              evt_f_exit = Views::Base::CustomEvent::ForceExitEvent.new(true)
+              process_event(evt_f_exit)
             else
               @menu_bar.find_item(@mnu_commercio).check()
               @menu_bar.find_item(@mnu_servizi).check(false)

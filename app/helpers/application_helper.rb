@@ -9,6 +9,8 @@ module Helpers
   module ApplicationHelper
     extend NumberHelper
 
+    RESTART_EXIT_CODE = 8
+
     WXBRA_APP_NAME = 'Paperclip'
     WXBRA_CONF_PATH = 'conf/paperclip.yml'
     PAPERCLIP_CONF_PATH = 'conf/paperclip.rb'

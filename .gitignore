@@ -20,7 +20,6 @@ init.rb
 /*.txt
 /*.sql
 /paperclip.*
-/log/paperclip.log
 paperclip_server.*
 paperclip2.*
 paperclip2_server.*

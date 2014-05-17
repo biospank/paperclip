@@ -25,7 +25,7 @@
     :set_default: !ruby/object:Configatron::Store
       __locked: false
       attributes: {}
-:attivita: 1
+:attivita: 2
 :screen: !ruby/object:Configatron::Store
   __locked: false
   attributes:
