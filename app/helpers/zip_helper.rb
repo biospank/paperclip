@@ -1,8 +1,8 @@
 # encoding: utf-8
-if Running.ruby_18?
-  require 'zip/zip'
-else
+if Running.ruby_19?
   require 'zip'
+else
+  require 'zip/zip'
 end
 
 module Helpers
