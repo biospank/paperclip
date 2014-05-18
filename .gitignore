@@ -12,6 +12,7 @@
 /web/
 /resources/models/
 Migrate
+/log/paperclip.log
 Recover
 Rakefile
 attestazione.au3
