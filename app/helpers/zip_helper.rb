@@ -1,5 +1,5 @@
 # encoding: utf-8
-if Running.ruby_19?
+if Running.mingw?
   require 'zip'
 else
   require 'zip/zip'
