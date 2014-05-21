@@ -325,11 +325,23 @@ module Views
     def mnu_bilancio_attivo_click(evt)
       begin
         Wx::BusyCursor.busy() do
-          configatron.bilancio.attivo = evt.checked?
-          write_config()
-          listbook_mgr.reset_folders()
-          notify(:evt_bilancio_attivo, evt.checked?)
-          logger.debug("configatron.bilancio.attivo: #{configatron.bilancio.attivo}")
+          res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
+            'Avvertenza',
+            Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+          if res == Wx::YES
+            configatron.bilancio.attivo = evt.checked?
+            write_config()
+            evt_f_exit = Views::Base::CustomEvent::ForceExitEvent.new(true)
+            process_event(evt_f_exit)
+          else
+            @menu_bar.find_item(@mnu_bilancio_attivo).check(!evt.checked?)
+          end
+          # configatron.bilancio.attivo = evt.checked?
+          # write_config()
+          # listbook_mgr.reset_folders()
+          # notify(:evt_bilancio_attivo, evt.checked?)
+          # logger.debug("configatron.bilancio.attivo: #{configatron.bilancio.attivo}")
         end
       rescue Exception => e
         log_error(self, e)
