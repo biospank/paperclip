@@ -4,6 +4,7 @@ require 'app/helpers/fatturazione_helper'
 require 'app/views/fatturazione/nota_spese_folder'
 require 'app/views/fatturazione/fattura_folder'
 require 'app/views/fatturazione/corrispettivi_folder'
+require 'app/views/fatturazione/corrispettivi_bilancio_folder'
 require 'app/views/fatturazione/ddt_folder'
 require 'app/views/fatturazione/impostazioni_folder'
 require 'app/views/fatturazione/report_folder'
@@ -12,7 +13,7 @@ module Views
   module Fatturazione
     module FatturazioneNotebookMgr
       include Views::Base::View
-      
+
       def ui
         logger.debug('initializing FatturazioneNotebookMgr...')
         xrc = Helpers::WxHelper::Xrc.instance()
@@ -20,8 +21,25 @@ module Views
         nota_spese_folder.ui()
         xrc.find('FATTURA_FOLDER', self, :extends => Views::Fatturazione::FatturaFolder)
         fattura_folder.ui()
-        xrc.find('CORRISPETTIVI_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviFolder)
-        corrispettivi_folder.ui()
+        if configatron.bilancio.attivo
+          xrc.find('CORRISPETTIVI_FOLDER', self) do |folder|
+            # alla rimozione dei folder, quelli presenti vengono rinumerati a partire da zero
+            self.delete_page(Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER)
+          end
+
+          xrc.find('CORRISPETTIVI_BILANCIO_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviBilancioFolder)
+          corrispettivi_bilancio_folder.ui()
+        else
+          xrc.find('CORRISPETTIVI_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviFolder)
+          corrispettivi_folder.ui()
+
+          xrc.find('CORRISPETTIVI_BILANCIO_FOLDER', self) do |folder|
+            # alla rimozione dei folder, quelli presenti vengono rinumerati a partire da zero
+            self.delete_page(Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER + 1)
+          end
+
+        end
+
         xrc.find('DDT_FOLDER', self, :extends => Views::Fatturazione::DdtFolder)
         ddt_folder.ui()
         xrc.find('IMPOSTAZIONI_FOLDER', self, :extends => Views::Fatturazione::ImpostazioniFolder)
@@ -38,12 +56,10 @@ module Views
       end
 
       def fatturazione_notebook_mgr_page_changing(evt)
-        logger.debug("page changing!")
         evt.skip()
       end
 
       def fatturazione_notebook_mgr_page_changed(evt)
-        logger.debug("page changed!")
         case evt.selection
         when Helpers::FatturazioneHelper::WXBRA_NOTA_SPESE_FOLDER
           nota_spese_folder().init_folder()
@@ -53,16 +69,20 @@ module Views
         when Helpers::FatturazioneHelper::WXBRA_DDT_FOLDER
           ddt_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER
-          corrispettivi_folder().init_folder()
+          if configatron.bilancio.attivo
+            corrispettivi_bilancio_folder().init_folder()
+          else
+            corrispettivi_folder().init_folder()
+          end
         when Helpers::FatturazioneHelper::WXBRA_IMPOSTAZIONI_FOLDER
           impostazioni_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_REPORT_FOLDER
           report_folder().init_folder()
-          
+
         end
         evt.skip()
       end
-      
+
     end
   end
 end

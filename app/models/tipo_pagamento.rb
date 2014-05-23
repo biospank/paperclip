@@ -23,12 +23,12 @@ module Models
     def valido?
       if configatron.bilancio.attivo
         unless IN_ATTESA.include? self.id
-          return self.pdc_dare || self.pdc_avere || self.nc_pdc_dare || self.nc_pdc_avere
+          return ((self.pdc_dare || self.pdc_avere) && (self.nc_pdc_dare || self.nc_pdc_avere))
         end
       else
         unless IN_ATTESA.include? self.id
-          return cassa_dare? || cassa_avere? || banca_dare? || banca_avere? || fuori_partita_dare? || fuori_partita_avere? ||
-            nc_cassa_dare? || nc_cassa_avere? || nc_banca_dare? || nc_banca_avere? || nc_fuori_partita_dare? || nc_fuori_partita_avere?
+          return (cassa_dare? || cassa_avere? || banca_dare? || banca_avere? || fuori_partita_dare? || fuori_partita_avere?) &&
+            (nc_cassa_dare? || nc_cassa_avere? || nc_banca_dare? || nc_banca_avere? || nc_fuori_partita_dare? || nc_fuori_partita_avere?)
         end
       end
       return true
@@ -68,11 +68,9 @@ module Models
 
     def validate()
       if configatron.bilancio.attivo
-        errors.add(:pdc_dare, "Inserire almeno un conto in 'Scritture PD Fattura'") if self.pdc_dare.blank? &&  self.pdc_avere.blank?
-        errors.add(:nc_pdc_dare, "Inserire almeno un conto in 'Scritture PD Nota di credito'") if self.nc_pdc_dare.blank? &&  self.nc_pdc_avere.blank?
+        errors.add(:pdc_dare, "Inserire almeno un conto in 'Scritture PD Fattura' e 'Scritture PD Nota di credito'") unless self.valido?
       else
-        errors.add(:pdc_dare, "Valorizzare almeno un flag in 'Opzioni Fattura'") if !cassa_dare? && !cassa_avere? && !banca_dare? && !banca_avere? && !fuori_partita_dare? && !fuori_partita_avere?
-        errors.add(:nc_pdc_dare, "Valorizzare almeno un flag in 'Opzioni Nota di credito'") if !nc_cassa_dare? && !nc_cassa_avere? && !nc_banca_dare? && !nc_banca_avere? && !nc_fuori_partita_dare? && !nc_fuori_partita_avere?
+        errors.add(:pdc_dare, "Valorizzare almeno un flag in 'Opzioni Fattura' e 'Opzioni Nota di credito'") unless self.valido?
         if(self.banca and
            ((self.banca_dare == 0 and self.banca_avere == 0) or
             (self.nc_banca_dare == 0 and self.nc_banca_avere == 0)))

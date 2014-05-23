@@ -37,7 +37,7 @@
     :set_default: !ruby/object:Configatron::Store
       __locked: false
       attributes: {}
-    :attivo: true
+    :attivo: false
 :liquidazioni: !ruby/object:Configatron::Store
   __locked: false
   attributes:
@@ -56,6 +56,8 @@
         :to_ary: !ruby/object:Configatron::Store
           __locked: false
           attributes: {}
+    :default_pdc_dare: 43
+    :default_pdc_avere: 81
 :bilancio_attivo: !ruby/object:Configatron::Store
   __locked: false
   attributes: {}
