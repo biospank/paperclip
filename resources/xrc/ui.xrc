@@ -1172,7 +1172,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Fatturazione</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="FATTURAZIONE_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -15208,7 +15208,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Prima Nota</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="PRIMA_NOTA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -15677,133 +15677,6 @@
 																			</object>
 																		</object>
 																		<object class="sizeritem">
-																			<option>2</option>
-																			<flag>wxEXPAND|wxALL</flag>
-																			<border>3</border>
-																			<object class="wxStaticBoxSizer">
-																				<orient>wxVERTICAL</orient>
-																				<label>Conto</label>
-																				<object class="sizeritem">
-																					<option>1</option>
-																					<flag>wxALIGN_CENTER_HORIZONTAL|wxEXPAND</flag>
-																					<border>3</border>
-																					<object class="wxBoxSizer">
-																						<orient>wxHORIZONTAL</orient>
-																						<object class="sizeritem">
-																							<option>0</option>
-																							<flag>wxALIGN_CENTER_VERTICAL</flag>
-																							<border>3</border>
-																							<object class="wxBoxSizer">
-																								<orient>wxVERTICAL</orient>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																									<border>3</border>
-																									<object class="wxStaticText" name="wxID_STATIC3611">
-																										<tooltip>Piano dei conti</tooltip>
-																										<label>Dare:</label>
-																									</object>
-																								</object>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																									<border>3</border>
-																									<object class="wxTextCtrl" name="lku_pdc_dare">
-																										<style>wxTE_PROCESS_ENTER</style>
-																										<size>50,-1</size>
-																										<tooltip>Premere F3 per la ricerca</tooltip>
-																										<value></value>
-																										<maxlength>5</maxlength>
-																									</object>
-																								</object>
-																							</object>
-																						</object>
-																						<object class="sizeritem">
-																							<option>1</option>
-																							<flag>wxALIGN_CENTER_VERTICAL</flag>
-																							<border>3</border>
-																							<object class="wxBoxSizer">
-																								<orient>wxVERTICAL</orient>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL</flag>
-																									<border>3</border>
-																									<object class="wxStaticText" name="m_staticText32421">
-																										<label></label>
-																									</object>
-																								</object>
-																								<object class="sizeritem">
-																									<option>1</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
-																									<border>3</border>
-																									<object class="wxTextCtrl" name="txt_descrizione_pdc_dare">
-																										<enabled>0</enabled>
-																										<value></value>
-																										<maxlength>0</maxlength>
-																									</object>
-																								</object>
-																							</object>
-																						</object>
-																						<object class="sizeritem">
-																							<option>0</option>
-																							<flag>wxALIGN_CENTER_VERTICAL</flag>
-																							<border>3</border>
-																							<object class="wxBoxSizer">
-																								<orient>wxVERTICAL</orient>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																									<border>3</border>
-																									<object class="wxStaticText" name="wxID_STATIC36111">
-																										<tooltip>Piano dei conti</tooltip>
-																										<label>Avere:</label>
-																									</object>
-																								</object>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																									<border>3</border>
-																									<object class="wxTextCtrl" name="lku_pdc_avere">
-																										<style>wxTE_PROCESS_ENTER</style>
-																										<size>50,-1</size>
-																										<tooltip>Premere F3 per la ricerca</tooltip>
-																										<value></value>
-																										<maxlength>5</maxlength>
-																									</object>
-																								</object>
-																							</object>
-																						</object>
-																						<object class="sizeritem">
-																							<option>1</option>
-																							<flag>wxALIGN_CENTER_VERTICAL</flag>
-																							<border>3</border>
-																							<object class="wxBoxSizer">
-																								<orient>wxVERTICAL</orient>
-																								<object class="sizeritem">
-																									<option>0</option>
-																									<flag>wxALL</flag>
-																									<border>3</border>
-																									<object class="wxStaticText" name="m_staticText324211">
-																										<label></label>
-																									</object>
-																								</object>
-																								<object class="sizeritem">
-																									<option>1</option>
-																									<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
-																									<border>3</border>
-																									<object class="wxTextCtrl" name="txt_descrizione_pdc_avere">
-																										<enabled>0</enabled>
-																										<value></value>
-																										<maxlength>0</maxlength>
-																									</object>
-																								</object>
-																							</object>
-																						</object>
-																					</object>
-																				</object>
-																			</object>
-																		</object>
-																		<object class="sizeritem">
 																			<option>1</option>
 																			<flag>wxEXPAND|wxALL</flag>
 																			<border>3</border>
@@ -15979,14 +15852,461 @@
 												</object>
 											</object>
 											<object class="notebookpage">
-												<label>Causali</label>
+												<label>Scritture</label>
 												<selected>1</selected>
+												<object class="wxPanel" name="SCRITTURE_BILANCIO_FOLDER">
+													<style>wxTAB_TRAVERSAL</style>
+													<object class="wxBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxEXPAND|wxALL</flag>
+															<border>3</border>
+															<object class="wxStaticBoxSizer">
+																<orient>wxVERTICAL</orient>
+																<label>Scritture</label>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxEXPAND|wxRIGHT|wxTOP|wxBOTTOM</flag>
+																	<border>3</border>
+																	<object class="wxBoxSizer">
+																		<orient>wxHORIZONTAL</orient>
+																		<object class="sizeritem">
+																			<option>2</option>
+																			<flag>wxALIGN_TOP|wxRIGHT|wxTOP|wxBOTTOM</flag>
+																			<border>3</border>
+																			<object class="wxBoxSizer">
+																				<orient>wxVERTICAL</orient>
+																				<object class="sizeritem">
+																					<option>0</option>
+																					<flag>wxEXPAND</flag>
+																					<border>3</border>
+																					<object class="wxBoxSizer">
+																						<orient>wxHORIZONTAL</orient>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag></flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC511">
+																										<label>Data Op.:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_data_operazione">
+																										<style>wxTE_PROCESS_ENTER</style>
+																										<size>90,-1</size>
+																										<value></value>
+																										<maxlength>10</maxlength>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag></flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC610">
+																										<label>Causale:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="lku_causale">
+																										<style>wxTE_PROCESS_ENTER</style>
+																										<size>40,-1</size>
+																										<tooltip>Premere F3 per la ricerca</tooltip>
+																										<value></value>
+																										<maxlength>3</maxlength>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>1</option>
+																							<flag></flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALL|wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="m_staticText32311">
+																										<label></label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_descrizione_causale">
+																										<enabled>0</enabled>
+																										<value></value>
+																										<maxlength>0</maxlength>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																					</object>
+																				</object>
+																				<object class="sizeritem">
+																					<option>0</option>
+																					<flag>wxEXPAND|wxALL</flag>
+																					<border>3</border>
+																					<object class="wxBoxSizer">
+																						<orient>wxVERTICAL</orient>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxALIGN_LEFT|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxStaticText" name="wxID_STATIC811">
+																								<label>Descrizione:</label>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxEXPAND|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxTextCtrl" name="txt_descrizione">
+																								<style>wxTE_MULTILINE|wxTE_PROCESS_TAB</style>
+																								<size>-1,60</size>
+																								<value></value>
+																								<maxlength>0</maxlength>
+																							</object>
+																						</object>
+																					</object>
+																				</object>
+																				<object class="sizeritem">
+																					<option>1</option>
+																					<flag>wxEXPAND</flag>
+																					<border>5</border>
+																					<object class="wxBoxSizer">
+																						<orient>wxHORIZONTAL</orient>
+																						<object class="sizeritem">
+																							<option>0</option>
+																							<flag>wxALIGN_TOP|wxALL</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxVERTICAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALL</flag>
+																									<border>3</border>
+																									<object class="wxStaticText" name="wxID_STATIC10101">
+																										<label>Importo:</label>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_LEFT|wxALL|wxEXPAND</flag>
+																									<border>3</border>
+																									<object class="wxTextCtrl" name="txt_importo">
+																										<style>wxTE_PROCESS_ENTER|wxTE_RIGHT|wxWANTS_CHARS</style>
+																										<size>80,-1</size>
+																										<value></value>
+																										<maxlength>0</maxlength>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																						<object class="sizeritem">
+																							<option>1</option>
+																							<flag>wxALIGN_CENTER_HORIZONTAL|wxEXPAND</flag>
+																							<border>3</border>
+																							<object class="wxBoxSizer">
+																								<orient>wxHORIZONTAL</orient>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_VERTICAL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="wxID_STATIC361131">
+																												<tooltip>Piano dei conti</tooltip>
+																												<label>Dare:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="lku_pdc_dare">
+																												<style>wxTE_PROCESS_ENTER</style>
+																												<size>50,-1</size>
+																												<tooltip>Premere F3 per la ricerca</tooltip>
+																												<value></value>
+																												<maxlength>5</maxlength>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText3242131">
+																												<label></label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_descrizione_pdc_dare">
+																												<enabled>0</enabled>
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>0</option>
+																									<flag>wxALIGN_CENTER_VERTICAL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="wxID_STATIC3611121">
+																												<tooltip>Piano dei conti</tooltip>
+																												<label>Avere:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="lku_pdc_avere">
+																												<style>wxTE_PROCESS_ENTER</style>
+																												<size>50,-1</size>
+																												<tooltip>Premere F3 per la ricerca</tooltip>
+																												<value></value>
+																												<maxlength>5</maxlength>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																								<object class="sizeritem">
+																									<option>1</option>
+																									<flag>wxALIGN_CENTER_VERTICAL</flag>
+																									<border>3</border>
+																									<object class="wxBoxSizer">
+																										<orient>wxVERTICAL</orient>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText32421121">
+																												<label></label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>1</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxTextCtrl" name="txt_descrizione_pdc_avere">
+																												<enabled>0</enabled>
+																												<value></value>
+																												<maxlength>0</maxlength>
+																											</object>
+																										</object>
+																									</object>
+																								</object>
+																							</object>
+																						</object>
+																					</object>
+																				</object>
+																			</object>
+																		</object>
+																		<object class="spacer">
+																			<option>1</option>
+																			<flag>wxEXPAND|wxALL</flag>
+																			<border>3</border>
+																			<size>5,5</size>
+																		</object>
+																		<object class="sizeritem">
+																			<option>0</option>
+																			<flag>wxEXPAND|wxALL</flag>
+																			<border>3</border>
+																			<object class="wxBoxSizer">
+																				<orient>wxVERTICAL</orient>
+																				<object class="sizeritem">
+																					<option>0</option>
+																					<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																					<border>3</border>
+																					<object class="wxButton" name="btn_salva">
+																						<size>100,-1</size>
+																						<label>Salva</label>
+																						<default>0</default>
+																					</object>
+																				</object>
+																				<object class="sizeritem">
+																					<option>0</option>
+																					<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																					<border>3</border>
+																					<object class="wxButton" name="btn_elimina">
+																						<size>100,-1</size>
+																						<label>Elimina</label>
+																						<default>0</default>
+																					</object>
+																				</object>
+																				<object class="sizeritem">
+																					<option>0</option>
+																					<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+																					<border>3</border>
+																					<object class="wxButton" name="btn_nuova">
+																						<size>100,-1</size>
+																						<label>Nuova</label>
+																						<default>0</default>
+																					</object>
+																				</object>
+																			</object>
+																		</object>
+																	</object>
+																</object>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxEXPAND|wxALL</flag>
+															<border>3</border>
+															<object class="wxStaticBoxSizer">
+																<orient>wxHORIZONTAL</orient>
+																<label>Ricerca movimenti</label>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>3</border>
+																	<object class="wxStaticText" name="m_staticText4921">
+																		<label>Anno:</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>3</border>
+																	<object class="wxChoice" name="chce_anno">
+																		<size>80,-1</size>
+																		<selection>0</selection>
+																		<content />
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<object class="wxStaticText" name="wxID_STATIC911">
+																		<label>Dal..</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<object class="wxTextCtrl" name="txt_dal">
+																		<style>wxTE_PROCESS_ENTER</style>
+																		<size>90,-1</size>
+																		<value></value>
+																		<maxlength>10</maxlength>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<object class="wxStaticText" name="wxID_STATIC921">
+																		<label>Al..</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<object class="wxTextCtrl" name="txt_al">
+																		<style>wxTE_PROCESS_ENTER</style>
+																		<size>90,-1</size>
+																		<value></value>
+																		<maxlength>10</maxlength>
+																	</object>
+																</object>
+																<object class="spacer">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<size>5,5</size>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																	<border>3</border>
+																	<object class="wxButton" name="btn_ricerca">
+																		<size>100,-1</size>
+																		<label>_Ricerca</label>
+																		<default>0</default>
+																	</object>
+																</object>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND|wxALL</flag>
+															<border>3</border>
+															<object class="wxStaticBoxSizer">
+																<orient>wxVERTICAL</orient>
+																<label>Lista movimenti</label>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxALL|wxEXPAND</flag>
+																	<border>3</border>
+																	<object class="wxListCtrl" name="lstrep_scritture">
+																		<style>wxLC_HRULES|wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_VRULES</style>
+																		<size>100,100</size>
+																	</object>
+																</object>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="notebookpage">
+												<label>Causali</label>
+												<selected>0</selected>
 												<object class="wxPanel" name="CAUSALI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
 														<orient>wxVERTICAL</orient>
 														<object class="sizeritem">
-															<option>1</option>
+															<option>0</option>
 															<flag>wxEXPAND|wxALL</flag>
 															<border>3</border>
 															<object class="wxPanel" name="CAUSALI_PANEL">
@@ -16146,7 +16466,7 @@
 																						<border>3</border>
 																						<object class="wxTextCtrl" name="txt_descrizione_agg">
 																							<style>wxTE_MULTILINE</style>
-																							<size>-1,60</size>
+																							<size>-1,100</size>
 																							<value></value>
 																							<maxlength>0</maxlength>
 																						</object>
@@ -16359,8 +16679,8 @@
 													<object class="wxBoxSizer">
 														<orient>wxVERTICAL</orient>
 														<object class="sizeritem">
-															<option>1</option>
-															<flag>wxEXPAND|wxALL</flag>
+															<option>0</option>
+															<flag>wxALL|wxEXPAND</flag>
 															<border>3</border>
 															<object class="wxPanel" name="CAUSALI_BILANCIO_PANEL">
 																<style>wxTAB_TRAVERSAL</style>
@@ -16422,40 +16742,21 @@
 																					</object>
 																					<object class="sizeritem">
 																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																						<flag>wxALIGN_LEFT|wxALIGN_TOP|wxALL</flag>
 																						<border>3</border>
-																						<object class="wxStaticText" name="wxID_STATIC3422">
-																							<tooltip>Piano dei conti</tooltip>
-																							<label>Conto Dare:</label>
+																						<object class="wxStaticText" name="wxID_STATIC191">
+																							<label>Dettaglio:</label>
 																						</object>
 																					</object>
 																					<object class="sizeritem">
-																						<option>1</option>
-																						<flag>wxEXPAND</flag>
-																						<border>5</border>
-																						<object class="wxBoxSizer">
-																							<orient>wxHORIZONTAL</orient>
-																							<object class="sizeritem">
-																								<option>0</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="lku_pdc_dare">
-																									<size>50,-1</size>
-																									<tooltip>Premere F3 per la ricerca</tooltip>
-																									<value></value>
-																									<maxlength>5</maxlength>
-																								</object>
-																							</object>
-																							<object class="sizeritem">
-																								<option>1</option>
-																								<flag>wxALL</flag>
-																								<border>3</border>
-																								<object class="wxTextCtrl" name="txt_descrizione_pdc_dare">
-																									<enabled>0</enabled>
-																									<value></value>
-																									<maxlength>0</maxlength>
-																								</object>
-																							</object>
+																						<option>0</option>
+																						<flag>wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+																						<border>3</border>
+																						<object class="wxTextCtrl" name="txt_descrizione_agg">
+																							<style>wxTE_MULTILINE</style>
+																							<size>-1,100</size>
+																							<value></value>
+																							<maxlength>0</maxlength>
 																						</object>
 																					</object>
 																					<object class="sizeritem">
@@ -16470,7 +16771,7 @@
 																					<object class="sizeritem">
 																						<option>1</option>
 																						<flag>wxEXPAND</flag>
-																						<border>5</border>
+																						<border>3</border>
 																						<object class="wxBoxSizer">
 																							<orient>wxHORIZONTAL</orient>
 																							<object class="sizeritem">
@@ -16498,6 +16799,44 @@
 																					</object>
 																					<object class="sizeritem">
 																						<option>0</option>
+																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																						<border>3</border>
+																						<object class="wxStaticText" name="wxID_STATIC3422">
+																							<tooltip>Piano dei conti</tooltip>
+																							<label>Conto Dare:</label>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>1</option>
+																						<flag>wxEXPAND</flag>
+																						<border>3</border>
+																						<object class="wxBoxSizer">
+																							<orient>wxHORIZONTAL</orient>
+																							<object class="sizeritem">
+																								<option>0</option>
+																								<flag>wxALL</flag>
+																								<border>3</border>
+																								<object class="wxTextCtrl" name="lku_pdc_dare">
+																									<size>50,-1</size>
+																									<tooltip>Premere F3 per la ricerca</tooltip>
+																									<value></value>
+																									<maxlength>5</maxlength>
+																								</object>
+																							</object>
+																							<object class="sizeritem">
+																								<option>1</option>
+																								<flag>wxALL</flag>
+																								<border>3</border>
+																								<object class="wxTextCtrl" name="txt_descrizione_pdc_dare">
+																									<enabled>0</enabled>
+																									<value></value>
+																									<maxlength>0</maxlength>
+																								</object>
+																							</object>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>0</option>
 																						<flag>wxALL</flag>
 																						<border>3</border>
 																						<object class="wxStaticText" name="m_staticText2712">
@@ -16507,7 +16846,7 @@
 																					<object class="sizeritem">
 																						<option>1</option>
 																						<flag>wxEXPAND</flag>
-																						<border>5</border>
+																						<border>3</border>
 																						<object class="wxBoxSizer">
 																							<orient>wxHORIZONTAL</orient>
 																							<object class="sizeritem">
@@ -16542,25 +16881,6 @@
 																									<checked>0</checked>
 																								</object>
 																							</object>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALIGN_LEFT|wxALIGN_TOP|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxStaticText" name="wxID_STATIC191">
-																							<label>Dettaglio:</label>
-																						</object>
-																					</object>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL</flag>
-																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_descrizione_agg">
-																							<style>wxTE_MULTILINE</style>
-																							<size>-1,60</size>
-																							<value></value>
-																							<maxlength>0</maxlength>
 																						</object>
 																					</object>
 																				</object>
@@ -19046,7 +19366,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -19416,7 +19736,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Acquisizione</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="CARICO_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">

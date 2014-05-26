@@ -12,16 +12,16 @@ module Views
   module ListbookMgr
     include Views::Base::View
     include Helpers::MVCHelper
-    
+
     attr_accessor :timer_scadenze, :main_frame
-    
+
     def ui(parent)
       @main_frame = parent
-      
+
       controller :base
-      
+
       logger.debug('initializing ListbookMgr...')
- 
+
       img_list = Wx::ImageList.new(48, 48)
       img_list << Helpers::ImageHelper.make_bitmap('ana.png')
       img_list << Wx::Bitmap.new(Helpers::ImageHelper.make_image('ana.png').convert_to_greyscale())
@@ -35,16 +35,21 @@ module Views
       img_list << Wx::Bitmap.new(Helpers::ImageHelper.make_image('mag.png').convert_to_greyscale())
       img_list << Helpers::ImageHelper.make_bitmap('conf.png')
       img_list << Wx::Bitmap.new(Helpers::ImageHelper.make_image('conf.png').convert_to_greyscale())
-      
+
       self.set_image_list(img_list)
 
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_ANAGRAFICA_VIEW, 1)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW, 3)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW, 5)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW, 7)
+      if configatron.bilancio.attivo
+        self.set_page_text(4, 'Partita Doppia')
+      else
+        self.set_page_text(4, 'Prima Nota')
+      end
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_MAGAZZINO_VIEW, 9)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_CONFIGURAZIONE_VIEW, 11)
-      
+
       setup_listeners()
       xrc = Helpers::WxHelper::Xrc.instance()
       xrc.find('ANAGRAFICA_NOTEBOOK_MGR', self, :extends => Views::Anagrafica::AnagraficaNotebookMgr)
@@ -67,7 +72,7 @@ module Views
       configurazione_notebook_mgr.set_selection(Helpers::ConfigurazioneHelper::WXBRA_AZIENDA_FOLDER)
 
       map_events(self)
-      
+
       evt_listbook_page_changing(self)    { |evt| listbook_page_changing(evt) }
       evt_listbook_page_changed(self)    { |evt| listbook_page_changed(evt) }
 
@@ -226,19 +231,19 @@ module Views
         notify(:evt_categoria_pdc_changed, evt.result_set)
       end
 
-      evt_ritenuta_changed do | evt | 
+      evt_ritenuta_changed do | evt |
         notify(:evt_ritenuta_changed, evt.result_set)
       end
 
-      evt_causale_changed do | evt | 
+      evt_causale_changed do | evt |
         notify(:evt_causale_changed, evt.result_set)
       end
 
-      evt_banca_changed do | evt | 
+      evt_banca_changed do | evt |
         notify(:evt_banca_changed, evt.result_set)
       end
 
-      evt_tipo_pagamento_cliente_changed do | evt | 
+      evt_tipo_pagamento_cliente_changed do | evt |
         notify(:evt_tipo_pagamento_cliente_changed, evt.result_set)
       end
 
@@ -246,7 +251,7 @@ module Views
         notify(:evt_tipo_pagamento_fornitore_changed, evt.result_set)
       end
 
-      evt_scadenza_in_sospeso do | evt | 
+      evt_scadenza_in_sospeso do | evt |
         begin
           unless Models::Utente.system?
             if can? :read, Helpers::ApplicationHelper::Modulo::SCADENZARIO
@@ -298,7 +303,7 @@ module Views
         end
       end
 
-      evt_dettaglio_incasso do | evt | 
+      evt_dettaglio_incasso do | evt |
         begin
           incasso = evt.incasso
           set_selection(Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW)
@@ -320,7 +325,7 @@ module Views
         end
       end
 
-      evt_dettaglio_pagamento do | evt | 
+      evt_dettaglio_pagamento do | evt |
         begin
           pagamento = evt.pagamento
           set_selection(Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW)
@@ -359,7 +364,7 @@ module Views
         end
       end
 
-      evt_dettaglio_fattura_fatturazione do | evt | 
+      evt_dettaglio_fattura_fatturazione do | evt |
         begin
           fattura = evt.fattura
           set_selection(Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW)
@@ -370,7 +375,7 @@ module Views
         end
       end
 
-      evt_dettaglio_nota_spese do | evt | 
+      evt_dettaglio_nota_spese do | evt |
         begin
           nota_spese = evt.nota_spese
           set_selection(Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW)
@@ -392,13 +397,13 @@ module Views
         end
       end
 
-      # carico tutti i dati che non dipendono 
+      # carico tutti i dati che non dipendono
       # dall'azienda selezionata
-      
+
       # carico le ritenute
       ritenute = ctrl.search_ritenute()
       notify(:evt_ritenuta_changed, ritenute)
-      
+
       # carico le aliquote
       aliquote = ctrl.search_aliquote()
       notify(:evt_aliquota_changed, aliquote)
@@ -422,7 +427,7 @@ module Views
       # carico i tipi pagamento cliente
       tipi_pagamento_cliente = ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::CLIENTI)
       notify(:evt_tipo_pagamento_cliente_changed, tipi_pagamento_cliente)
-                          
+
       # carico i tipi pagamento fornitore
       tipi_pagamento_fornitore = ctrl.search_tipi_pagamento(Helpers::AnagraficaHelper::FORNITORI)
       notify(:evt_tipo_pagamento_fornitore_changed, tipi_pagamento_fornitore)
@@ -439,7 +444,7 @@ module Views
     def init_folders()
       load_dependent_data()
     end
-    
+
     # chiamato al cambio azienda
     def reset_folders()
       Wx::BusyCursor.busy() do
@@ -447,29 +452,29 @@ module Views
         load_dependent_data()
       end
     end
-    
+
     # viene chiamato dopo la login e al cambio azienda
     def load_dependent_data(check_sospesi=true)
       # Durante l'inizializzazione vengono considerate tutte
       # le ricerche collegate con l'azienda che e' stata scelta
       # in fase di login
-      
+
       # carico gli anni contabili delle note spese
       anni_contabili_ns = ctrl.load_anni_contabili(Models::NotaSpese)
       notify(:evt_anni_contabili_ns_changed, anni_contabili_ns)
-      
+
       # carico gli anni contabili delle fatture clienti
       anni_contabili_fatture_clienti = ctrl.load_anni_contabili(Models::FatturaCliente)
       notify(:evt_anni_contabili_fattura_cliente_changed, anni_contabili_fatture_clienti)
-      
+
       # carico gli anni contabili delle fatture fornitori
       anni_contabili_fatture_fornitori = ctrl.load_anni_contabili(Models::FatturaFornitore)
       notify(:evt_anni_contabili_fattura_fornitore_changed, anni_contabili_fatture_fornitori)
-      
+
       # carico gli anni contabili delle scritture
       anni_contabili_scritture = ctrl.load_anni_contabili(Models::Scrittura, :data_operazione)
       notify(:evt_anni_contabili_scrittura_changed, anni_contabili_scritture)
-      
+
       # carico gli anni contabili dei documenti di trasporto
       anni_contabili_ddt = ctrl.load_anni_contabili(Models::Ddt)
       notify(:evt_anni_contabili_ddt_changed, anni_contabili_ddt)
@@ -490,11 +495,11 @@ module Views
       notify(:evt_load_corrispettivi)
 
       # PROGRESSIVI
-      # 
+      #
       # carico gli anni contabili dei progressivi nota spese
       progressivi_ns = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNotaSpese)
       notify(:evt_progressivo_ns, progressivi_ns)
-      
+
       # carico gli anni contabili dei progressivi fattura
       progressivi_fattura = ctrl.load_anni_contabili_progressivi(Models::ProgressivoFatturaCliente)
       notify(:evt_progressivo_fattura, progressivi_fattura)
@@ -510,7 +515,7 @@ module Views
       # carico i clienti
       clienti = ctrl.search_clienti()
       notify(:evt_cliente_changed, clienti)
-      
+
       # carico i fornitori
       fornitori = ctrl.search_fornitori()
       notify(:evt_fornitore_changed, fornitori)
@@ -535,13 +540,13 @@ module Views
       # lancio l'evento per il controllo delle scadenze
       # This sends the event for processing by listeners
       process_event(Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()) if check_sospesi
-      
+
       # ogni n minuti (60000 = 1 minuto) verifica i movimenti in sospeso
       self.timer_scadenze = Wx::Timer.every(300000) do
         process_event(Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()) unless ctrl.locked?
       end
     end
-    
+
     def listbook_page_changing(evt)
       if ctrl.locked?
 #        Wx::message_box("Completare la chiusura dei movimenti in sospeso.",
@@ -564,7 +569,7 @@ module Views
         end
       end
     end
-    
+
     def listbook_page_changed(evt)
       begin
         case evt.selection
@@ -589,10 +594,10 @@ module Views
       rescue Exception => e
         logger.error(e.message)
       end
-      
+
       evt.skip()
     end
-    
+
     def update_ui()
       notify(:evt_attivita_changed)
     end

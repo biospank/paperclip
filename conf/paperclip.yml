@@ -37,7 +37,7 @@
     :set_default: !ruby/object:Configatron::Store
       __locked: false
       attributes: {}
-    :attivo: false
+    :attivo: true
 :liquidazioni: !ruby/object:Configatron::Store
   __locked: false
   attributes:
