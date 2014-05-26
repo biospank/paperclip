@@ -12,17 +12,17 @@ module Models
     belongs_to :pdc_dare, :class_name => "Models::Pdc", :foreign_key => 'pdc_dare_id'
     belongs_to :pdc_avere, :class_name => "Models::Pdc", :foreign_key => 'pdc_avere_id'
 
-    before_save do |causale| 
-      Causale.update_all('predefinita = 0') if causale.predefinita? 
+    before_save do |causale|
+      Causale.update_all('predefinita = 0') if causale.predefinita?
     end
-    
-    validates_presence_of :codice, 
+
+    validates_presence_of :codice,
       :message => "Inserire il codice"
 
-    validates_presence_of :descrizione, 
+    validates_presence_of :descrizione,
       :message => "Inserire la descrizione"
 
-    validates_uniqueness_of :codice, 
+    validates_uniqueness_of :codice,
       :message => "Codice causale gia' utilizzato."
 
     # pdc_dare è obbligatorio se è attivo il bilancio
@@ -48,23 +48,12 @@ module Models
     def movimento_di_banca?()
       return banca_dare? || banca_avere?
     end
-    
+
     protected
-    
+
     def validate()
-      if configatron.bilancio.attivo
-        # se è stata abilitata la banca in dare o in avere
-        if self.banca_dare? || self.banca_avere?
-          # e non esiste almeno un conto con la banca
-          if((self.pdc_dare.blank? || self.pdc_dare.banca.blank?) &&
-            (self.pdc_avere.blank? || self.pdc_avere.banca.blank?))
-            errors.add(:pdc_dare, "Le opzioni banca prevedono almeno un conto con la banca associata.\nPremere F5 per selezionare un conto con la banca oppure associare la banca a un conto\nnel pannello 'prima nota -> piano dei conti -> gestione conti'.")
-          end
-        end
-      else
-        if(self.banca and self.banca_dare == 0 and self.banca_avere == 0)
-          errors.add(:banca, "Le opzioni non sono compatibili con la banca selezionata.")
-        end
+      if(self.banca and self.banca_dare == 0 and self.banca_avere == 0)
+        errors.add(:banca, "Le opzioni non sono compatibili con la banca selezionata.")
       end
 #      if configatron.bilancio.attivo
 #        # pdc_dare è obbligatorio se fuori_partita_dare è valorizzato
@@ -86,6 +75,6 @@ module Models
 #        end
 #      end
     end
-    
+
   end
 end

@@ -10,7 +10,7 @@ module Views
       WX_ID_F2 = Wx::ID_ANY
 
       def ui
-        logger.debug('initializing CorrispettiviFolder...')
+        logger.debug('initializing CorrispettiviBilancioFolder...')
         xrc = Helpers::WxHelper::Xrc.instance()
         xrc.find('CORRISPETTIVI_BILANCIO_PANEL', self, :extends => Views::Fatturazione::CorrispettiviBilancioPanel)
         corrispettivi_bilancio_panel.ui(self)

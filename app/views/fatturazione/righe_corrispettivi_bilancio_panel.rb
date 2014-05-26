@@ -230,13 +230,11 @@ module Views
       def update_riga_ui()
         if self.riga_corrispettivo.registrato_in_prima_nota?
           disable_widgets [txt_giorno, txt_importo, lku_aliquota,
-                          lku_pdc_avere, btn_aggiungi, btn_modifica]
-          disable_widgets [lku_pdc_avere] if configatron.bilancio.attivo
+                          lku_pdc_avere, btn_aggiungi, btn_modifica, lku_pdc_avere]
           enable_widgets [btn_elimina, btn_nuovo]
         else
           enable_widgets [txt_giorno, txt_importo, lku_aliquota,
-                          lku_pdc_avere, btn_modifica, btn_elimina, btn_nuovo]
-          enable_widgets [lku_pdc_avere] if configatron.bilancio.attivo
+                          lku_pdc_avere, btn_modifica, btn_elimina, btn_nuovo, lku_pdc_avere]
           disable_widgets [btn_aggiungi]
         end
       end

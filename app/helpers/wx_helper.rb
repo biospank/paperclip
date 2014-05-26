@@ -7,9 +7,9 @@ module Helpers
     class Xrc
       include Singleton
       include Helpers::Logger
-    
+
       attr_reader :resource
-    
+
       def initialize
         @resource = Wx::XmlResource.get
         #@resource.add_handler(WxArchiveFSHandler.new)
@@ -18,19 +18,19 @@ module Helpers
         #@resource.load("resources/xrc/ui.xrc")
         @resource.load("resources/xrc/ui.xrs")
 
-        @finder = lambda do | x, parent | 
+        @finder = lambda do | x, parent |
           Wx::Window.find_window_by_id(Wx::xrcid(x), parent)
         end
 
       end
-    
+
       def find(x, parent, opt = {})
         widget = @finder.call(x, parent)
         widget.extend(opt[:extends]) if opt[:extends]
         #parent.instance_variable_set("@#{x}", widget)
-        
+
         yield widget if block_given?
-        
+
         # inizializzo la variabile d'istanza
         x.downcase!
         if opt[:force_parent]
@@ -81,9 +81,9 @@ module Helpers
             end
 
           }
-          
+
           if opt[:alias]
-            opt[:force_parent].instance_eval %{
+            parent.instance_eval %{
               alias #{opt[:alias]} #{x}
             }
           end
@@ -102,9 +102,9 @@ module Helpers
         end
 
         widget
-        
+
       end
-    
+
     end
 
 #    def WxHelper.include_ui
@@ -151,7 +151,7 @@ module Helpers
 #        cls.evt_set_focus() { |evt| call_method(cls, m_kill_focus, evt) }
 #      }
 #    end
-    
+
 #    def map_text_enter(cls, txts)
 #      txts.each { |txt|
 #        obj = cls.instance_variable_get("@#{txt}")
@@ -181,7 +181,7 @@ module Helpers
     def map_events(cls)
       @grids = {} unless @grids
       @lists = {} unless @lists
-      
+
       cls.instance_variables.each { |var|
         obj = cls.instance_variable_get(var)
 
@@ -242,8 +242,8 @@ module Helpers
           cls.evt_text(obj)           { |evt| call_method(cls, m+'_change', evt) }
 #          cls.evt_text_enter(obj)     { |evt| call_method(cls, m+'_enter',   evt) }
           obj.evt_char { |evt| call_method(cls, m+'_keypress',   evt) }
-#          obj.connect(Wx::ID_ANY, 
-#                      Wx::ID_ANY, 
+#          obj.connect(Wx::ID_ANY,
+#                      Wx::ID_ANY,
 #                      Wx::EVT_KEY_DOWN)   { |evt| call_method(cls, m+'_enter_keypress', evt) }
 
         when /^@lku/
@@ -267,7 +267,7 @@ module Helpers
       cls.evt_grid_select_cell      { |evt| grid_event(cls, 'click',        evt) }
       cls.evt_grid_label_left_click { |evt| grid_event(cls, 'label_click',  evt) }
       cls.evt_grid_range_select     { |evt| grid_event(cls, 'range_select', evt) }
-		
+
     end
   end
 end

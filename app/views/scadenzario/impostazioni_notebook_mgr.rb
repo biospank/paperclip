@@ -21,8 +21,10 @@ module Views
             self.delete_page(Helpers::ScadenzarioHelper::WXBRA_INCASSI_PAGAMENTI_FOLDER)
           end
 
-          xrc.find('INCASSI_PAGAMENTI_BILANCIO_FOLDER', self, :extends => Views::Scadenzario::IncassiPagamentiBilancioFolder)
-          incassi_pagamenti_bilancio_folder.ui()
+          xrc.find('INCASSI_PAGAMENTI_BILANCIO_FOLDER', self,
+            :extends => Views::Scadenzario::IncassiPagamentiBilancioFolder,
+            :alias => :incassi_pagamenti_folder)
+          incassi_pagamenti_folder.ui()
         else
           xrc.find('INCASSI_PAGAMENTI_FOLDER', self, :extends => Views::Scadenzario::IncassiPagamentiFolder)
           incassi_pagamenti_folder.ui()
@@ -58,33 +60,20 @@ module Views
       def impostazioni_notebook_mgr_page_changed(evt)
         case evt.selection
         when Helpers::ScadenzarioHelper::WXBRA_INCASSI_PAGAMENTI_FOLDER
-          if configatron.bilancio.attivo
-            incassi_pagamenti_bilancio_folder().init_folder()
-          else
-            incassi_pagamenti_folder().init_folder()
-          end
+          incassi_pagamenti_folder().init_folder()
         when Helpers::ScadenzarioHelper::WXBRA_NORMA_LIQUIDAZIONI_FOLDER
           norma_liquidazioni_folder().init_folder()
-
         end
         evt.skip()
       end
 
       def init_folder()
-        if configatron.bilancio.attivo
-          incassi_pagamenti_bilancio_folder.init_folder
-        else
-          incassi_pagamenti_folder.init_folder
-        end
+        incassi_pagamenti_folder.init_folder
         norma_liquidazioni_folder.init_folder
       end
 
       def reset_folder()
-        if configatron.bilancio.attivo
-          incassi_pagamenti_bilancio_folder.reset_folder
-        else
-          incassi_pagamenti_folder.reset_folder
-        end
+        incassi_pagamenti_folder.reset_folder
         norma_liquidazioni_folder.reset_folder
       end
 

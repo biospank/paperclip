@@ -29,10 +29,14 @@ module Views
             self.delete_page(Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER)
           end
 
-          xrc.find('SCADENZARIO_CLIENTI_BILANCIO_FOLDER', self, :extends => Views::Scadenzario::ScadenzarioClientiBilancioFolder)
-          scadenzario_clienti_bilancio_folder.ui()
-          xrc.find('SCADENZARIO_FORNITORI_BILANCIO_FOLDER', self, :extends => Views::Scadenzario::ScadenzarioFornitoriBilancioFolder)
-          scadenzario_fornitori_bilancio_folder.ui()
+          xrc.find('SCADENZARIO_CLIENTI_BILANCIO_FOLDER', self,
+            :extends => Views::Scadenzario::ScadenzarioClientiBilancioFolder,
+            :alias => :scadenzario_clienti_folder)
+          scadenzario_clienti_folder.ui()
+          xrc.find('SCADENZARIO_FORNITORI_BILANCIO_FOLDER', self,
+            :extends => Views::Scadenzario::ScadenzarioFornitoriBilancioFolder,
+            :alias => :scadenzario_fornitori_folder)
+          scadenzario_fornitori_folder.ui()
         else
           xrc.find('SCADENZARIO_CLIENTI_FOLDER', self, :extends => Views::Scadenzario::ScadenzarioClientiFolder)
           scadenzario_clienti_folder.ui()
@@ -72,17 +76,9 @@ module Views
         logger.debug("page changed!")
         case evt.selection
         when Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_CLIENTI_FOLDER
-          if configatron.bilancio.attivo
-            scadenzario_clienti_bilancio_folder().init_folder()
-          else
-            scadenzario_clienti_folder().init_folder()
-          end
+          scadenzario_clienti_folder().init_folder()
         when Helpers::ScadenzarioHelper::WXBRA_SCADENZARIO_FORNITORI_FOLDER
-          if configatron.bilancio.attivo
-            scadenzario_fornitori_bilancio_folder().init_folder()
-          else
-            scadenzario_fornitori_folder().init_folder()
-          end
+          scadenzario_fornitori_folder().init_folder()
         when Helpers::ScadenzarioHelper::WXBRA_IMPOSTAZIONI_SCADENZARIO_FOLDER
           impostazioni_folder().init_folder()
         when Helpers::ScadenzarioHelper::WXBRA_REPORT_SCADENZARIO_FOLDER

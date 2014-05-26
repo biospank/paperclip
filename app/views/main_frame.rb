@@ -258,7 +258,7 @@ module Views
       begin
         Wx::BusyCursor.busy() do
           if evt.checked?
-            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
+            res = Wx::message_box("Paperclip sarà riavviato. Confermi le nuove impostazioni?",
               'Avvertenza',
                   Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
@@ -292,7 +292,7 @@ module Views
       begin
         Wx::BusyCursor.busy() do
           if evt.checked?
-            res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
+            res = Wx::message_box("Paperclip sarà riavviato. Confermi le nuove impostazioni?",
               'Avvertenza',
               Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
@@ -325,7 +325,7 @@ module Views
     def mnu_bilancio_attivo_click(evt)
       begin
         Wx::BusyCursor.busy() do
-          res = Wx::message_box("Le nuove impostazioni necessitano un riavvio.\nConfermi le nuove impostazioni?",
+          res = Wx::message_box("Paperclip sarà riavviato. Confermi le nuove impostazioni?",
             'Avvertenza',
             Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 

@@ -27,8 +27,10 @@ module Views
             self.delete_page(Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER)
           end
 
-          xrc.find('CORRISPETTIVI_BILANCIO_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviBilancioFolder)
-          corrispettivi_bilancio_folder.ui()
+          xrc.find('CORRISPETTIVI_BILANCIO_FOLDER', self,
+            :extends => Views::Fatturazione::CorrispettiviBilancioFolder,
+            :alias => :corrispettivi_folder)
+          corrispettivi_folder.ui()
         else
           xrc.find('CORRISPETTIVI_FOLDER', self, :extends => Views::Fatturazione::CorrispettiviFolder)
           corrispettivi_folder.ui()
@@ -69,11 +71,7 @@ module Views
         when Helpers::FatturazioneHelper::WXBRA_DDT_FOLDER
           ddt_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_CORRISPETTIVI_FOLDER
-          if configatron.bilancio.attivo
-            corrispettivi_bilancio_folder().init_folder()
-          else
-            corrispettivi_folder().init_folder()
-          end
+          corrispettivi_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_IMPOSTAZIONI_FOLDER
           impostazioni_folder().init_folder()
         when Helpers::FatturazioneHelper::WXBRA_REPORT_FOLDER
