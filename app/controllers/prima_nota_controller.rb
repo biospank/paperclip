@@ -3,11 +3,11 @@
 module Controllers
   module PrimaNotaController
     include Controllers::BaseController
-    
+
     attr_accessor :totali, :saldi, :ripresa_saldi, :dati_ripresa_saldo
-    
+
     # gestione prima nota
-    
+
     def saldo_cassa()
       Scrittura.sum(:cassa_dare, :conditions => ["azienda_id = ?", Azienda.current]) - Scrittura.sum(:cassa_avere, :conditions => ["azienda_id = ?", Azienda.current])
     end
@@ -27,7 +27,7 @@ module Controllers
           update_scrittura_partita_doppia() if configatron.bilancio.attivo
         end
       end
-      
+
       return true
     end
 
@@ -89,7 +89,7 @@ module Controllers
       storno.banca_avere = (scrittura.banca_avere * -1) if scrittura.banca_avere?
       storno.fuori_partita_dare = (scrittura.fuori_partita_dare * -1) if scrittura.fuori_partita_dare?
       storno.fuori_partita_avere = (scrittura.fuori_partita_avere * -1) if scrittura.fuori_partita_avere?
-      
+
       storno.parent = scrittura
 
       storno.save_with_validation(false)
@@ -115,7 +115,7 @@ module Controllers
     def build_scritture_search_conditions()
       query_str = []
       parametri = []
-      
+
       data_dal = get_date(:from)
       data_al = get_date(:to)
 
@@ -123,8 +123,8 @@ module Controllers
       parametri << data_dal
       query_str << "data_operazione <= ?"
       parametri << data_al
-        
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
         :include => [:storno, :causale, :banca],
         :order => 'data_operazione'}
     end
@@ -191,7 +191,7 @@ module Controllers
         query_str << "pdc.hidden = ?"
         parametri << 0
       end
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
 
       {:conditions => [query_str.join(' AND '), *parametri],
@@ -230,15 +230,15 @@ module Controllers
     end
 
     # gestione storico residui
-    
+
     def search_storico_residui()
       Scrittura.search(:all, :select => "data_residuo",
-                        :conditions => ["#{to_sql_year('data_residuo')} = ? ", filtro.anno], 
+                        :conditions => ["#{to_sql_year('data_residuo')} = ? ", filtro.anno],
                         :group => "data_residuo",
                         :order => "data_residuo")
 
     end
-     
+
     # gestione report
     def report_scritture
       data_matrix = []
@@ -278,23 +278,23 @@ module Controllers
     def build_scritture_report_conditions()
       query_str = []
       parametri = []
-      
+
       if filtro.stampa_residuo
         if filtro.data_storico_residuo
-          query_str << "prima_nota.data_residuo = ?" 
+          query_str << "prima_nota.data_residuo = ?"
           parametri << filtro.data_storico_residuo
         else
-          query_str << "prima_nota.congelata = 0" 
+          query_str << "prima_nota.congelata = 0"
         end
       else
         # DA RIVEDERE FORSE SAREBBE MEGLIO > 0.0
         case filtro.partita
         when Helpers::PrimaNotaHelper::CASSA
-          query_str << "(prima_nota.cassa_dare is not null or prima_nota.cassa_avere is not null)" 
+          query_str << "(prima_nota.cassa_dare is not null or prima_nota.cassa_avere is not null)"
         when Helpers::PrimaNotaHelper::BANCA
-          query_str << "(prima_nota.banca_dare is not null or prima_nota.banca_avere is not null)" 
+          query_str << "(prima_nota.banca_dare is not null or prima_nota.banca_avere is not null)"
         when Helpers::PrimaNotaHelper::FUORI_PARTITA
-          query_str << "(prima_nota.fuori_partita_dare is not null or prima_nota.fuori_partita_avere is not null)" 
+          query_str << "(prima_nota.fuori_partita_dare is not null or prima_nota.fuori_partita_avere is not null)"
         end
 
         data_dal = get_date(:from)
@@ -315,12 +315,12 @@ module Controllers
           parametri << filtro.banca
         end
       end
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
         :include => [:causale, :banca, :storno],
         :order => "prima_nota.data_operazione"}
     end
-    
+
     def report_partitario
       data_matrix = []
       self.totali = {:cassa => {:dare => 0, :avere => 0}, :banca => {:dare => 0, :avere => 0}, :fuori_partita => {:dare => 0, :avere => 0}}
@@ -414,6 +414,72 @@ module Controllers
       data_matrix
     end
 
+    def report_scritture_bilancio
+      data_matrix = []
+
+      Scrittura.search(:all, build_scritture_bilancio_report_conditions()).each do |scrittura|
+        dati_scrittura = IdentModel.new(scrittura.id, Scrittura)
+        dati_scrittura << scrittura.data_operazione
+        if scrittura.esterna?
+          tipo = 'A'
+          if scrittura.stornata?
+            tipo = 'AS'
+          end
+        else
+          tipo = 'M'
+          if scrittura.stornata?
+            tipo = 'MS'
+          end
+        end
+        dati_scrittura << tipo
+        dati_scrittura << scrittura.descrizione
+        dati_scrittura << scrittura.importo
+        dati_scrittura << (scrittura.pdc_dare ? "#{scrittura.pdc_dare.codice} - #{scrittura.pdc_dare.descrizione}" : '')
+        dati_scrittura << (scrittura.pdc_avere ? "#{scrittura.pdc_avere.codice} - #{scrittura.pdc_avere.descrizione}" : '')
+        dati_scrittura << (scrittura.causale ? scrittura.causale.descrizione : '')
+
+        data_matrix << dati_scrittura
+
+      end
+
+      data_matrix
+    end
+
+    def build_scritture_bilancio_report_conditions()
+      query_str = []
+      parametri = []
+
+      if filtro.stampa_residuo
+        if filtro.data_storico_residuo
+          query_str << "prima_nota.data_residuo = ?"
+          parametri << filtro.data_storico_residuo
+        else
+          query_str << "prima_nota.congelata = 0"
+        end
+      else
+        # DA RIVEDERE FORSE SAREBBE MEGLIO > 0.0
+        query_str << "(prima_nota.importo is not null)"
+
+        data_dal = get_date(:from)
+        data_al = get_date(:to)
+
+        query_str << "prima_nota.data_operazione >= ?"
+        parametri << data_dal
+        query_str << "prima_nota.data_operazione <= ?"
+        parametri << data_al
+
+        if (filtro.causale)
+          query_str << "prima_nota.causale_id = ?"
+          parametri << filtro.causale
+        end
+
+      end
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+        :include => [:causale, :banca, :storno],
+        :order => "prima_nota.data_operazione"}
+    end
+
     def report_partitario_bilancio
       data_matrix = []
 
@@ -467,7 +533,7 @@ module Controllers
               'Pdc::DettaglioIvaFatturaCliente',
               'Models::PagamentoFatturaCliente',
               'Models::MaxiPagamentoCliente'
-            
+
           dati_scrittura = IdentModel.new(scrittura.tipo[:owner], FatturaClienteScadenzario)
 
         when 'Pdc::DettaglioImponibileFatturaFornitore',
@@ -480,7 +546,7 @@ module Controllers
         else
           dati_scrittura = []
         end
-        
+
         dati_scrittura << scrittura.data_operazione
         dati_scrittura << scrittura.descrizione
         if codice_conto_scrittura = [scrittura.pdc_dare_id,
@@ -544,10 +610,10 @@ module Controllers
         ripresa_saldo =  avere - dare
         self.ripresa_saldi[partita][:avere] = ripresa_saldo
       end
-      
+
       ripresa_saldo
     end
-    
+
     def calcola_saldo(partita)
       sub_totale_dare = self.totali[partita][:dare] + self.ripresa_saldi[partita][:dare]
       sub_totale_avere = self.totali[partita][:avere] + self.ripresa_saldi[partita][:avere]
@@ -558,23 +624,23 @@ module Controllers
         saldo =  sub_totale_avere - sub_totale_dare
         self.saldi[partita][:avere] = saldo
       end
-      
+
       saldo
     end
-    
+
     def build_partitario_report_conditions()
       query_str = []
       parametri = []
-      
+
       date_conditions(query_str, parametri)
       common_conditions(query_str, parametri)
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
         :include => [:causale, :banca],
         :joins => "LEFT JOIN prima_nota as storni ON prima_nota.id = storni.parent_id",
         :order => "prima_nota.data_operazione"}
     end
-    
+
     def build_ripresa_saldo_report_conditions()
       query_str = []
       parametri = []
@@ -583,7 +649,7 @@ module Controllers
       common_conditions(query_str, parametri)
 
       # aggiunto per la chiamata alla funzione sum
-      query_str << "prima_nota.azienda_id = ?" 
+      query_str << "prima_nota.azienda_id = ?"
       parametri << Azienda.current
 
       {:conditions => [query_str.join(' AND '), *parametri],
@@ -606,17 +672,17 @@ module Controllers
         query_str << "prima_nota.data_operazione <= ?"
         parametri << data_al
       end
-        
+
     end
 
     def common_conditions(query_str, parametri)
       case filtro.partita
       when Helpers::PrimaNotaHelper::CASSA
-        query_str << "(prima_nota.cassa_dare is not null or prima_nota.cassa_avere is not null)" 
+        query_str << "(prima_nota.cassa_dare is not null or prima_nota.cassa_avere is not null)"
       when Helpers::PrimaNotaHelper::BANCA
-        query_str << "(prima_nota.banca_dare is not null or prima_nota.banca_avere is not null)" 
+        query_str << "(prima_nota.banca_dare is not null or prima_nota.banca_avere is not null)"
       when Helpers::PrimaNotaHelper::FUORI_PARTITA
-        query_str << "(prima_nota.fuori_partita_dare is not null or prima_nota.fuori_partita_avere is not null)" 
+        query_str << "(prima_nota.fuori_partita_dare is not null or prima_nota.fuori_partita_avere is not null)"
       end
 
       if (filtro.causale)
@@ -628,16 +694,16 @@ module Controllers
         query_str << "prima_nota.banca_id = ?"
         parametri << filtro.banca
       end
-      
+
       # escludo le scritture stornate
-      query_str << "storni.parent_id is null" 
+      query_str << "storni.parent_id is null"
       # e gli storni
-      query_str << "prima_nota.parent_id is null" 
+      query_str << "prima_nota.parent_id is null"
 
     end
 
     def riga_dati_ripresa_saldo()
-      
+
       dati_ripresa_saldo = []
       dati_ripresa_saldo << ''
       dati_ripresa_saldo << ''
@@ -666,9 +732,9 @@ module Controllers
       dati_totali << (self.totali[:fuori_partita][:avere].zero? ? '' : self.totali[:fuori_partita][:avere])
 
       dati_totali
-      
+
     end
-    
+
     def riga_dati_saldi()
       dati_saldi = []
       dati_saldi << ''
@@ -682,16 +748,16 @@ module Controllers
       dati_saldi << (self.saldi[:fuori_partita][:avere].zero? ? '' : self.saldi[:fuori_partita][:avere])
 
       dati_saldi
-      
+
     end
-    
+
     # gestione report bilancio stato patrimoniale
     def report_stato_patrimoniale()
       attivita_data_matrix = {}
       passivita_data_matrix = {}
 
       tipo_conti = %w('Attivo' 'Passivo')
-      
+
       conti_ids = seleziona_conti(:pdc_dare_id, tipo_conti)
       conti_ids << seleziona_conti(:nc_pdc_dare_id, tipo_conti)
       conti_ids << seleziona_conti(:pdc_avere_id, tipo_conti)
@@ -953,7 +1019,7 @@ module Controllers
       end
 
       ricavi = ricavi_data_matrix.sort.map {|e| e.last}.reject {|e| e[2].zero?}
-      
+
       ricavi.group_by { |e|  e[3]}.each do |e|
         codice_categoria = e.first
         array_conti = e.last
@@ -991,7 +1057,7 @@ module Controllers
 
         conto_ident << conto.codice
         conto_ident << conto.descrizione
-        
+
         if(conto.cliente?)
           differenza = (somma_attivo - somma_passivo)
           conto_ident << differenza

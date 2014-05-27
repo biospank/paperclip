@@ -58,14 +58,15 @@ module Helpers
         logger.info "executing: #{cmd_params}"
         system(cmd_params)
 
-        system(sumatra_cmd % "./tmp/#{template}.pdf") if opts[:preview]
-
+        Thread.fork do
+          system(sumatra_cmd % "./tmp/#{template}.pdf") if opts[:preview]
+        end
       end
 
       def merge_all(docs, opts = {})
         # merge non distruttivo
         opts.merge!(DEFATULT_MERGE_ALL_OPTS) { |key, oldval, newval| oldval }
-        
+
         params = []
         docs.each {|doc| params << "./tmp/#{doc}.pdf"}
         params << "output ./tmp/#{opts[:output]}.pdf"
@@ -74,10 +75,11 @@ module Helpers
         logger.info "executing: #{cmd_params}"
         system(cmd_params)
 
-        system(sumatra_cmd % "./tmp/#{opts[:output]}.pdf") if opts[:preview]
-
+        Thread.fork do
+          system(sumatra_cmd % "./tmp/#{opts[:output]}.pdf") if opts[:preview]
+        end
       end
-      
+
       def render_header(opts={})
 
       end

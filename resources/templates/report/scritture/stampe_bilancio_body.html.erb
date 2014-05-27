@@ -1,0 +1,33 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- CSS relative to tmp -->
+    <link href="../resources/stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/stylesheets/custom.css" rel="stylesheet">
+    <script src="../resources/javascripts/jquery-min.js"></script>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span12">
+          <table id="report" class="table table-bordered table-condensed">
+            <tbody>
+              <% self.result_set_lstrep_scritture.each do |riga| %>
+                <tr>
+                  <td style="width: 10%;" class="center"><%= riga[0].to_s(:italian_short_date) %></td>
+                  <td style="width: 5%;" class="center"><%= riga[1] %></td>
+                  <td style="width: 30%;" class="left"><div class="dontsplit"><%= riga[2] %></div></td>
+                  <td style="width: 10%;" class="right"><%= Helpers::ApplicationHelper.currency(riga[3]) %></td>
+                  <td style="width: 15%;" class="left"><div class="dontsplit"><%= riga[4] %></div></td>
+                  <td style="width: 15%;" class="left"><div class="dontsplit"><%= riga[5] %></div></td>
+                  <td style="width: 15%;" class="left"><div class="dontsplit"><%= riga[6] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
