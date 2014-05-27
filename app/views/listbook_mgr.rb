@@ -43,9 +43,9 @@ module Views
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_SCADENZARIO_VIEW, 5)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_PRIMA_NOTA_VIEW, 7)
       if configatron.bilancio.attivo
-        self.set_page_text(4, 'Partita Doppia')
+        self.set_page_text(3, 'Partita Doppia')
       else
-        self.set_page_text(4, 'Prima Nota')
+        self.set_page_text(3, 'Prima Nota')
       end
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_MAGAZZINO_VIEW, 9)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_CONFIGURAZIONE_VIEW, 11)
