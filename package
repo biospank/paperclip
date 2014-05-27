@@ -22,6 +22,7 @@ module Paperclip
       case options.platform
       when 'win'
         invoke :new_schema unless options.preserve_db?
+        remove_dir 'Output', :verbose => false
         remove_dir 'pkg', :verbose => false
         empty_directory 'pkg', :verbose => false
         run ocra_command, :verbose => false
