@@ -1,7 +1,6 @@
 Modifiche generiche
 - le dialog sarebbe meglio che accettassero un parametro di tipo hash configurabile anche da lookup
 - tasto aggiorna (sulla toolbar) cliccabile solo per gestione in rete. (aggiorna i dati dal server)
-- spostare tutte le impostazioni nel modulo configurazione
 - verifica load_by_codice che includa anche l'azienda
 - about in italiano
 - calcolo con arrotondamento fiscale
@@ -17,8 +16,6 @@ Modifiche generiche
 - documentazione contestuale (riassuntiva) e separata (dettagliata)
 - scegliere le viste da caricare in base alla configurazione su db
 - capire come suddividere il file ui.xrc e caricare solo i moduli necessari
-- modificare il comportamento al cambio voce (commercio, servizi)
-    sarebbe meglio che la finestra si adattasse automaticamente (layout)
 - settaggio della variabile d'ambiente (InnoSetup) durante l'istallazione per ritrovare il path in aggiornamento
 - distinguere l'attivita' merceologica nel caso di piu' aziende (nel file paperclip.yml - togliere la scelta)
 - rendere piu' solida la licenza di utilizzo
@@ -39,7 +36,6 @@ Wkhtmltopdf
 - ottimizzazione caricamento css (da linea di comando)
 
 Ruby 1.9
-- passare a git
 - reset delle migrazioni
 - servizio di backup automatico
 - istallazione su penna usb
@@ -49,7 +45,6 @@ Ruby 1.9
 - pry
 - axlsx
 - foreman
-- childprocess (https://github.com/jarib/childprocess) ko
 - vegas trasforma in eseguible un app sinatra (http://code.quirkey.com/vegas/)
 - launchy (https://github.com/copiousfreetime/launchy)
 - queue_classic/clockwork (queuing/cron in postgresql)

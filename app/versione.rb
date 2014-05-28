@@ -1,6 +1,6 @@
 module Versione
   # da modificare ogni qual volta esce una nuova versione
-  RELEASE = '2.4.1'
+  RELEASE = '3.0.0'
 
   def last_release()
     @@__last_release ||= RELEASE.split('.').join().to_i
