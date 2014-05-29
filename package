@@ -118,8 +118,8 @@ module Paperclip
 
     desc "new_schema", "Create new db schema"
     def new_schema
-      invoke :migrate
-      invoke :schema_dump
+      #invoke :migrate
+      #invoke :schema_dump
       remove_file 'db/development/bra.db', :verbose => false
       invoke :schema_restore
       invoke :seed
