@@ -3,20 +3,20 @@
 module Controllers
   module FatturazioneController
     include Controllers::BaseController
-    
+
     # gestione nota spese
 
     def load_nota_spese(id)
       NotaSpese.find(id)
     end
-    
+
     def save_nota_spese()
       righe = ns_righe_fattura_panel.result_set_lstrep_righe_nota_spese
 
       NotaSpese.transaction do
         nota_spese.save!
 
-        ProgressivoNotaSpese.aggiorna_progressivo(nota_spese) if nota_spese.num.match(/^[0-9]*$/) 
+        ProgressivoNotaSpese.aggiorna_progressivo(nota_spese) if nota_spese.num.match(/^[0-9]*$/)
 
         righe.each do |riga|
           case riga.instance_status
@@ -52,10 +52,10 @@ module Controllers
     def build_note_spese_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente], # produce una inner join, oppure
 #        :joins => "LEFT OUTER JOIN clienti ON clienti.id = nota_spese.cliente_id,
         :include => [:cliente],
@@ -68,7 +68,7 @@ module Controllers
     def load_fattura_cliente(id)
       FatturaClienteFatturazione.find(id)
     end
-    
+
     def save_fattura_cliente()
       righe = righe_fattura_cliente_panel.result_set_lstrep_righe_fattura
 
@@ -122,10 +122,10 @@ module Controllers
     def build_fatture_clienti_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente], # produce una inner join, oppure
 #        :joins => "LEFT OUTER JOIN clienti ON clienti.id = nota_spese.cliente_id,
         :include => [:cliente],
@@ -135,10 +135,10 @@ module Controllers
     def build_fatture_fornitori_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente], # produce una inner join, oppure
 #        :joins => "LEFT OUTER JOIN clienti ON clienti.id = nota_spese.cliente_id,
         :include => [:fornitore],
@@ -214,13 +214,18 @@ module Controllers
 
     def scrittura_corrispettivo(corrispettivo, descrizione)
       scrittura = Scrittura.new(:azienda => Azienda.current,
-                                :cassa_dare => corrispettivo.importo,
                                 :banca => nil,
                                 :descrizione => descrizione,
                                 :data_operazione => corrispettivo.data,
                                 :data_registrazione => Time.now,
                                 :esterna => 1,
                                 :congelata => 0)
+
+      if configatron.bilancio.attivo
+        scrittura.importo = corrispettivo.importo
+      else
+        scrittura.cassa_dare = corrispettivo.importo
+      end
 
       scrittura.save_with_validation(false)
       corrispettivo.update_attributes(:registrato_in_prima_nota => 1)
@@ -286,13 +291,18 @@ module Controllers
 
     def storno_scrittura_corrispettivo(corrispettivo, descrizione)
       scrittura = Scrittura.new(:azienda => Azienda.current,
-                                :cassa_dare => (corrispettivo.importo * -1),
                                 :banca => nil,
                                 :descrizione => descrizione,
                                 :data_operazione => Date.today,
                                 :data_registrazione => Time.now,
                                 :esterna => 1,
                                 :congelata => 0)
+
+      if configatron.bilancio.attivo
+        scrittura.importo = (corrispettivo.importo * -1)
+      else
+        scrittura.cassa_dare = (corrispettivo.importo * -1)
+      end
 
       scrittura.parent = corrispettivo.scrittura
 
@@ -384,7 +394,7 @@ module Controllers
     def build_corrispettivi_report_conditions()
       query_str = []
       parametri = []
-      
+
       data_dal = get_date(:from)
       data_al = get_date(:to)
 
@@ -392,7 +402,7 @@ module Controllers
       parametri << data_dal
       query_str << "corrispettivi.data <= ?"
       parametri << data_al
-        
+
       if filtro.anno
         query_str << "#{to_sql_year('data')} = ? "
         parametri << filtro.anno
@@ -407,20 +417,20 @@ module Controllers
         query_str << "corrispettivi.aliquota_id = ? "
         parametri << filtro.aliquota
       end
-      
+
       {:conditions => [query_str.join(' AND '), *parametri],
         :include => [:pdc_dare, :pdc_avere],
         :order => 'corrispettivi.data'}
     end
-    
+
     def search_corrispettivi()
       Corrispettivo.search(:all, build_corrispettivi_search_conditions())
     end
-    
+
     def build_corrispettivi_search_conditions()
       query_str = []
       parametri = []
-      
+
       if filtro.anno
         query_str << "#{to_sql_year('data')} = ? "
         parametri << filtro.anno
@@ -435,7 +445,7 @@ module Controllers
 #        query_str << "corrispettivi.aliquota_id = ? "
 #        parametri << filtro.aliquota
 #      end
-      
+
       {:conditions => [query_str.join(' AND '), *parametri],
         :order => 'corrispettivi.data'}
     end
@@ -445,14 +455,14 @@ module Controllers
     def load_ddt(id)
       Ddt.find(id)
     end
-    
+
     def save_ddt()
       righe = righe_ddt_panel.result_set_lstrep_righe_ddt
 
       Ddt.transaction do
         ddt.save!
 
-        ProgressivoDdt.aggiorna_progressivo(ddt) if ddt.num.match(/^[0-9]*$/) 
+        ProgressivoDdt.aggiorna_progressivo(ddt) if ddt.num.match(/^[0-9]*$/)
 
         righe.each do |riga|
           case riga.instance_status
@@ -478,7 +488,7 @@ module Controllers
     end
 
     def search_for_ddt()
-      if filtro.cliente 
+      if filtro.cliente
         if filtro.cliente.new_record?
           Ddt.search_for(filtro.ricerca, [:num, 'clienti.denominazione', 'fornitori.denominazione'], build_ddt_dialog_conditions())
         else
@@ -496,7 +506,7 @@ module Controllers
     def build_ddt_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       if filtro.anno
         query_str << "#{to_sql_year('data_emissione')} = ? "
         parametri << filtro.anno
@@ -506,23 +516,23 @@ module Controllers
         query_str << "cliente_id = ?"
         parametri << filtro.cliente.id
       end
-      
+
       # usando :include con associazione polimorfica e condizione sull'associazione non funziona
-      {:conditions => [query_str.join(' AND '), *parametri], 
+      {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente], # produce una inner join, oppure
         :joins => "LEFT JOIN clienti ON clienti.id = ddt.cliente_id LEFT JOIN fornitori ON fornitori.id = ddt.cliente_id ",
-#        :include => :cliente, 
+#        :include => :cliente,
         :order => 'ddt.data_emissione desc, ddt.num desc'}
     end
 
     # common
-    
+
     def search_incassi_ricorrenti()
       IncassoRicorrente.search(:all)
     end
-    
+
     # gestione aliquote
-    
+
     def save_aliquota()
       aliquota.save
     end
@@ -532,31 +542,31 @@ module Controllers
     end
 
     def search_for_aliquote()
-      Aliquota.search_for(filtro.ricerca, 
-        [:codice, :percentuale, :descrizione], 
+      Aliquota.search_for(filtro.ricerca,
+        [:codice, :percentuale, :descrizione],
         build_aliquote_dialog_conditions())
     end
 
     def build_aliquote_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
        :order => 'codice'}
     end
-    
+
     # gestione ritenute
-    
+
     def load_ritenuta(id)
       Ritenuta.find(id)
     end
-    
+
     def load_ritenuta_by_codice(codice)
       Ritenuta.find_by_codice(codice)
     end
-    
+
     def save_ritenuta()
       ritenuta.save
     end
@@ -566,27 +576,27 @@ module Controllers
     end
 
     def search_for_ritenute()
-      Ritenuta.search_for(filtro.ricerca, 
-        [:codice, :percentuale, :descrizione], 
+      Ritenuta.search_for(filtro.ricerca,
+        [:codice, :percentuale, :descrizione],
         build_ritenute_dialog_conditions())
     end
 
     def build_ritenute_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
        :order => 'codice'}
     end
-    
+
     # gestione incassi ricorrenti
-    
+
     def load_incasso_ricorrente(id)
       IncassoRicorrente.find(id, :include => [:cliente])
     end
-    
+
     def save_incasso_ricorrente()
       incasso_ricorrente.save
     end
@@ -596,24 +606,24 @@ module Controllers
     end
 
     def search_for_incassi_ricorrenti()
-      IncassoRicorrente.search_for(filtro.ricerca, 
-        ['clienti.denominazione', :descrizione], 
+      IncassoRicorrente.search_for(filtro.ricerca,
+        ['clienti.denominazione', :descrizione],
         build_incasso_ricorrente_dialog_conditions())
     end
 
     def build_incasso_ricorrente_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
+
       {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente],
        :include => [:cliente]
       }
     end
-    
-    
+
+
     # gestione report estratto
     def report_estratto
       data_matrix = []
@@ -659,7 +669,7 @@ module Controllers
 
           self.totale_incassi += ns.importo
         end
- 
+
         self.totale_ns += ns.importo
 
       end
@@ -670,37 +680,37 @@ module Controllers
     def build_estratto_report_conditions()
       query_str = []
       parametri = []
-      
+
       data_dal = get_date(:from)
       data_al = get_date(:to)
 
       if(filtro.residuo)
-        query_str << "nota_spese.data_emissione < ?" 
+        query_str << "nota_spese.data_emissione < ?"
         parametri << data_dal
-        query_str << "nota_spese.fattura_cliente_id is null" 
+        query_str << "nota_spese.fattura_cliente_id is null"
       else
         query_str << "nota_spese.data_emissione >= ?"
         parametri << data_dal
         query_str << "nota_spese.data_emissione <= ?"
         parametri << data_al
       end
-        
+
       if (filtro.cliente)
-        query_str << "nota_spese.cliente_id = ?" 
+        query_str << "nota_spese.cliente_id = ?"
         parametri << filtro.cliente
       end
 
       # aggiunto per la chiamata alla funzione sum
-      query_str << "nota_spese.azienda_id = ?" 
+      query_str << "nota_spese.azienda_id = ?"
       parametri << Azienda.current
 
       {:conditions => [query_str.join(' AND '), *parametri]}.merge(
-        (filtro.residuo ? {} : {:include => [:cliente, :fattura_cliente], 
+        (filtro.residuo ? {} : {:include => [:cliente, :fattura_cliente],
           :order => "clienti.denominazione, nota_spese.data_emissione"}
         )
       )
     end
-    
+
     # gestione report partitario
 #    def report_partitario
 #      data_matrix = []
@@ -738,7 +748,7 @@ module Controllers
 #
 #        data_matrix << dati_ns
 #
-#        if((fattura = ns.fattura_cliente) && (fattura.data_emissione <= filtro_data)) 
+#        if((fattura = ns.fattura_cliente) && (fattura.data_emissione <= filtro_data))
 #          dati_fattura = IdentModel.new(fattura.id, FatturaClienteFatturazione)
 #          dati_fattura << ''
 #          dati_fattura << ''
@@ -751,7 +761,7 @@ module Controllers
 #
 #          self.totale_incassi += ns.importo
 #        end
-# 
+#
 #        self.totale_ns += ns.importo
 #
 #      end
@@ -762,12 +772,12 @@ module Controllers
 #    def build_partitario_report_conditions()
 #      query_str = []
 #      parametri = []
-#      
+#
 #      if(filtro.dal)
 #        if(filtro.residuo)
-#          query_str << "nota_spese.data_emissione < ?" 
+#          query_str << "nota_spese.data_emissione < ?"
 #          parametri << filtro.dal
-#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)" 
+#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)"
 #          parametri << filtro.dal.year.to_s
 #        else
 #          query_str << "nota_spese.data_emissione >= ?"
@@ -779,44 +789,44 @@ module Controllers
 #        end
 #      elsif(filtro.al)
 #        if(filtro.residuo)
-#          query_str << "#{to_sql_year('nota_spese.data_emissione')} < ?" 
+#          query_str << "#{to_sql_year('nota_spese.data_emissione')} < ?"
 #          parametri << filtro.al.year.to_s
-#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)" 
+#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)"
 #          parametri << filtro.al.year.to_s
 #        else
-#          query_str << "#{to_sql_year('nota_spese.data_emissione')} >= ?" 
+#          query_str << "#{to_sql_year('nota_spese.data_emissione')} >= ?"
 #          parametri << filtro.al.year.to_s
 #          query_str << "nota_spese.data_emissione <= ?"
 #          parametri << filtro.al
 #        end
 #      else
 #        if(filtro.residuo)
-#          query_str << "#{to_sql_year('nota_spese.data_emissione')} < ?" 
+#          query_str << "#{to_sql_year('nota_spese.data_emissione')} < ?"
 #          parametri << filtro.anno
-#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)" 
+#          query_str << "(nota_spese.fattura_cliente_id is null or #{to_sql_year('fatture_clienti.data_emissione')} >= ?)"
 #          parametri << filtro.anno
 #        else
-#          query_str << "#{to_sql_year('nota_spese.data_emissione')} = ?" 
+#          query_str << "#{to_sql_year('nota_spese.data_emissione')} = ?"
 #          parametri << filtro.anno
 #        end
 #      end
-#      
+#
 #      if (filtro.cliente)
-#        query_str << "nota_spese.cliente_id = ?" 
+#        query_str << "nota_spese.cliente_id = ?"
 #        parametri << filtro.cliente
 #      end
 #
 #      # aggiunto per la chiamata alla funzione sum
-#      query_str << "nota_spese.azienda_id = ?" 
+#      query_str << "nota_spese.azienda_id = ?"
 #      parametri << Azienda.current
 #
 #      {:conditions => [query_str.join(' AND '), *parametri]}.merge(
-#        (filtro.residuo ? {:include => [:fattura_cliente]} : {:include => [:cliente, :fattura_cliente], 
+#        (filtro.residuo ? {:include => [:fattura_cliente]} : {:include => [:cliente, :fattura_cliente],
 #          :order => "clienti.denominazione, nota_spese.data_emissione"}
 #        )
 #      )
 #    end
-    
+
     # gestione report da fatturare
     def report_da_fatturare
       data_matrix = []
@@ -881,12 +891,12 @@ module Controllers
     def build_da_fatturare_report_conditions()
       query_str = []
       parametri = []
-      
+
       data_dal = get_date(:from)
       data_al = get_date(:to)
 
       if(filtro.residuo)
-        query_str << "nota_spese.data_emissione < ?" 
+        query_str << "nota_spese.data_emissione < ?"
         parametri << data_dal
       else
         query_str << "nota_spese.data_emissione >= ?"
@@ -894,11 +904,11 @@ module Controllers
         query_str << "nota_spese.data_emissione <= ?"
         parametri << data_al
       end
-        
+
       query_str << "nota_spese.fattura_cliente_id is null"
-      
+
       if (filtro.cliente)
-        query_str << "nota_spese.cliente_id = ?" 
+        query_str << "nota_spese.cliente_id = ?"
         parametri << filtro.cliente
       end
 
@@ -922,7 +932,7 @@ module Controllers
 
       end
     end
-    
+
     # gestione report fatture
     def report_fatture
       data_matrix = []
@@ -967,7 +977,7 @@ module Controllers
     def build_fatture_report_conditions()
       query_str = []
       parametri = []
-      
+
       data_dal = get_date(:from)
       data_al = get_date(:to)
 
@@ -975,9 +985,9 @@ module Controllers
       parametri << data_dal
       query_str << "fatture_clienti.data_emissione <= ?"
       parametri << data_al
-        
+
       if (filtro.cliente)
-        query_str << "fatture_clienti.cliente_id = ?" 
+        query_str << "fatture_clienti.cliente_id = ?"
         parametri << filtro.cliente
       end
 
@@ -998,7 +1008,7 @@ module Controllers
       end
 
     end
-    
+
     # gestione report flussi
     def report_flussi
       data_matrix = []
@@ -1050,19 +1060,19 @@ module Controllers
     def build_flussi_report_conditions()
       query_str = []
       parametri = []
-      
-      query_str << "#{to_sql_year('nota_spese.data_emissione')} = ? " 
+
+      query_str << "#{to_sql_year('nota_spese.data_emissione')} = ? "
       parametri << filtro.anno
-      
-      query_str << "nota_spese.cliente_id = ?" 
+
+      query_str << "nota_spese.cliente_id = ?"
       parametri << filtro.cliente
 
       {:conditions => [query_str.join(' AND '), *parametri]}.merge(
-        (filtro.residuo ? {} : {:include => [:cliente, :fattura_cliente], 
+        (filtro.residuo ? {} : {:include => [:cliente, :fattura_cliente],
           :order => "clienti.denominazione, nota_spese.data_emissione"}
         )
       )
     end
-    
+
   end
 end

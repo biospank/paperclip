@@ -20,11 +20,12 @@ module Controllers
       Scrittura.transaction do
         scrittura.save!
 
-        logger.debug("scrittura.instance_status: #{scrittura.instance_status}")
-        if scrittura.new_record?
-          create_scrittura_partita_doppia() if configatron.bilancio.attivo
-        else
-          update_scrittura_partita_doppia() if configatron.bilancio.attivo
+        if configatron.bilancio.attivo
+          if scrittura.new_record?
+            create_scrittura_partita_doppia()
+          else
+            update_scrittura_partita_doppia()
+          end
         end
       end
 
@@ -81,16 +82,19 @@ module Controllers
                                 :data_operazione => Date.today,
                                 :data_registrazione => Time.now,
                                 :esterna => 1,
-                                :congelata => 0)
+                                :congelata => 0,
+                                :parent => scrittura)
 
-      storno.cassa_dare = (scrittura.cassa_dare * -1) if scrittura.cassa_dare?
-      storno.cassa_avere = (scrittura.cassa_avere * -1) if scrittura.cassa_avere?
-      storno.banca_dare = (scrittura.banca_dare * -1) if scrittura.banca_dare?
-      storno.banca_avere = (scrittura.banca_avere * -1) if scrittura.banca_avere?
-      storno.fuori_partita_dare = (scrittura.fuori_partita_dare * -1) if scrittura.fuori_partita_dare?
-      storno.fuori_partita_avere = (scrittura.fuori_partita_avere * -1) if scrittura.fuori_partita_avere?
-
-      storno.parent = scrittura
+      if configatron.bilancio.attivo
+        storno.importo = (scrittura.importo * -1)
+      else
+        storno.cassa_dare = (scrittura.cassa_dare * -1) if scrittura.cassa_dare?
+        storno.cassa_avere = (scrittura.cassa_avere * -1) if scrittura.cassa_avere?
+        storno.banca_dare = (scrittura.banca_dare * -1) if scrittura.banca_dare?
+        storno.banca_avere = (scrittura.banca_avere * -1) if scrittura.banca_avere?
+        storno.fuori_partita_dare = (scrittura.fuori_partita_dare * -1) if scrittura.fuori_partita_dare?
+        storno.fuori_partita_avere = (scrittura.fuori_partita_avere * -1) if scrittura.fuori_partita_avere?
+      end
 
       storno.save_with_validation(false)
 

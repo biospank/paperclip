@@ -4,7 +4,7 @@ module Controllers
   module ScadenzarioController
     include Controllers::BaseController
     include Helpers::ScadenzarioHelper::Report
-    
+
 
     # gestione interesse
 
@@ -54,7 +54,7 @@ module Controllers
     def load_fattura_cliente(id)
       FatturaClienteScadenzario.find(id)
     end
-    
+
     def save_fattura_cliente()
       pagamenti = incassi_fattura_cliente_panel.result_set_lstrep_incassi_fattura
 
@@ -129,17 +129,17 @@ module Controllers
       end
 
       # Chiudo i maxi pagamenti con residuo a 0.0 non ancora scaduti
-      # 
+      #
       MaxiPagamentoCliente.find(:all, :conditions => ["chiuso = ?", 0]).collect do |maxi_pagamento|
         totale_pagamenti_multipli = PagamentoFatturaCliente.sum(:importo, :conditions => ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
 #          sql = QueryHelper.totale_pagamenti_multipli_cliente_query_string(maxi_pagamento.id)
 #          totale_pagamenti_multipli = PagamentoFatturaCliente.find_by_sql(sql)[0][:totale_pagamenti_multipli].to_f
-        if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(maxi_pagamento.importo)) 
+        if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(maxi_pagamento.importo))
           maxi_pagamento.update_attributes(:chiuso => 1)
         end
 
       end
-        
+
       return true
 
     end
@@ -147,7 +147,7 @@ module Controllers
     def elimina_pagamenti_fattura_cliente(fattura, pagamenti_da_eliminare, destroy)
       pagamenti_da_eliminare.each do |pagamento|
         if pagamento.registrato_in_prima_nota?
-          if pagamento.maxi_pagamento_cliente 
+          if pagamento.maxi_pagamento_cliente
             totale_pagamenti_multipli = PagamentoFatturaCliente.sum(:importo, :conditions => ["maxi_pagamento_cliente_id = ?", pagamento.maxi_pagamento_cliente_id])
             if(Helpers::ApplicationHelper.real(totale_pagamenti_multipli) >= Helpers::ApplicationHelper.real(pagamento.maxi_pagamento_cliente.importo))
               # cerco la scrittura associata al pagamento
@@ -202,7 +202,7 @@ module Controllers
     def load_fattura_fornitore(id)
       FatturaFornitore.find(id)
     end
-    
+
     def save_fattura_fornitore()
       pagamenti = pagamenti_fattura_fornitore_panel.result_set_lstrep_pagamenti_fattura
 
@@ -277,7 +277,7 @@ module Controllers
       end
 
       # Chiudo i maxi pagamenti con residuo a 0.0 non ancora scaduti
-      # 
+      #
       MaxiPagamentoFornitore.find(:all, :conditions => ["chiuso = ?", 0]).collect do |maxi_pagamento|
         totale_pagamenti_multipli = PagamentoFatturaFornitore.sum(:importo, :conditions => ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
 #          sql = QueryHelper.totale_pagamenti_multipli_fornitore_query_string(maxi_pagamento.id)
@@ -287,7 +287,7 @@ module Controllers
         end
 
       end
-        
+
       return true
 
     end
@@ -295,7 +295,7 @@ module Controllers
     def elimina_pagamenti_fattura_fornitore(fattura, pagamenti_da_eliminare, destroy)
       pagamenti_da_eliminare.each do |pagamento|
         if pagamento.registrato_in_prima_nota?
-          if pagamento.maxi_pagamento_fornitore 
+          if pagamento.maxi_pagamento_fornitore
             # solo se il totale dei pagamenti (associati al maxi_pagamento) e' uguale all'importo del maxi pagamento
             # c'e' sicuramente una registrazione i prima nota
             totale_pagamenti_multipli = PagamentoFatturaFornitore.sum(:importo, :conditions => ["maxi_pagamento_fornitore_id = ?", pagamento.maxi_pagamento_fornitore_id])
@@ -338,7 +338,7 @@ module Controllers
     end
 
     # GESTIONE TIPI PAGAMENTO
-    
+
     def search_for_tipi_pagamento()
       TipoPagamento.search_for(filtro.ricerca, [:codice, :descrizione], build_tipi_pagamento_dialog_conditions())
     end
@@ -346,19 +346,19 @@ module Controllers
     def build_tipi_pagamento_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
         :order => 'tipi_pagamento.descrizione'}
     end
 
     # GESTIONE MAXI INCASSI
-    
+
     def load_maxi_incasso(id)
       MaxiPagamentoCliente.find(id).calcola_residuo()
     end
-    
+
     def search_maxi_incassi()
       MaxiPagamentoCliente.search(:all, :include => [:tipo_pagamento, :pagamenti_fattura_cliente], :conditions => ["chiuso = ?", 0], :order => 'maxi_pagamenti_clienti.id').collect { |maxi_incasso| maxi_incasso.calcola_residuo() }
     end
@@ -378,11 +378,11 @@ module Controllers
     end
 
     # GESTIONE MAXI PAGAMENTI
-    
+
     def load_maxi_pagamento(id)
       MaxiPagamentoFornitore.find(id).calcola_residuo()
     end
-    
+
     def search_maxi_pagamenti()
       MaxiPagamentoFornitore.search(:all, :include => [:tipo_pagamento, :pagamenti_fattura_fornitore], :conditions => ["chiuso = ?", 0], :order => 'maxi_pagamenti_fornitori.id').collect { |maxi_pagamento| maxi_pagamento.calcola_residuo() }
     end
@@ -402,19 +402,19 @@ module Controllers
     end
 
     # GESTIONE TIPI PAGAMENTO
-    
+
     def save_incasso()
       incasso.save!
     end
-    
+
     def delete_incasso()
       incasso.destroy
     end
-    
+
     def save_pagamento()
       pagamento.save!
     end
-    
+
     def delete_pagamento()
       pagamento.destroy
     end
@@ -600,7 +600,7 @@ module Controllers
     end
 
     private
-    
+
     def build_descrizione_pagamento_fattura_cliente(pagamento, nota_di_credito)
       descrizione = ""
       if(nota_di_credito)
@@ -609,8 +609,8 @@ module Controllers
         descrizione << "Inc. Fatt. "
       end
 
-      descrizione  << pagamento.fattura_cliente.cliente.denominazione 
-      descrizione << " n. " << pagamento.fattura_cliente.num 
+      descrizione  << pagamento.fattura_cliente.cliente.denominazione
+      descrizione << " n. " << pagamento.fattura_cliente.num
       descrizione << " del " << pagamento.fattura_cliente.data_emissione.to_s(:italian_date)
       descrizione << " " << pagamento.tipo_pagamento.descrizione
       descrizione << " " << pagamento.note
@@ -628,8 +628,8 @@ module Controllers
         descrizione << "Pag. Fatt. "
       end
 
-      descrizione  << pagamento.fattura_fornitore.fornitore.denominazione 
-      descrizione << " n. " << pagamento.fattura_fornitore.num 
+      descrizione  << pagamento.fattura_fornitore.fornitore.denominazione
+      descrizione << " n. " << pagamento.fattura_fornitore.num
       descrizione << " del " << pagamento.fattura_fornitore.data_emissione.to_s(:italian_date)
       descrizione << " " << pagamento.tipo_pagamento.descrizione
       descrizione << " " << pagamento.note
@@ -648,8 +648,8 @@ module Controllers
         descrizione << "** STORNO SCRITTURA del #{pagamento.data_pagamento.to_s(:italian_date)} ** Inc. Fatt. "
       end
 
-      descrizione  << pagamento.fattura_cliente.cliente.denominazione 
-      descrizione << " n. " << pagamento.fattura_cliente.num 
+      descrizione  << pagamento.fattura_cliente.cliente.denominazione
+      descrizione << " n. " << pagamento.fattura_cliente.num
       descrizione << " del " << pagamento.fattura_cliente.data_emissione.to_s(:italian_date)
       descrizione << " " << pagamento.tipo_pagamento.descrizione
       descrizione << " " << pagamento.note
@@ -667,8 +667,8 @@ module Controllers
         descrizione << "** STORNO SCRITTURA del #{pagamento.data_pagamento.to_s(:italian_date)} ** Pag. Fatt."
       end
 
-      descrizione  << pagamento.fattura_fornitore.fornitore.denominazione 
-      descrizione << " n. " << pagamento.fattura_fornitore.num 
+      descrizione  << pagamento.fattura_fornitore.fornitore.denominazione
+      descrizione << " n. " << pagamento.fattura_fornitore.num
       descrizione << " del " << pagamento.fattura_fornitore.data_emissione.to_s(:italian_date)
       descrizione << " " << pagamento.tipo_pagamento.descrizione
       descrizione << " " << pagamento.note
@@ -688,8 +688,8 @@ module Controllers
       pagamenti_multipli = PagamentoFatturaCliente.find(:all, :include => [:fattura_cliente], :conditions => ["maxi_pagamento_cliente_id = ?", pagamento.maxi_pagamento_cliente_id])
 
       pagamenti_multipli.each do |pm|
-        descrizione  << " " << pm.fattura_cliente.cliente.denominazione 
-        descrizione << " n. " << pm.fattura_cliente.num 
+        descrizione  << " " << pm.fattura_cliente.cliente.denominazione
+        descrizione << " n. " << pm.fattura_cliente.num
         descrizione << " del " << pm.fattura_cliente.data_emissione.to_s(:italian_date)
       end
 
@@ -711,8 +711,8 @@ module Controllers
       pagamenti_multipli = PagamentoFatturaFornitore.find(:all, :include => [:fattura_fornitore], :conditions => ["maxi_pagamento_fornitore_id = ?", pagamento.maxi_pagamento_fornitore_id])
 
       pagamenti_multipli.each do |pm|
-        descrizione  << " " << pm.fattura_fornitore.fornitore.denominazione 
-        descrizione << " n. " << pm.fattura_fornitore.num 
+        descrizione  << " " << pm.fattura_fornitore.fornitore.denominazione
+        descrizione << " n. " << pm.fattura_fornitore.num
         descrizione << " del " << pm.fattura_fornitore.data_emissione.to_s(:italian_date)
       end
 
@@ -734,8 +734,8 @@ module Controllers
       pagamenti_multipli = PagamentoFatturaCliente.find(:all, :include => [:fattura_cliente], :conditions => ["maxi_pagamento_cliente_id = ?", pagamento.maxi_pagamento_cliente_id])
 
       pagamenti_multipli.each do |pm|
-        descrizione  << " " << pm.fattura_cliente.cliente.denominazione 
-        descrizione << " n. " << pm.fattura_cliente.num 
+        descrizione  << " " << pm.fattura_cliente.cliente.denominazione
+        descrizione << " n. " << pm.fattura_cliente.num
         descrizione << " del " << pm.fattura_cliente.data_emissione.to_s(:italian_date)
       end
 
@@ -757,8 +757,8 @@ module Controllers
       pagamenti_multipli = PagamentoFatturaFornitore.find(:all, :include => [:fattura_fornitore], :conditions => ["maxi_pagamento_fornitore_id = ?", pagamento.maxi_pagamento_fornitore_id])
 
       pagamenti_multipli.each do |pm|
-        descrizione  << " " << pm.fattura_fornitore.fornitore.denominazione 
-        descrizione << " n. " << pm.fattura_fornitore.num 
+        descrizione  << " " << pm.fattura_fornitore.fornitore.denominazione
+        descrizione << " n. " << pm.fattura_fornitore.num
         descrizione << " del " << pm.fattura_fornitore.data_emissione.to_s(:italian_date)
       end
 
@@ -779,44 +779,22 @@ module Controllers
                                 :congelata => 0)
 
       if(fattura.nota_di_credito?)
-        if (pagamento.tipo_pagamento.nc_cassa_dare? ||
-            pagamento.tipo_pagamento.nc_cassa_avere? ||
-            pagamento.tipo_pagamento.nc_banca_dare? ||
-            pagamento.tipo_pagamento.nc_banca_avere? ||
-            pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
-            pagamento.tipo_pagamento.nc_fuori_partita_avere?)
-
-          scrittura.cassa_dare = pagamento.importo if pagamento.tipo_pagamento.nc_cassa_dare?
-          scrittura.cassa_avere = pagamento.importo if pagamento.tipo_pagamento.nc_cassa_avere?
-          scrittura.banca_dare = pagamento.importo if pagamento.tipo_pagamento.nc_banca_dare?
-          scrittura.banca_avere = pagamento.importo if pagamento.tipo_pagamento.nc_banca_avere?
-          scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_dare?
-          scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_avere?
-
-          if configatron.bilancio.attivo
-            return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
-            if pagamento.is_a? Models::PagamentoFatturaCliente
-              if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.pdc_dare = nc_pdc_dare
-              else
-#                if !pagamento.tipo_pagamento.nc_cassa_dare? &&
-#                    !pagamento.tipo_pagamento.nc_banca_dare? &&
-#                    !pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
-              scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+        if configatron.bilancio.attivo
+          return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
+          scrittura.importo = pagamento.importo
+          if pagamento.is_a? Models::PagamentoFatturaCliente
+            if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+              scrittura.pdc_dare = nc_pdc_dare
             else
-              scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.pdc_avere = nc_pdc_avere
-              else
-#                if !pagamento.tipo_pagamento.nc_cassa_avere? &&
-#                    !pagamento.tipo_pagamento.nc_banca_avere? &&
-#                    !pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+            end
+            scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+          else
+            scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+            if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = nc_pdc_avere
+            else
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
             end
           end
 
@@ -827,48 +805,48 @@ module Controllers
           notify(:evt_prima_nota_changed, scritture)
 
         else
-          scrittura = nil
+          if (pagamento.tipo_pagamento.nc_cassa_dare? ||
+              pagamento.tipo_pagamento.nc_cassa_avere? ||
+              pagamento.tipo_pagamento.nc_banca_dare? ||
+              pagamento.tipo_pagamento.nc_banca_avere? ||
+              pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
+              pagamento.tipo_pagamento.nc_fuori_partita_avere?)
+
+            scrittura.cassa_dare = pagamento.importo if pagamento.tipo_pagamento.nc_cassa_dare?
+            scrittura.cassa_avere = pagamento.importo if pagamento.tipo_pagamento.nc_cassa_avere?
+            scrittura.banca_dare = pagamento.importo if pagamento.tipo_pagamento.nc_banca_dare?
+            scrittura.banca_avere = pagamento.importo if pagamento.tipo_pagamento.nc_banca_avere?
+            scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_dare?
+            scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+            pagamento.update_attributes(:registrato_in_prima_nota => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       else
-        if (pagamento.tipo_pagamento.cassa_dare? ||
-            pagamento.tipo_pagamento.cassa_avere? ||
-            pagamento.tipo_pagamento.banca_dare? ||
-            pagamento.tipo_pagamento.banca_avere? ||
-            pagamento.tipo_pagamento.fuori_partita_dare? ||
-            pagamento.tipo_pagamento.fuori_partita_avere?)
-
-          scrittura.cassa_dare = pagamento.importo if pagamento.tipo_pagamento.cassa_dare?
-          scrittura.cassa_avere = pagamento.importo if pagamento.tipo_pagamento.cassa_avere?
-          scrittura.banca_dare = pagamento.importo if pagamento.tipo_pagamento.banca_dare?
-          scrittura.banca_avere = pagamento.importo if pagamento.tipo_pagamento.banca_avere?
-          scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_dare?
-          scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_avere?
-
-          if configatron.bilancio.attivo
-            return nil if pagamento.tipo_pagamento.pdc_dare.nil? && pagamento.tipo_pagamento.pdc_avere.nil?
-            if pagamento.is_a? Models::PagamentoFatturaCliente
-              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
-              if pdc_avere = pagamento.tipo_pagamento.pdc_avere
-                scrittura.pdc_avere = pdc_avere
-              else
-#                if !pagamento.tipo_pagamento.cassa_avere? &&
-#                    !pagamento.tipo_pagamento.banca_avere? &&
-#                    !pagamento.tipo_pagamento.fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
+        if configatron.bilancio.attivo
+          return nil if pagamento.tipo_pagamento.pdc_dare.nil? && pagamento.tipo_pagamento.pdc_avere.nil?
+          scrittura.importo = pagamento.importo
+          if pagamento.is_a? Models::PagamentoFatturaCliente
+            scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+            if pdc_avere = pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = pdc_avere
             else
-              if pdc_dare = pagamento.tipo_pagamento.pdc_dare
-                scrittura.pdc_dare = pdc_dare
-              else
-#                if !pagamento.tipo_pagamento.cassa_dare? &&
-#                    !pagamento.tipo_pagamento.banca_dare? &&
-#                    !pagamento.tipo_pagamento.fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
-              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
             end
+          else
+            if pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_dare = pdc_dare
+            else
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+            end
+            scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
           end
 
           scrittura.save_with_validation(false)
@@ -878,7 +856,30 @@ module Controllers
           notify(:evt_prima_nota_changed, scritture)
 
         else
-          scrittura = nil
+
+          if (pagamento.tipo_pagamento.cassa_dare? ||
+              pagamento.tipo_pagamento.cassa_avere? ||
+              pagamento.tipo_pagamento.banca_dare? ||
+              pagamento.tipo_pagamento.banca_avere? ||
+              pagamento.tipo_pagamento.fuori_partita_dare? ||
+              pagamento.tipo_pagamento.fuori_partita_avere?)
+
+            scrittura.cassa_dare = pagamento.importo if pagamento.tipo_pagamento.cassa_dare?
+            scrittura.cassa_avere = pagamento.importo if pagamento.tipo_pagamento.cassa_avere?
+            scrittura.banca_dare = pagamento.importo if pagamento.tipo_pagamento.banca_dare?
+            scrittura.banca_avere = pagamento.importo if pagamento.tipo_pagamento.banca_avere?
+            scrittura.fuori_partita_dare = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_dare?
+            scrittura.fuori_partita_avere = pagamento.importo if pagamento.tipo_pagamento.fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+            pagamento.update_attributes(:registrato_in_prima_nota => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       end
 
@@ -1261,51 +1262,28 @@ module Controllers
                                 :data_operazione => Date.today,
                                 :data_registrazione => Time.now,
                                 :esterna => 1,
-                                :congelata => 0)
+                                :congelata => 0,
+                                :parent => pagamento.scrittura)
 
       negativo = (pagamento.importo * -1)
 
       if(fattura.nota_di_credito?)
-        if (pagamento.tipo_pagamento.nc_cassa_dare? ||
-            pagamento.tipo_pagamento.nc_cassa_avere? ||
-            pagamento.tipo_pagamento.nc_banca_dare? ||
-            pagamento.tipo_pagamento.nc_banca_avere? ||
-            pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
-            pagamento.tipo_pagamento.nc_fuori_partita_avere?)
-
-          scrittura.cassa_dare = negativo if pagamento.tipo_pagamento.nc_cassa_dare?
-          scrittura.cassa_avere = negativo if pagamento.tipo_pagamento.nc_cassa_avere?
-          scrittura.banca_dare = negativo if pagamento.tipo_pagamento.nc_banca_dare?
-          scrittura.banca_avere = negativo if pagamento.tipo_pagamento.nc_banca_avere?
-          scrittura.fuori_partita_dare = negativo if pagamento.tipo_pagamento.nc_fuori_partita_dare?
-          scrittura.fuori_partita_avere = negativo if pagamento.tipo_pagamento.nc_fuori_partita_avere?
-
-          scrittura.parent = pagamento.scrittura
-
-          if configatron.bilancio.attivo
-            return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
-            if pagamento.is_a? Models::PagamentoFatturaCliente
-              if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.pdc_dare = nc_pdc_dare
-              else
-#                if !pagamento.tipo_pagamento.nc_cassa_dare? &&
-#                    !pagamento.tipo_pagamento.nc_banca_dare? &&
-#                    !pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
-              scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+        if configatron.bilancio.attivo
+          return nil if pagamento.tipo_pagamento.nc_pdc_dare.nil? && pagamento.tipo_pagamento.nc_pdc_avere.nil?
+          scrittura.importo = negativo
+          if pagamento.is_a? Models::PagamentoFatturaCliente
+            if nc_pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+              scrittura.pdc_dare = nc_pdc_dare
             else
-              scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.pdc_avere = nc_pdc_avere
-              else
-#                if !pagamento.tipo_pagamento.nc_cassa_avere? &&
-#                    !pagamento.tipo_pagamento.nc_banca_avere? &&
-#                    !pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+            end
+            scrittura.pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+          else
+            scrittura.pdc_dare = pagamento.tipo_pagamento.nc_pdc_dare
+            if nc_pdc_avere = pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = nc_pdc_avere
+            else
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
             end
           end
 
@@ -1315,49 +1293,49 @@ module Controllers
           scritture = search_scritture()
           notify(:evt_prima_nota_changed, scritture)
 
+        else
+          if (pagamento.tipo_pagamento.nc_cassa_dare? ||
+              pagamento.tipo_pagamento.nc_cassa_avere? ||
+              pagamento.tipo_pagamento.nc_banca_dare? ||
+              pagamento.tipo_pagamento.nc_banca_avere? ||
+              pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
+              pagamento.tipo_pagamento.nc_fuori_partita_avere?)
+
+            scrittura.cassa_dare = negativo if pagamento.tipo_pagamento.nc_cassa_dare?
+            scrittura.cassa_avere = negativo if pagamento.tipo_pagamento.nc_cassa_avere?
+            scrittura.banca_dare = negativo if pagamento.tipo_pagamento.nc_banca_dare?
+            scrittura.banca_avere = negativo if pagamento.tipo_pagamento.nc_banca_avere?
+            scrittura.fuori_partita_dare = negativo if pagamento.tipo_pagamento.nc_fuori_partita_dare?
+            scrittura.fuori_partita_avere = negativo if pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+            pagamento.update_attributes(:registrato_in_prima_nota => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       else
-        if (pagamento.tipo_pagamento.cassa_dare? ||
-            pagamento.tipo_pagamento.cassa_avere? ||
-            pagamento.tipo_pagamento.banca_dare? ||
-            pagamento.tipo_pagamento.banca_avere? ||
-            pagamento.tipo_pagamento.fuori_partita_dare? ||
-            pagamento.tipo_pagamento.fuori_partita_avere?)
-
-          scrittura.cassa_dare = negativo if pagamento.tipo_pagamento.cassa_dare?
-          scrittura.cassa_avere = negativo if pagamento.tipo_pagamento.cassa_avere?
-          scrittura.banca_dare = negativo if pagamento.tipo_pagamento.banca_dare?
-          scrittura.banca_avere = negativo if pagamento.tipo_pagamento.banca_avere?
-          scrittura.fuori_partita_dare = negativo if pagamento.tipo_pagamento.fuori_partita_dare?
-          scrittura.fuori_partita_avere = negativo if pagamento.tipo_pagamento.fuori_partita_avere?
-
-          scrittura.parent = pagamento.scrittura
-
-          if configatron.bilancio.attivo
-            return nil if pagamento.tipo_pagamento.pdc_dare.nil? && pagamento.tipo_pagamento.pdc_avere.nil?
-            if pagamento.is_a? Models::PagamentoFatturaCliente
-              scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
-              if pdc_avere = pagamento.tipo_pagamento.pdc_avere
-                scrittura.pdc_avere = pdc_avere
-              else
-#                if !pagamento.tipo_pagamento.cassa_avere? &&
-#                    !pagamento.tipo_pagamento.banca_avere? &&
-#                    !pagamento.tipo_pagamento.fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
+        if configatron.bilancio.attivo
+          return nil if pagamento.tipo_pagamento.pdc_dare.nil? && pagamento.tipo_pagamento.pdc_avere.nil?
+          scrittura.importo = negativo
+          if pagamento.is_a? Models::PagamentoFatturaCliente
+            scrittura.pdc_dare = pagamento.tipo_pagamento.pdc_dare
+            if pdc_avere = pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = pdc_avere
             else
-              if pdc_dare = pagamento.tipo_pagamento.pdc_dare
-                scrittura.pdc_dare = pdc_dare
-              else
-#                if !pagamento.tipo_pagamento.cassa_dare? &&
-#                    !pagamento.tipo_pagamento.banca_dare? &&
-#                    !pagamento.tipo_pagamento.fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
-              scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
             end
+          else
+            if pdc_dare = pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_dare = pdc_dare
+            else
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+            end
+            scrittura.pdc_avere = pagamento.tipo_pagamento.pdc_avere
           end
 
           scrittura.save_with_validation(false)
@@ -1366,6 +1344,30 @@ module Controllers
           scritture = search_scritture()
           notify(:evt_prima_nota_changed, scritture)
 
+        else
+          if (pagamento.tipo_pagamento.cassa_dare? ||
+              pagamento.tipo_pagamento.cassa_avere? ||
+              pagamento.tipo_pagamento.banca_dare? ||
+              pagamento.tipo_pagamento.banca_avere? ||
+              pagamento.tipo_pagamento.fuori_partita_dare? ||
+              pagamento.tipo_pagamento.fuori_partita_avere?)
+
+            scrittura.cassa_dare = negativo if pagamento.tipo_pagamento.cassa_dare?
+            scrittura.cassa_avere = negativo if pagamento.tipo_pagamento.cassa_avere?
+            scrittura.banca_dare = negativo if pagamento.tipo_pagamento.banca_dare?
+            scrittura.banca_avere = negativo if pagamento.tipo_pagamento.banca_avere?
+            scrittura.fuori_partita_dare = negativo if pagamento.tipo_pagamento.fuori_partita_dare?
+            scrittura.fuori_partita_avere = negativo if pagamento.tipo_pagamento.fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+            pagamento.update_attributes(:registrato_in_prima_nota => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       end
 
@@ -1481,44 +1483,22 @@ module Controllers
                                 :congelata => 0)
 
       if(fattura.nota_di_credito?)
-        if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
-            maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_banca_avere? ||
-            maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?)
-
-          scrittura.cassa_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_cassa_dare?
-          scrittura.cassa_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_cassa_avere?
-          scrittura.banca_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_banca_dare?
-          scrittura.banca_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_banca_avere?
-          scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-          scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-
-          if configatron.bilancio.attivo
-            return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
-            if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
-              if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.pdc_dare = nc_pdc_dare
-              else
-#                if !maxi_pagamento.tipo_pagamento.nc_cassa_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_banca_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
-              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+        if configatron.bilancio.attivo
+          return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
+          scrittura.importo = maxi_pagamento.importo
+          if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
+            if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+              scrittura.pdc_dare = nc_pdc_dare
             else
-              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.pdc_avere = nc_pdc_avere
-              else
-#                if !maxi_pagamento.tipo_pagamento.nc_cassa_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_banca_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+            end
+            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+          else
+            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+            if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = nc_pdc_avere
+            else
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
             end
           end
 
@@ -1535,48 +1515,54 @@ module Controllers
           notify(:evt_prima_nota_changed, scritture)
 
         else
-          scrittura = nil
+          if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
+              maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_banca_avere? ||
+              maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?)
+
+            scrittura.cassa_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_cassa_dare?
+            scrittura.cassa_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_cassa_avere?
+            scrittura.banca_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_banca_dare?
+            scrittura.banca_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_banca_avere?
+            scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
+            scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+
+            if(maxi_pagamento.is_a? Models::MaxiPagamentoCliente)
+              PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 1], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+            elsif(maxi_pagamento.is_a? Models::MaxiPagamentoFornitore)
+              PagamentoFatturaFornitore.update_all(["registrato_in_prima_nota = ?", 1], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+            end
+            maxi_pagamento.update_attributes(:chiuso => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       else
-        if (maxi_pagamento.tipo_pagamento.cassa_dare? ||
-            maxi_pagamento.tipo_pagamento.cassa_avere? ||
-            maxi_pagamento.tipo_pagamento.banca_dare? ||
-            maxi_pagamento.tipo_pagamento.banca_avere? ||
-            maxi_pagamento.tipo_pagamento.fuori_partita_dare? ||
-            maxi_pagamento.tipo_pagamento.fuori_partita_avere?)
-
-          scrittura.cassa_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.cassa_dare?
-          scrittura.cassa_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.cassa_avere?
-          scrittura.banca_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.banca_dare?
-          scrittura.banca_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.banca_avere?
-          scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_dare?
-          scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
-
-          if configatron.bilancio.attivo
-            return nil if maxi_pagamento.tipo_pagamento.pdc_dare.nil? && maxi_pagamento.tipo_pagamento.pdc_avere.nil?
-            if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
-              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-              if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
-                scrittura.pdc_avere = pdc_avere
-              else
-#                if !maxi_pagamento.tipo_pagamento.cassa_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.banca_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
+        if configatron.bilancio.attivo
+          return nil if maxi_pagamento.tipo_pagamento.pdc_dare.nil? && maxi_pagamento.tipo_pagamento.pdc_avere.nil?
+          scrittura.importo = maxi_pagamento.importo
+          if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
+            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+            if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = pdc_avere
             else
-              if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-                scrittura.pdc_dare = pdc_dare
-              else
-#                if !maxi_pagamento.tipo_pagamento.cassa_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.banca_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
-              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
             end
+          else
+            if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_dare = pdc_dare
+            else
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+            end
+            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
           end
 
           scrittura.save_with_validation(false)
@@ -1592,7 +1578,36 @@ module Controllers
           notify(:evt_prima_nota_changed, scritture)
 
         else
-          scrittura = nil
+
+          if (maxi_pagamento.tipo_pagamento.cassa_dare? ||
+              maxi_pagamento.tipo_pagamento.cassa_avere? ||
+              maxi_pagamento.tipo_pagamento.banca_dare? ||
+              maxi_pagamento.tipo_pagamento.banca_avere? ||
+              maxi_pagamento.tipo_pagamento.fuori_partita_dare? ||
+              maxi_pagamento.tipo_pagamento.fuori_partita_avere?)
+
+            scrittura.cassa_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.cassa_dare?
+            scrittura.cassa_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.cassa_avere?
+            scrittura.banca_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.banca_dare?
+            scrittura.banca_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.banca_avere?
+            scrittura.fuori_partita_dare = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_dare?
+            scrittura.fuori_partita_avere = maxi_pagamento.importo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+
+            if(maxi_pagamento.is_a? Models::MaxiPagamentoCliente)
+              PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 1], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+            elsif(maxi_pagamento.is_a? Models::MaxiPagamentoFornitore)
+              PagamentoFatturaFornitore.update_all(["registrato_in_prima_nota = ?", 1], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+            end
+            maxi_pagamento.update_attributes(:chiuso => 1)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       end
 
@@ -1644,7 +1659,7 @@ module Controllers
           elsif(maxi_pagamento.is_a? Models::MaxiPagamentoFornitore)
             PagamentoFatturaFornitore.update_all(["registrato_in_partita_doppia = ?", 1], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
           end
-          
+
           maxi_pagamento.update_attributes(:chiuso => 1)
 
         else
@@ -1707,51 +1722,28 @@ module Controllers
                                 :data_operazione => Date.today,
                                 :data_registrazione => Time.now,
                                 :esterna => 1,
-                                :congelata => 0)
+                                :congelata => 0,
+                                :parent => old_scrittura)
 
       negativo = (maxi_pagamento.importo * -1)
 
       if(fattura.nota_di_credito?)
-        if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
-            maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_banca_avere? ||
-            maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
-            maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?)
-
-          scrittura.cassa_dare = negativo if maxi_pagamento.tipo_pagamento.nc_cassa_dare?
-          scrittura.cassa_avere = negativo if maxi_pagamento.tipo_pagamento.nc_cassa_avere?
-          scrittura.banca_dare = negativo if maxi_pagamento.tipo_pagamento.nc_banca_dare?
-          scrittura.banca_avere = negativo if maxi_pagamento.tipo_pagamento.nc_banca_avere?
-          scrittura.fuori_partita_dare = negativo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-          scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-
-          scrittura.parent = old_scrittura
-
-          if configatron.bilancio.attivo
-            return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
-            if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
-              if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-                scrittura.pdc_dare = nc_pdc_dare
-              else
-#                if !maxi_pagamento.tipo_pagamento.nc_cassa_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_banca_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
-              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+        if configatron.bilancio.attivo
+          return nil if maxi_pagamento.tipo_pagamento.nc_pdc_dare.nil? && maxi_pagamento.tipo_pagamento.nc_pdc_avere.nil?
+          scrittura.importo = negativo
+          if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
+            if nc_pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+              scrittura.pdc_dare = nc_pdc_dare
             else
-              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
-              if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
-                scrittura.pdc_avere = nc_pdc_avere
-              else
-#                if !maxi_pagamento.tipo_pagamento.nc_cassa_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_banca_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.cliente.conto)
+            end
+            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+          else
+            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.nc_pdc_dare
+            if nc_pdc_avere = maxi_pagamento.tipo_pagamento.nc_pdc_avere
+              scrittura.pdc_avere = nc_pdc_avere
+            else
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.fornitore.conto)
             end
           end
 
@@ -1768,50 +1760,54 @@ module Controllers
           notify(:evt_prima_nota_changed, scritture)
 
         else
-          scrittura = nil
+          if (maxi_pagamento.tipo_pagamento.nc_cassa_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_cassa_avere? ||
+              maxi_pagamento.tipo_pagamento.nc_banca_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_banca_avere? ||
+              maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare? ||
+              maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?)
+
+            scrittura.cassa_dare = negativo if maxi_pagamento.tipo_pagamento.nc_cassa_dare?
+            scrittura.cassa_avere = negativo if maxi_pagamento.tipo_pagamento.nc_cassa_avere?
+            scrittura.banca_dare = negativo if maxi_pagamento.tipo_pagamento.nc_banca_dare?
+            scrittura.banca_avere = negativo if maxi_pagamento.tipo_pagamento.nc_banca_avere?
+            scrittura.fuori_partita_dare = negativo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_dare?
+            scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.nc_fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+
+            if(maxi_pagamento.is_a? Models::MaxiPagamentoCliente)
+              PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+            elsif(maxi_pagamento.is_a? Models::MaxiPagamentoFornitore)
+              PagamentoFatturaFornitore.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+            end
+            maxi_pagamento.update_attributes(:chiuso => 0)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       else
-        if (maxi_pagamento.tipo_pagamento.cassa_dare? ||
-            maxi_pagamento.tipo_pagamento.cassa_avere? ||
-            maxi_pagamento.tipo_pagamento.banca_dare? ||
-            maxi_pagamento.tipo_pagamento.banca_avere? ||
-            maxi_pagamento.tipo_pagamento.fuori_partita_dare? ||
-            maxi_pagamento.tipo_pagamento.fuori_partita_avere?)
-
-          scrittura.cassa_dare = negativo if maxi_pagamento.tipo_pagamento.cassa_dare?
-          scrittura.cassa_avere = negativo if maxi_pagamento.tipo_pagamento.cassa_avere?
-          scrittura.banca_dare = negativo if maxi_pagamento.tipo_pagamento.banca_dare?
-          scrittura.banca_avere = negativo if maxi_pagamento.tipo_pagamento.banca_avere?
-          scrittura.fuori_partita_dare = negativo if maxi_pagamento.tipo_pagamento.fuori_partita_dare?
-          scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
-
-          scrittura.parent = old_scrittura
-
-          if configatron.bilancio.attivo
-            return nil if maxi_pagamento.tipo_pagamento.pdc_dare.nil? && maxi_pagamento.tipo_pagamento.pdc_avere.nil?
-            if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
-              scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-              if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
-                scrittura.pdc_avere = pdc_avere
-              else
-#                if !maxi_pagamento.tipo_pagamento.cassa_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.banca_avere? &&
-#                    !maxi_pagamento.tipo_pagamento.fuori_partita_avere?
-                  scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
-#                end
-              end
+        if configatron.bilancio.attivo
+          return nil if maxi_pagamento.tipo_pagamento.pdc_dare.nil? && maxi_pagamento.tipo_pagamento.pdc_avere.nil?
+          scrittura.importo = negativo
+          if maxi_pagamento.is_a? Models::MaxiPagamentoCliente
+            scrittura.pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+            if pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = pdc_avere
             else
-              if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
-                scrittura.pdc_dare = pdc_dare
-              else
-#                if !maxi_pagamento.tipo_pagamento.cassa_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.banca_dare? &&
-#                    !maxi_pagamento.tipo_pagamento.fuori_partita_dare?
-                  scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
-#                end
-              end
-              scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
+              scrittura.pdc_avere = Models::Pdc.find_by_codice(fattura.cliente.conto)
             end
+          else
+            if pdc_dare = maxi_pagamento.tipo_pagamento.pdc_dare
+              scrittura.pdc_dare = pdc_dare
+            else
+              scrittura.pdc_dare = Models::Pdc.find_by_codice(fattura.fornitore.conto)
+            end
+            scrittura.pdc_avere = maxi_pagamento.tipo_pagamento.pdc_avere
           end
 
           scrittura.save_with_validation(false)
@@ -1826,6 +1822,36 @@ module Controllers
           scritture = search_scritture()
           notify(:evt_prima_nota_changed, scritture)
 
+        else
+          if (maxi_pagamento.tipo_pagamento.cassa_dare? ||
+              maxi_pagamento.tipo_pagamento.cassa_avere? ||
+              maxi_pagamento.tipo_pagamento.banca_dare? ||
+              maxi_pagamento.tipo_pagamento.banca_avere? ||
+              maxi_pagamento.tipo_pagamento.fuori_partita_dare? ||
+              maxi_pagamento.tipo_pagamento.fuori_partita_avere?)
+
+            scrittura.cassa_dare = negativo if maxi_pagamento.tipo_pagamento.cassa_dare?
+            scrittura.cassa_avere = negativo if maxi_pagamento.tipo_pagamento.cassa_avere?
+            scrittura.banca_dare = negativo if maxi_pagamento.tipo_pagamento.banca_dare?
+            scrittura.banca_avere = negativo if maxi_pagamento.tipo_pagamento.banca_avere?
+            scrittura.fuori_partita_dare = negativo if maxi_pagamento.tipo_pagamento.fuori_partita_dare?
+            scrittura.fuori_partita_avere = negativo if maxi_pagamento.tipo_pagamento.fuori_partita_avere?
+
+            scrittura.save_with_validation(false)
+
+            if(maxi_pagamento.is_a? Models::MaxiPagamentoCliente)
+              PagamentoFatturaCliente.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_cliente_id = ?", maxi_pagamento.id])
+            elsif(maxi_pagamento.is_a? Models::MaxiPagamentoFornitore)
+              PagamentoFatturaFornitore.update_all(["registrato_in_prima_nota = ?", 0], ["maxi_pagamento_fornitore_id = ?", maxi_pagamento.id])
+            end
+            maxi_pagamento.update_attributes(:chiuso => 0)
+
+            scritture = search_scritture()
+            notify(:evt_prima_nota_changed, scritture)
+
+          else
+            scrittura = nil
+          end
         end
       end
 
