@@ -24,7 +24,7 @@ end
   20 => ['Fatturazione', 1],
   30 => ['Scadenzario', 1],
   40 => ['Prima Nota', 1],
-  50 => ['Magazzino', 0],
+  50 => ['Magazzino', 1],
   60 => ['Configurazione', 1]
 }.each do |key, value|
   modulo = Models::Modulo.new(
@@ -437,7 +437,7 @@ end
 
 # utente admin e di sistema valgono per tutte le aziende
 {
-  1 => ['admin', '8743342106303a9cb104d2484a6fcbf516d2f8be'], 
+  1 => ['admin', '8743342106303a9cb104d2484a6fcbf516d2f8be'],
   2 => ['bratech', '8743342106303a9cb104d2484a6fcbf516d2f8be']
 }.each do |key, value|
   conn.execute "INSERT INTO UTENTI (id, profilo_id, azienda_id, nominativo, login, password) VALUES (#{key}, 1, 1, 'Administrator', '#{value[0]}', '#{value[1]}')"
@@ -450,4 +450,3 @@ Models::Licenza.create(
   :data_scadenza => Date.today.months_since(4),
   :versione => '2.4.0'
 )
-

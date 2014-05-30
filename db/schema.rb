@@ -11,202 +11,18 @@
 
 ActiveRecord::Schema.define(:version => 98) do
 
-  create_table "ALIQUOTE", :force => true do |t|
+  create_table "aliquote", :force => true do |t|
     t.string  "codice",       :limit => 50,                 :null => false
     t.decimal "percentuale"
     t.string  "descrizione",  :limit => 100
     t.integer "attiva",                      :default => 1
-    t.integer "predefinita",  :limit => 1,   :default => 0, :null => false
+    t.integer "predefinita",  :limit => 2,   :default => 0, :null => false
     t.integer "lock_version",                :default => 0, :null => false
-  end
-
-  create_table "CATEGORIE", :force => true do |t|
-    t.string "descrizione", :limit => 100
-  end
-
-  create_table "CLIENTI", :force => true do |t|
-    t.integer "azienda_id",                                  :null => false
-    t.string  "denominazione", :limit => 100
-    t.integer "no_p_iva",                     :default => 0
-    t.string  "p_iva",         :limit => 11
-    t.string  "cod_fisc",      :limit => 16
-    t.string  "indirizzo",     :limit => 100
-    t.string  "comune",        :limit => 50
-    t.string  "provincia",     :limit => 2
-    t.string  "cap",           :limit => 10
-    t.string  "citta",         :limit => 50
-    t.string  "telefono",      :limit => 50
-    t.string  "cellulare",     :limit => 50
-    t.string  "fax",           :limit => 50
-    t.string  "e_mail",        :limit => 100
-    t.integer "attivo",                       :default => 1
-    t.string  "note",          :limit => 300
-    t.integer "lock_version",                 :default => 0, :null => false
-    t.integer "pdc_id"
-    t.integer "conto"
-  end
-
-  add_index "CLIENTI", ["pdc_id"], :name => "CLIENTI_PDC_FK_IDX"
-
-  create_table "FATTURE_FORNITORI", :force => true do |t|
-    t.integer "azienda_id",                                      :null => false
-    t.integer "fornitore_id",                                    :null => false
-    t.string  "num",                :limit => 20,                :null => false
-    t.date    "data_emissione",                                  :null => false
-    t.decimal "importo",                                         :null => false
-    t.integer "nota_di_credito",                  :default => 0
-    t.integer "lock_version",                     :default => 0, :null => false
-    t.date    "data_registrazione"
-  end
-
-  add_index "FATTURE_FORNITORI", ["data_emissione"], :name => "FF_DATA_EMISSIONE_IDX"
-  add_index "FATTURE_FORNITORI", ["data_registrazione"], :name => "FATTURE_FORNITORI_DATA_REG_IDX"
-  add_index "FATTURE_FORNITORI", ["fornitore_id"], :name => "FF_FORNITORE_FK_IDX"
-  add_index "FATTURE_FORNITORI", ["num"], :name => "FF_NUM_IDX"
-
-  create_table "FORNITORI", :force => true do |t|
-    t.integer "azienda_id",                                  :null => false
-    t.string  "denominazione", :limit => 100
-    t.integer "no_p_iva",                     :default => 0
-    t.string  "p_iva",         :limit => 11
-    t.string  "cod_fisc",      :limit => 16
-    t.string  "indirizzo",     :limit => 100
-    t.string  "comune",        :limit => 50
-    t.string  "provincia",     :limit => 2
-    t.string  "cap",           :limit => 10
-    t.string  "citta",         :limit => 50
-    t.string  "telefono",      :limit => 50
-    t.string  "cellulare",     :limit => 50
-    t.string  "fax",           :limit => 50
-    t.string  "e_mail",        :limit => 100
-    t.integer "attivo",                       :default => 1
-    t.string  "note",          :limit => 300
-    t.integer "lock_version",                 :default => 0, :null => false
-    t.integer "pdc_id"
-    t.integer "conto"
-  end
-
-  add_index "FORNITORI", ["pdc_id"], :name => "FORNITORI_PDC_FK_IDX"
-
-  create_table "INCASSI_RICORRENTI", :force => true do |t|
-    t.integer "cliente_id",                                 :null => false
-    t.decimal "importo",                                    :null => false
-    t.string  "descrizione",  :limit => 100,                :null => false
-    t.integer "attivo",                      :default => 1
-    t.integer "lock_version",                :default => 0, :null => false
-  end
-
-  create_table "LICENZA", :force => true do |t|
-    t.string "numero_seriale", :limit => 100, :null => false
-    t.date   "data_scadenza"
-    t.string "versione",       :limit => 20
-  end
-
-  create_table "PAGAMENTI_FATTURE_CLIENTI", :force => true do |t|
-    t.integer "fattura_cliente_id",                                         :null => false
-    t.integer "maxi_pagamento_cliente_id"
-    t.decimal "importo",                                                    :null => false
-    t.integer "range_temporale"
-    t.integer "tipo_pagamento_id"
-    t.integer "banca_id"
-    t.date    "data_pagamento",                                             :null => false
-    t.date    "data_registrazione",                                         :null => false
-    t.integer "registrato_in_prima_nota"
-    t.string  "note",                         :limit => 100
-    t.integer "lock_version",                                :default => 0, :null => false
-    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
-  end
-
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["banca_id"], :name => "PFC_BANCA_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["data_pagamento"], :name => "PFC_DATA_PAGAMENTO_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["data_registrazione"], :name => "PFC_DATA_REGISTRAZIONE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["fattura_cliente_id"], :name => "PFC_FATTURA_CLIENTE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["maxi_pagamento_cliente_id"], :name => "PFC_MAXI_PAGAMENTO_CLIENTE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_CLIENTI", ["tipo_pagamento_id"], :name => "PFC_TIPO_PAGAMENTO_FK_IDX"
-
-  create_table "PAGAMENTI_FATTURE_FORNITORI", :force => true do |t|
-    t.integer "fattura_fornitore_id",                                       :null => false
-    t.integer "maxi_pagamento_fornitore_id"
-    t.decimal "importo",                                                    :null => false
-    t.integer "range_temporale"
-    t.integer "tipo_pagamento_id"
-    t.integer "banca_id"
-    t.date    "data_pagamento",                                             :null => false
-    t.date    "data_registrazione",                                         :null => false
-    t.integer "registrato_in_prima_nota"
-    t.string  "note",                         :limit => 100
-    t.integer "lock_version",                                :default => 0, :null => false
-    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
-  end
-
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["banca_id"], :name => "PFF_BANCA_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["data_pagamento"], :name => "PFF_DATA_PAGAMENTO_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["data_registrazione"], :name => "PFF_DATA_REGISTRAZIONE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["fattura_fornitore_id"], :name => "PFF_FATTURA_FORNITORE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["maxi_pagamento_fornitore_id"], :name => "PFF_MAXI_PAGAMENTO_FORNITORE_FK_IDX"
-  add_index "PAGAMENTI_FATTURE_FORNITORI", ["tipo_pagamento_id"], :name => "PFF_TIPO_PAGAMENTO_FK_IDX"
-
-  create_table "PAGAMENTI_PRIMA_NOTA", :force => true do |t|
-    t.integer "prima_nota_id",                  :null => false
-    t.integer "pagamento_fattura_cliente_id"
-    t.integer "pagamento_fattura_fornitore_id"
-    t.integer "maxi_pagamento_cliente_id"
-    t.integer "maxi_pagamento_fornitore_id"
-  end
-
-  add_index "PAGAMENTI_PRIMA_NOTA", ["maxi_pagamento_cliente_id"], :name => "PPN_MAXI_PAGAMENTO_CLIENTE_FK_IDX"
-  add_index "PAGAMENTI_PRIMA_NOTA", ["maxi_pagamento_fornitore_id"], :name => "PPN_MAXI_PAGAMENTO_FORNITORE_FK_IDX"
-  add_index "PAGAMENTI_PRIMA_NOTA", ["pagamento_fattura_cliente_id"], :name => "PPN_PAGAMENTO_FATTURA_CLIENTE_FK_IDX"
-  add_index "PAGAMENTI_PRIMA_NOTA", ["pagamento_fattura_fornitore_id"], :name => "PPN_PAGAMENTO_FATTURA_FORNITORE_FK_IDX"
-  add_index "PAGAMENTI_PRIMA_NOTA", ["prima_nota_id"], :name => "PPN_PRIMA_NOTA_FK_IDX"
-
-  create_table "PROFILI", :force => true do |t|
-    t.string "descrizione", :limit => 50
-  end
-
-  create_table "PROGRESSIVO_DDT", :force => true do |t|
-    t.integer "azienda_id",  :null => false
-    t.integer "progressivo", :null => false
-    t.integer "anno_rif",    :null => false
-  end
-
-  create_table "PROGRESSIVO_FATTURE_CLIENTI", :force => true do |t|
-    t.integer "azienda_id",  :null => false
-    t.integer "progressivo", :null => false
-    t.integer "anno_rif",    :null => false
-  end
-
-  create_table "PROGRESSIVO_NOTA_CREDITO", :force => true do |t|
-    t.integer "azienda_id",  :null => false
-    t.integer "progressivo", :null => false
-    t.integer "anno_rif",    :null => false
-  end
-
-  create_table "PROGRESSIVO_NOTA_SPESE", :force => true do |t|
-    t.integer "azienda_id",  :null => false
-    t.integer "progressivo", :null => false
-    t.integer "anno_rif",    :null => false
-  end
-
-  create_table "RITENUTE", :force => true do |t|
-    t.string  "codice",      :limit => 50,                 :null => false
-    t.decimal "percentuale"
-    t.string  "descrizione", :limit => 100
-    t.integer "attiva",                     :default => 1
-    t.integer "predefinita", :limit => 1,   :default => 0, :null => false
-  end
-
-  create_table "UTENTI", :force => true do |t|
-    t.integer "profilo_id",                              :null => false
-    t.string  "nominativo", :limit => 80
-    t.string  "login",      :limit => 80
-    t.string  "password",   :limit => 40
-    t.integer "azienda_id",               :default => 1, :null => false
   end
 
   create_table "azienda", :force => true do |t|
     t.string  "nome",          :limit => 100
-    t.integer "attivita_merc", :limit => 1,   :default => 1
+    t.integer "attivita_merc", :limit => 2,   :default => 1
   end
 
   create_table "banche", :force => true do |t|
@@ -218,9 +34,13 @@ ActiveRecord::Schema.define(:version => 98) do
     t.string  "telefono",       :limit => 50
     t.string  "indirizzo",      :limit => 100
     t.integer "attiva",                        :default => 1
-    t.integer "predefinita",    :limit => 1,   :default => 0,  :null => false
+    t.integer "predefinita",    :limit => 2,   :default => 0,  :null => false
     t.string  "codice",         :limit => 4,   :default => "", :null => false
     t.integer "lock_version",                  :default => 0,  :null => false
+  end
+
+  create_table "categorie", :force => true do |t|
+    t.string "descrizione", :limit => 100
   end
 
   create_table "categorie_pdc", :force => true do |t|
@@ -247,7 +67,7 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "fuori_partita_dare",                 :default => 0
     t.integer "fuori_partita_avere",                :default => 0
     t.integer "attiva",                             :default => 1
-    t.integer "predefinita",         :limit => 1,   :default => 0,  :null => false
+    t.integer "predefinita",         :limit => 2,   :default => 0,  :null => false
     t.string  "codice",              :limit => 4,   :default => "", :null => false
     t.integer "lock_version",                       :default => 0,  :null => false
     t.integer "pdc_dare_id"
@@ -256,6 +76,30 @@ ActiveRecord::Schema.define(:version => 98) do
 
   add_index "causali", ["pdc_avere_id"], :name => "CAUSALI_PDC_AVERE_FK_IDX"
   add_index "causali", ["pdc_dare_id"], :name => "CAUSALI_PDC_DARE_FK_IDX"
+
+  create_table "clienti", :force => true do |t|
+    t.integer "azienda_id",                                  :null => false
+    t.string  "denominazione", :limit => 100
+    t.integer "no_p_iva",                     :default => 0
+    t.string  "p_iva",         :limit => 11
+    t.string  "cod_fisc",      :limit => 16
+    t.string  "indirizzo",     :limit => 100
+    t.string  "comune",        :limit => 50
+    t.string  "provincia",     :limit => 2
+    t.string  "cap",           :limit => 10
+    t.string  "citta",         :limit => 50
+    t.string  "telefono",      :limit => 50
+    t.string  "cellulare",     :limit => 50
+    t.string  "fax",           :limit => 50
+    t.string  "e_mail",        :limit => 100
+    t.integer "attivo",                       :default => 1
+    t.string  "note",          :limit => 300
+    t.integer "lock_version",                 :default => 0, :null => false
+    t.integer "pdc_id"
+    t.integer "conto"
+  end
+
+  add_index "clienti", ["pdc_id"], :name => "CLIENTI_PDC_FK_IDX"
 
   create_table "corrispettivi", :force => true do |t|
     t.date     "data",                                                       :null => false
@@ -355,6 +199,8 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                   :default => 0, :null => false
   end
 
+  add_index "ddt", ["data_emissione", "id", "num"], :name => "ddt_idx"
+
   create_table "dettaglio_fatture_partita_doppia", :force => true do |t|
     t.integer "partita_doppia_id",              :null => false
     t.integer "fattura_cliente_id"
@@ -387,19 +233,75 @@ ActiveRecord::Schema.define(:version => 98) do
     t.string  "rif_pagamento",   :limit => 100
     t.integer "da_fatturazione",                :default => 0
     t.integer "da_scadenzario",                 :default => 0
-    t.integer "iva_diff",        :limit => 1,   :default => 0, :null => false
+    t.integer "iva_diff",        :limit => 2,   :default => 0, :null => false
     t.integer "lock_version",                   :default => 0, :null => false
   end
 
-  add_index "fatture_clienti", ["cliente_id"], :name => "FC_CLIENTE_FK_IDX"
-  add_index "fatture_clienti", ["data_emissione"], :name => "FC_DATA_EMISSIONE_IDX"
-  add_index "fatture_clienti", ["num"], :name => "FC_NUM_IDX"
+  add_index "fatture_clienti", ["cliente_id"], :name => "fc_cliente_fk_idx"
+  add_index "fatture_clienti", ["data_emissione"], :name => "fc_data_emissione_idx"
+  add_index "fatture_clienti", ["num"], :name => "fc_num_idx"
+
+  create_table "fatture_fornitori", :force => true do |t|
+    t.integer "azienda_id",                                      :null => false
+    t.integer "fornitore_id",                                    :null => false
+    t.string  "num",                :limit => 20,                :null => false
+    t.date    "data_emissione",                                  :null => false
+    t.decimal "importo",                                         :null => false
+    t.integer "nota_di_credito",                  :default => 0
+    t.integer "lock_version",                     :default => 0, :null => false
+    t.date    "data_registrazione"
+  end
+
+  add_index "fatture_fornitori", ["data_emissione"], :name => "ff_data_emissione_idx"
+  add_index "fatture_fornitori", ["data_registrazione"], :name => "FATTURE_FORNITORI_DATA_REG_IDX"
+  add_index "fatture_fornitori", ["fornitore_id"], :name => "ff_fornitore_fk_idx"
+  add_index "fatture_fornitori", ["num"], :name => "ff_num_idx"
+
+  create_table "fornitori", :force => true do |t|
+    t.integer "azienda_id",                                  :null => false
+    t.string  "denominazione", :limit => 100
+    t.integer "no_p_iva",                     :default => 0
+    t.string  "p_iva",         :limit => 11
+    t.string  "cod_fisc",      :limit => 16
+    t.string  "indirizzo",     :limit => 100
+    t.string  "comune",        :limit => 50
+    t.string  "provincia",     :limit => 2
+    t.string  "cap",           :limit => 10
+    t.string  "citta",         :limit => 50
+    t.string  "telefono",      :limit => 50
+    t.string  "cellulare",     :limit => 50
+    t.string  "fax",           :limit => 50
+    t.string  "e_mail",        :limit => 100
+    t.integer "attivo",                       :default => 1
+    t.string  "note",          :limit => 300
+    t.integer "lock_version",                 :default => 0, :null => false
+    t.integer "pdc_id"
+    t.integer "conto"
+  end
+
+  add_index "fornitori", ["pdc_id"], :name => "FORNITORI_PDC_FK_IDX"
+
+  create_table "incassi_ricorrenti", :force => true do |t|
+    t.integer "cliente_id",                                 :null => false
+    t.decimal "importo",                                    :null => false
+    t.string  "descrizione",  :limit => 100,                :null => false
+    t.integer "attivo",                      :default => 1
+    t.integer "lock_version",                :default => 0, :null => false
+  end
+
+  add_index "incassi_ricorrenti", ["cliente_id", "descrizione", "id"], :name => "incassi_ricorrenti_idx"
 
   create_table "interessi_liquidazioni_trimestrali", :force => true do |t|
     t.integer  "percentuale",                 :null => false
     t.integer  "lock_version", :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "licenza", :force => true do |t|
+    t.string "numero_seriale", :limit => 100, :null => false
+    t.date   "data_scadenza"
+    t.string "versione",       :limit => 20
   end
 
   create_table "maxi_pagamenti_clienti", :force => true do |t|
@@ -415,11 +317,11 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                      :default => 0, :null => false
   end
 
-  add_index "maxi_pagamenti_clienti", ["azienda_id"], :name => "MPC_AZIENDA_FK_IDX"
-  add_index "maxi_pagamenti_clienti", ["banca_id"], :name => "MPC_BANCA_FK_IDX"
-  add_index "maxi_pagamenti_clienti", ["data_pagamento"], :name => "MPC_DATA_PAGAMENTO_FK_IDX"
-  add_index "maxi_pagamenti_clienti", ["data_registrazione"], :name => "MPC_DATA_REGISTRAZIONE_FK_IDX"
-  add_index "maxi_pagamenti_clienti", ["tipo_pagamento_id"], :name => "MPC_TIPO_PAGAMENTO_FK_IDX"
+  add_index "maxi_pagamenti_clienti", ["azienda_id"], :name => "mpc_azienda_fk_idx"
+  add_index "maxi_pagamenti_clienti", ["banca_id"], :name => "mpc_banca_fk_idx"
+  add_index "maxi_pagamenti_clienti", ["data_pagamento"], :name => "mpc_data_pagamento_fk_idx"
+  add_index "maxi_pagamenti_clienti", ["data_registrazione"], :name => "mpc_data_registrazione_fk_idx"
+  add_index "maxi_pagamenti_clienti", ["tipo_pagamento_id"], :name => "mpc_tipo_pagamento_fk_idx"
 
   create_table "maxi_pagamenti_fornitori", :force => true do |t|
     t.integer "azienda_id",                                       :null => false
@@ -434,11 +336,11 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                      :default => 0, :null => false
   end
 
-  add_index "maxi_pagamenti_fornitori", ["azienda_id"], :name => "MPF_AZIENDA_FK_IDX"
-  add_index "maxi_pagamenti_fornitori", ["banca_id"], :name => "MPF_BANCA_FK_IDX"
-  add_index "maxi_pagamenti_fornitori", ["data_pagamento"], :name => "MPF_DATA_PAGAMENTO_IDX"
-  add_index "maxi_pagamenti_fornitori", ["data_registrazione"], :name => "MPF_DATA_REGISTRAZIONE_IDX"
-  add_index "maxi_pagamenti_fornitori", ["tipo_pagamento_id"], :name => "MPF_TIPO_PAGAMENTO_FK_IDX"
+  add_index "maxi_pagamenti_fornitori", ["azienda_id"], :name => "mpf_azienda_fk_idx"
+  add_index "maxi_pagamenti_fornitori", ["banca_id"], :name => "mpf_banca_fk_idx"
+  add_index "maxi_pagamenti_fornitori", ["data_pagamento"], :name => "mpf_data_pagamento_idx"
+  add_index "maxi_pagamenti_fornitori", ["data_registrazione"], :name => "mpf_data_registrazione_idx"
+  add_index "maxi_pagamenti_fornitori", ["tipo_pagamento_id"], :name => "mpf_tipo_pagamento_fk_idx"
 
   create_table "moduli", :force => true do |t|
     t.string  "nome",      :limit => 50, :null => false
@@ -448,7 +350,7 @@ ActiveRecord::Schema.define(:version => 98) do
   create_table "moduli_azienda", :force => true do |t|
     t.integer "azienda_id",                             :null => false
     t.integer "modulo_id",                              :null => false
-    t.integer "attivo",     :limit => 1, :default => 1, :null => false
+    t.integer "attivo",     :limit => 2, :default => 1, :null => false
   end
 
   create_table "movimenti", :force => true do |t|
@@ -467,10 +369,9 @@ ActiveRecord::Schema.define(:version => 98) do
     t.decimal  "imponibile",                     :default => 0.0, :null => false
   end
 
-  add_index "movimenti", ["data"], :name => "M_DATA_IDX"
-  add_index "movimenti", ["prodotto_id"], :name => "M_PRODOTTO_FK_IDX"
-  add_index "movimenti", ["riga_fattura_id"], :name => "M_RIGA_FATTURA_FK_IDX"
-  add_index "movimenti", ["riga_ordine_id"], :name => "M_RIGA_ORDINE_FK_IDX"
+  add_index "movimenti", ["data"], :name => "m_data_idx"
+  add_index "movimenti", ["prodotto_id"], :name => "m_prodotto_fk_idx"
+  add_index "movimenti", ["riga_ordine_id"], :name => "m_riga_ordine_fk_idx"
 
   create_table "norma", :force => true do |t|
     t.string  "codice",      :limit => 50,                 :null => false
@@ -492,8 +393,8 @@ ActiveRecord::Schema.define(:version => 98) do
     t.decimal "iva",                              :default => 0.0, :null => false
   end
 
-  add_index "nota_spese", ["data_emissione"], :name => "NS_DATA_EMISSIONE_IDX"
-  add_index "nota_spese", ["num"], :name => "NS_NUM_IDX"
+  add_index "nota_spese", ["data_emissione"], :name => "ns_data_emissione_idx"
+  add_index "nota_spese", ["num"], :name => "ns_num_idx"
 
   create_table "ordini", :force => true do |t|
     t.integer "azienda_id",                                   :null => false
@@ -506,10 +407,54 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                  :default => 0, :null => false
   end
 
-  add_index "ordini", ["azienda_id"], :name => "O_AZIENDA_FK_IDX"
-  add_index "ordini", ["data_emissione"], :name => "O_DATA_EMISSIONE_IDX"
-  add_index "ordini", ["fornitore_id"], :name => "O_FORNITORE_FK_IDX"
-  add_index "ordini", ["stato"], :name => "O_STATO_IDX"
+  add_index "ordini", ["azienda_id"], :name => "o_azienda_fk_idx"
+  add_index "ordini", ["data_emissione"], :name => "o_data_emissione_idx"
+  add_index "ordini", ["fornitore_id"], :name => "o_fornitore_fk_idx"
+  add_index "ordini", ["stato"], :name => "o_stato_idx"
+
+  create_table "pagamenti_fatture_clienti", :force => true do |t|
+    t.integer "fattura_cliente_id",                                         :null => false
+    t.integer "maxi_pagamento_cliente_id"
+    t.decimal "importo",                                                    :null => false
+    t.integer "range_temporale"
+    t.integer "tipo_pagamento_id"
+    t.integer "banca_id"
+    t.date    "data_pagamento",                                             :null => false
+    t.date    "data_registrazione",                                         :null => false
+    t.integer "registrato_in_prima_nota"
+    t.string  "note",                         :limit => 100
+    t.integer "lock_version",                                :default => 0, :null => false
+    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
+  end
+
+  add_index "pagamenti_fatture_clienti", ["banca_id"], :name => "pfc_banca_fk_idx"
+  add_index "pagamenti_fatture_clienti", ["data_pagamento"], :name => "pfc_data_pagamento_fk_idx"
+  add_index "pagamenti_fatture_clienti", ["data_registrazione"], :name => "pfc_data_registrazione_fk_idx"
+  add_index "pagamenti_fatture_clienti", ["fattura_cliente_id"], :name => "pfc_fattura_cliente_fk_idx"
+  add_index "pagamenti_fatture_clienti", ["maxi_pagamento_cliente_id"], :name => "pfc_maxi_pagamento_cliente_fk_idx"
+  add_index "pagamenti_fatture_clienti", ["tipo_pagamento_id"], :name => "pfc_tipo_pagamento_fk_idx"
+
+  create_table "pagamenti_fatture_fornitori", :force => true do |t|
+    t.integer "fattura_fornitore_id",                                       :null => false
+    t.integer "maxi_pagamento_fornitore_id"
+    t.decimal "importo",                                                    :null => false
+    t.integer "range_temporale"
+    t.integer "tipo_pagamento_id"
+    t.integer "banca_id"
+    t.date    "data_pagamento",                                             :null => false
+    t.date    "data_registrazione",                                         :null => false
+    t.integer "registrato_in_prima_nota"
+    t.string  "note",                         :limit => 100
+    t.integer "lock_version",                                :default => 0, :null => false
+    t.integer "registrato_in_partita_doppia", :limit => 1,   :default => 0
+  end
+
+  add_index "pagamenti_fatture_fornitori", ["banca_id"], :name => "pff_banca_fk_idx"
+  add_index "pagamenti_fatture_fornitori", ["data_pagamento"], :name => "pff_data_pagamento_fk_idx"
+  add_index "pagamenti_fatture_fornitori", ["data_registrazione"], :name => "pff_data_registrazione_fk_idx"
+  add_index "pagamenti_fatture_fornitori", ["fattura_fornitore_id"], :name => "pff_fattura_fornitore_fk_idx"
+  add_index "pagamenti_fatture_fornitori", ["maxi_pagamento_fornitore_id"], :name => "pff_maxi_pagamento_fornitore_fk_idx"
+  add_index "pagamenti_fatture_fornitori", ["tipo_pagamento_id"], :name => "pff_tipo_pagamento_fk_idx"
 
   create_table "pagamenti_partita_doppia", :force => true do |t|
     t.integer "partita_doppia_id",              :null => false
@@ -524,6 +469,20 @@ ActiveRecord::Schema.define(:version => 98) do
   add_index "pagamenti_partita_doppia", ["pagamento_fattura_cliente_id"], :name => "PPD_PAGAMENTO_FATTURA_CLIENTE_FK_IDX"
   add_index "pagamenti_partita_doppia", ["pagamento_fattura_fornitore_id"], :name => "PPD_PAGAMENTO_FATTURA_FORNITORE_FK_IDX"
   add_index "pagamenti_partita_doppia", ["partita_doppia_id"], :name => "PPD_PARTITA_DOPPIA_FK_IDX"
+
+  create_table "pagamenti_prima_nota", :force => true do |t|
+    t.integer "prima_nota_id",                  :null => false
+    t.integer "pagamento_fattura_cliente_id"
+    t.integer "pagamento_fattura_fornitore_id"
+    t.integer "maxi_pagamento_cliente_id"
+    t.integer "maxi_pagamento_fornitore_id"
+  end
+
+  add_index "pagamenti_prima_nota", ["maxi_pagamento_cliente_id"], :name => "ppn_maxi_pagamento_cliente_fk_idx"
+  add_index "pagamenti_prima_nota", ["maxi_pagamento_fornitore_id"], :name => "ppn_maxi_pagamento_fornitore_fk_idx"
+  add_index "pagamenti_prima_nota", ["pagamento_fattura_cliente_id"], :name => "ppn_pagamento_fattura_cliente_fk_idx"
+  add_index "pagamenti_prima_nota", ["pagamento_fattura_fornitore_id"], :name => "ppn_pagamento_fattura_fornitore_fk_idx"
+  add_index "pagamenti_prima_nota", ["prima_nota_id"], :name => "ppn_prima_nota_fk_idx"
 
   create_table "partita_doppia", :force => true do |t|
     t.integer  "azienda_id",                                       :null => false
@@ -573,8 +532,8 @@ ActiveRecord::Schema.define(:version => 98) do
   create_table "permessi", :force => true do |t|
     t.integer "utente_id",                                     :null => false
     t.integer "modulo_azienda_id",                             :null => false
-    t.integer "lettura",           :limit => 1, :default => 1, :null => false
-    t.integer "scrittura",         :limit => 1, :default => 1, :null => false
+    t.integer "lettura",           :limit => 2, :default => 1, :null => false
+    t.integer "scrittura",         :limit => 2, :default => 1, :null => false
   end
 
   create_table "prima_nota", :force => true do |t|
@@ -600,12 +559,12 @@ ActiveRecord::Schema.define(:version => 98) do
     t.decimal  "importo"
   end
 
-  add_index "prima_nota", ["azienda_id"], :name => "PN_AZIENDA_FK_IDX"
-  add_index "prima_nota", ["banca_id"], :name => "PN_BANCA_FK_IDX"
-  add_index "prima_nota", ["causale_id"], :name => "PN_CAUSALE_FK_IDX"
-  add_index "prima_nota", ["data_operazione"], :name => "PN_DATA_OPERAZIONE_IDX"
-  add_index "prima_nota", ["data_registrazione"], :name => "PN_DATA_REGISTRAZIONE_IDX"
-  add_index "prima_nota", ["parent_id"], :name => "PN_PARENT_FK_IDX"
+  add_index "prima_nota", ["azienda_id"], :name => "pn_azienda_fk_idx"
+  add_index "prima_nota", ["banca_id"], :name => "pn_banca_fk_idx"
+  add_index "prima_nota", ["causale_id"], :name => "pn_causale_fk_idx"
+  add_index "prima_nota", ["data_operazione"], :name => "pn_data_operazione_idx"
+  add_index "prima_nota", ["data_registrazione"], :name => "pn_data_registrazione_idx"
+  add_index "prima_nota", ["parent_id"], :name => "pn_parent_fk_idx"
   add_index "prima_nota", ["pdc_avere_id"], :name => "PRIMA_NOTA_PDC_AVERE_FK_IDX"
   add_index "prima_nota", ["pdc_dare_id"], :name => "PRIMA_NOTA_PDC_DARE_FK_IDX"
 
@@ -625,22 +584,38 @@ ActiveRecord::Schema.define(:version => 98) do
     t.decimal "prezzo_acquisto"
     t.decimal "prezzo_vendita"
     t.string  "note",            :limit => 300
-    t.integer "attivo",          :limit => 1,   :default => 1,   :null => false
+    t.integer "attivo",          :limit => 2,   :default => 1,   :null => false
     t.integer "lock_version",                   :default => 0,   :null => false
     t.integer "aliquota_id"
     t.decimal "imponibile",                     :default => 0.0, :null => false
   end
 
-  add_index "prodotti", ["aliquota_id"], :name => "P_ALIQUOTA_FK_IDX"
-  add_index "prodotti", ["azienda_id"], :name => "P_AZIENDA_FK_IDX"
-  add_index "prodotti", ["bar_code"], :name => "P_BAR_CODE_IDX"
-  add_index "prodotti", ["codice"], :name => "P_CODICE_IDX"
+  add_index "prodotti", ["aliquota_id"], :name => "p_aliquota_fk_idx"
+  add_index "prodotti", ["azienda_id"], :name => "p_azienda_fk_idx"
+  add_index "prodotti", ["bar_code"], :name => "p_bar_code_idx"
+  add_index "prodotti", ["codice"], :name => "p_codice_idx"
+
+  create_table "profili", :force => true do |t|
+    t.string "descrizione", :limit => 50
+  end
 
   create_table "progressivo_clienti", :force => true do |t|
     t.integer  "progressivo",                 :null => false
     t.integer  "lock_version", :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "progressivo_ddt", :force => true do |t|
+    t.integer "azienda_id",  :null => false
+    t.integer "progressivo", :null => false
+    t.integer "anno_rif",    :null => false
+  end
+
+  create_table "progressivo_fatture_clienti", :force => true do |t|
+    t.integer "azienda_id",  :null => false
+    t.integer "progressivo", :null => false
+    t.integer "anno_rif",    :null => false
   end
 
   create_table "progressivo_fornitori", :force => true do |t|
@@ -650,6 +625,18 @@ ActiveRecord::Schema.define(:version => 98) do
     t.datetime "updated_at"
   end
 
+  create_table "progressivo_nota_credito", :force => true do |t|
+    t.integer "azienda_id",  :null => false
+    t.integer "progressivo", :null => false
+    t.integer "anno_rif",    :null => false
+  end
+
+  create_table "progressivo_nota_spese", :force => true do |t|
+    t.integer "azienda_id",  :null => false
+    t.integer "progressivo", :null => false
+    t.integer "anno_rif",    :null => false
+  end
+
   create_table "righe_ddt", :force => true do |t|
     t.integer "ddt_id",                                     :null => false
     t.string  "descrizione",  :limit => 500,                :null => false
@@ -657,7 +644,7 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                :default => 0, :null => false
   end
 
-  add_index "righe_ddt", ["id", "ddt_id"], :name => "RIGHE_DDT_IDX"
+  add_index "righe_ddt", ["ddt_id", "id"], :name => "righe_ddt_idx"
 
   create_table "righe_fattura_pdc", :force => true do |t|
     t.integer  "fattura_cliente_id"
@@ -689,8 +676,6 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                      :default => 0, :null => false
   end
 
-  add_index "righe_fatture_clienti", ["id", "fattura_cliente_id", "aliquota_id"], :name => "RIGHE_FATTURE_CLIENTI_IDX"
-
   create_table "righe_nota_spese", :force => true do |t|
     t.integer "nota_spese_id",                               :null => false
     t.integer "importo_iva"
@@ -701,7 +686,7 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",                 :default => 0, :null => false
   end
 
-  add_index "righe_nota_spese", ["nota_spese_id"], :name => "RNS_NOTA_SPESE_FK_IDX"
+  add_index "righe_nota_spese", ["nota_spese_id"], :name => "rns_nota_spese_fk_idx"
 
   create_table "righe_ordini", :force => true do |t|
     t.integer "ordine_id",                      :null => false
@@ -712,8 +697,16 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "lock_version",    :default => 0, :null => false
   end
 
-  add_index "righe_ordini", ["ordine_id"], :name => "RO_ORDINE_FK_IDX"
-  add_index "righe_ordini", ["prodotto_id"], :name => "RO_PRODOTTO_FK_IDX"
+  add_index "righe_ordini", ["ordine_id"], :name => "ro_ordine_fk_idx"
+  add_index "righe_ordini", ["prodotto_id"], :name => "ro_prodotto_fk_idx"
+
+  create_table "ritenute", :force => true do |t|
+    t.string  "codice",      :limit => 50,                 :null => false
+    t.decimal "percentuale"
+    t.string  "descrizione", :limit => 100
+    t.integer "attiva",                     :default => 1
+    t.integer "predefinita", :limit => 2,   :default => 0, :null => false
+  end
 
   create_table "saldi_iva_mensili", :force => true do |t|
     t.integer  "azienda_id",                  :null => false
@@ -762,7 +755,7 @@ ActiveRecord::Schema.define(:version => 98) do
     t.integer "nc_fuori_partita_dare",                :default => 0
     t.integer "nc_fuori_partita_avere",               :default => 0
     t.integer "attivo",                               :default => 1
-    t.integer "predefinito",            :limit => 1,  :default => 0,  :null => false
+    t.integer "predefinito",            :limit => 2,  :default => 0,  :null => false
     t.string  "codice",                 :limit => 4,  :default => "", :null => false
     t.integer "banca_id"
     t.integer "lock_version",                         :default => 0,  :null => false
@@ -776,5 +769,13 @@ ActiveRecord::Schema.define(:version => 98) do
   add_index "tipi_pagamento", ["nc_pdc_dare_id"], :name => "TP_NC_PDC_DARE_FK_IDX"
   add_index "tipi_pagamento", ["pdc_avere_id"], :name => "TP_PDC_AVERE_FK_IDX"
   add_index "tipi_pagamento", ["pdc_dare_id"], :name => "TP_PDC_DARE_FK_IDX"
+
+  create_table "utenti", :force => true do |t|
+    t.integer "profilo_id",                              :null => false
+    t.string  "nominativo", :limit => 80
+    t.string  "login",      :limit => 80
+    t.string  "password",   :limit => 40
+    t.integer "azienda_id",               :default => 1, :null => false
+  end
 
 end
