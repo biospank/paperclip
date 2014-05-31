@@ -3,13 +3,13 @@
 module Controllers
   module MagazzinoController
     include Controllers::BaseController
-    
+
     # gestione fattura cliente
 
     def load_ordine(id)
       Ordine.find(id)
     end
-    
+
     def save_ordine()
       righe_ordine = righe_ordine_panel.result_set_lstrep_righe_ordine
 
@@ -62,31 +62,41 @@ module Controllers
     def build_ordini_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-      
-      {:conditions => [query_str.join(' AND '), *parametri], 
+
+      {:conditions => [query_str.join(' AND '), *parametri],
 #        :joins => [:cliente], # produce una inner join, oppure
 #        :joins => "LEFT OUTER JOIN clienti ON clienti.id = nota_spese.cliente_id,
         :include => [:fornitore],
         :order => 'ordini.data_emissione desc, ordini.num desc'}
     end
 
-    
+
     # gestione prodotti
-    
+
     def load_prodotto(id)
       Prodotto.find(id)
     end
-    
+
     def load_prodotto_by_codice(codice)
       Prodotto.find_by_codice(codice, :conditions => ["azienda_id = ?", Azienda.current])
     end
-    
+
     def load_prodotto_by_bar_code(barcode)
       Prodotto.find_by_bar_code(barcode, :conditions => ["azienda_id = ?", Azienda.current])
     end
-    
+
+    def load_scarico_prodotto_by_bar_code(magazzino, barcode)
+      Prodotto.find_by_bar_code(barcode,
+        {:select => "prodotti.id, prodotti.codice, prodotti.descrizione",
+         :conditions => ["azienda_id = ?", Azienda.current]
+         :joins => :movimenti,
+         :group => "prodotti.id, prodotti.codice, prodotti.descrizione"}
+      )
+    end
+
+
     def save_prodotto()
       prodotto.save
     end
@@ -96,23 +106,64 @@ module Controllers
     end
 
     def search_for_prodotti()
-      Prodotto.search_for(filtro.ricerca, 
-        [:codice, :bar_code, :descrizione], 
+      Prodotto.search_for(filtro.ricerca,
+        [:codice, :bar_code, :descrizione],
         build_prodotti_dialog_conditions())
     end
 
     def build_prodotti_dialog_conditions()
       query_str = []
       parametri = []
-      
+
       filtro.build_conditions(query_str, parametri) if filtro
-    
-      {:conditions => [query_str.join(' AND '), *parametri], 
-       :order => 'codice'}
+
+      if filtro.magazzino
+        query_str << "movimenti.magazzino_id = ?"
+        parametri << filtro.magazzino
+        return {:select => "prodotti.id, prodotti.codice, prodotti.descrizione",
+         :conditions => [query_str.join(' AND '), *parametri],
+         :joins => :movimenti,
+         :group => "prodotti.id, prodotti.codice, prodotti.descrizione",
+         :order => 'prodotti.codice'}
+       else
+        return {:conditions => [query_str.join(' AND '), *parametri],
+         :order => 'codice'}
+      end
+
     end
-    
+
+    # gestione magazzini
+
+    def load_magazzino(id)
+      Magazzino.find(id)
+    end
+
+    def save_magazzino()
+      magazzino.save
+    end
+
+    def delete_magazzino()
+      magazzino.destroy
+    end
+
+    def search_for_magazzini()
+      Magazzino.search_for(filtro.ricerca,
+        [:nome],
+        build_magazzini_dialog_conditions())
+    end
+
+    def build_magazzini_dialog_conditions()
+      query_str = []
+      parametri = []
+
+      filtro.build_conditions(query_str, parametri) if filtro
+
+      {:conditions => [query_str.join(' AND '), *parametri],
+       :order => 'nome'}
+    end
+
     # gestione carichi
-    
+
     def save_movimenti_carico()
       righe_carico = righe_carico_panel.result_set_lstrep_righe_carico
 
@@ -257,6 +308,11 @@ module Controllers
       query_str << "prodotti.azienda_id = ?"
       parametri << Azienda.current
 
+      if (filtro.magazzino)
+        query_str << "movimenti.magazzino_id = ?"
+        parametri << filtro.magazzino
+      end
+
       if (filtro.prodotto)
         query_str << "prodotti.id = ?"
         parametri << filtro.prodotto
@@ -283,7 +339,7 @@ module Controllers
 
       Prodotto.find(:all,
         :select => "p.id as id, p.codice as codice, p.descrizione as descrizione, sum(c.qta) as qta, p.prezzo_acquisto as prezzo_acquisto",
-        :from => "prodotti p, (SELECT data, prodotto_id, (CASE WHEN type = 'Carico' THEN qta ELSE -qta END) AS qta FROM movimenti) c",
+        :from => "prodotti p, (SELECT data, prodotto_id, magazzino_id, (CASE WHEN type = 'Carico' THEN qta ELSE -qta END) AS qta FROM movimenti) c",
         #:joins => "left join movimenti c on p.id = c.prodotto_id left join movimenti s on p.id = s.prodotto_id",
         :conditions => build_giacenze_report_conditions(),
         :group => "p.id, p.codice, p.descrizione",
@@ -294,12 +350,17 @@ module Controllers
         end
         prodotto
       end
-      
+
     end
 
     def build_giacenze_report_conditions()
       query_str = []
       parametri = []
+
+      if (filtro.magazzino)
+        query_str << "c.magazzino_id = ?"
+        parametri << filtro.magazzino
+      end
 
       if (filtro.prodotto)
         query_str << "p.id = ?"

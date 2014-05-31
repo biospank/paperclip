@@ -4,7 +4,7 @@ module Controllers
   module BaseController
     include Helpers::Logger
     include Models
-      
+
     # flag che indica se l'applicazione e' loccata
     @@locked = false
     # flag che indica la presenza della finestra delle scadenze
@@ -15,13 +15,13 @@ module Controllers
     def locked=(bool)
       @@locked = bool
     end
-    
+
     def locked()
       @@locked
     end
-    
-    alias locked? locked 
-    
+
+    alias locked? locked
+
     def to_sql_year(column)
       case ActiveRecord::Base.connection.adapter_name().downcase.to_sym
       when :sqlite
@@ -76,7 +76,7 @@ module Controllers
     def load_cliente(id)
       Cliente.find(id)
     end
-    
+
     def load_fattura_cliente_scadenzario(id)
       FatturaClienteScadenzario.find(id)
     end
@@ -84,11 +84,11 @@ module Controllers
     def load_cliente_by_p_iva(p_iva)
       Cliente.search(:first, :conditions => {:p_iva => p_iva})
     end
-    
+
     def load_fornitore(id)
       Fornitore.find(id)
     end
-    
+
     def load_fattura_fornitore(id)
       FatturaFornitore.find(id)
     end
@@ -96,7 +96,7 @@ module Controllers
     def load_incasso(id)
       PagamentoFatturaCliente.find(id)
     end
-    
+
     def load_scrittura(id)
       Scrittura.find(id)
     end
@@ -108,27 +108,27 @@ module Controllers
     def load_pagamento(id)
       PagamentoFatturaFornitore.find(id)
     end
-    
+
     def load_tipo_pagamento_cliente(id)
       TipoPagamentoCliente.find(id)
     end
-      
+
     def load_tipo_pagamento_cliente_by_codice(codice)
       TipoPagamentoCliente.by_codice(codice).first
     end
-      
+
     def load_tipo_pagamento_fornitore(id)
       TipoPagamentoFornitore.find(id)
     end
-      
+
     def load_tipo_pagamento_fornitore_by_codice(codice)
       TipoPagamentoFornitore.by_codice(codice).first
     end
-      
+
     def load_banca(id)
       Banca.find(id)
     end
-      
+
     def load_aliquota(id)
       Aliquota.find(id)
     end
@@ -148,19 +148,19 @@ module Controllers
     def load_aliquota_by_codice(codice)
       Aliquota.find_by_codice(codice)
     end
-    
+
     def search_progressivo(klass, anno)
       klass.search(:first, :conditions => ["anno_rif = ?", anno])
     end
-      
+
     def load_anni_contabili(klass, column=nil)
       # non funziona
       #klass.calculate(:distinct, "strftime('%Y', #{(column || 'data_emissione')})")
       # non funziona con order
-#        klass.find(:all, 
+#        klass.find(:all,
 #                    :select => "distinct(strftime('%Y', #{(column || 'data_emissione')})) as anno",
 #                    :order => "anno").map {|row| row[:anno]}
-#        klass.find(:all, 
+#        klass.find(:all,
 #                    :select => "strftime('%Y', #{(column || 'data_emissione')}) as anno",
 #                    :conditions => ["azienda_id = ?", Azienda.current],
 #                    :group => "anno",
@@ -214,6 +214,10 @@ module Controllers
       Causale.search(:all, :order => 'descrizione')
     end
 
+    def search_magazzini()
+      Magazzino.search(:all, :order => 'nome')
+    end
+
     def search_prodotti()
       Prodotto.search(:all, :order => 'descrizione')
     end
@@ -238,17 +242,17 @@ module Controllers
 
     def carica_movimenti_in_sospeso
       @@incassi = PagamentoFatturaCliente.find(:all,
-                                      :conditions => ["pagamenti_fatture_clienti.data_pagamento <= ? and registrato_in_prima_nota = ? and fatture_clienti.azienda_id = ? and (maxi_pagamento_cliente_id is null or maxi_pagamenti_clienti.chiuso = 1)", 
-                                      Date.today, 
-                                      0, 
+                                      :conditions => ["pagamenti_fatture_clienti.data_pagamento <= ? and registrato_in_prima_nota = ? and fatture_clienti.azienda_id = ? and (maxi_pagamento_cliente_id is null or maxi_pagamenti_clienti.chiuso = 1)",
+                                      Date.today,
+                                      0,
                                       Azienda.current.id],
                                       :include => [:fattura_cliente, :maxi_pagamento_cliente],
                                       :order => 'pagamenti_fatture_clienti.data_pagamento')
 
       @@pagamenti = PagamentoFatturaFornitore.find(:all,
-                                      :conditions => ["pagamenti_fatture_fornitori.data_pagamento <= ? and registrato_in_prima_nota = ? and fatture_fornitori.azienda_id = ? and (maxi_pagamento_fornitore_id is null or maxi_pagamenti_fornitori.chiuso = 1)", 
-                                      Date.today, 
-                                      0, 
+                                      :conditions => ["pagamenti_fatture_fornitori.data_pagamento <= ? and registrato_in_prima_nota = ? and fatture_fornitori.azienda_id = ? and (maxi_pagamento_fornitore_id is null or maxi_pagamenti_fornitori.chiuso = 1)",
+                                      Date.today,
+                                      0,
                                       Azienda.current.id],
                                       :include => [:fattura_fornitore, :maxi_pagamento_fornitore],
                                       :order => 'pagamenti_fatture_fornitori.data_pagamento')
@@ -265,7 +269,7 @@ module Controllers
     def pagamenti_sospesi
       @@pagamenti ||= []
     end
-    
+
     def registra_licenza()
       licenza.update_attribute(:data_scadenza, nil)
     end

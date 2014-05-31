@@ -520,6 +520,10 @@ module Views
       fornitori = ctrl.search_fornitori()
       notify(:evt_fornitore_changed, fornitori)
 
+      # carico i magazzini
+      magazzini = ctrl.search_magazzini()
+      notify(:evt_dettaglio_magazzino_changed, magazzini)
+
       # carico i prodotti
       prodotti = ctrl.search_prodotti()
       notify(:evt_prodotto_changed, prodotti)

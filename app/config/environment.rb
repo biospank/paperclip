@@ -254,6 +254,8 @@ module PaperclipConfig
     Models.autoload 'DettaglioFatturaPartitaDoppia',  'app/models/dettaglio_fattura_partita_doppia.rb'
     Models.autoload 'PrimaNotaPartitaDoppia',  'app/models/prima_nota_partita_doppia.rb'
 
+    Models.autoload 'Magazzino',  'app/models/magazzino.rb'
+
     ActiveRecord::Base.extend Models::Base::Searchable
 
     ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(

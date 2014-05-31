@@ -129,15 +129,16 @@ module Views
             answer = prodotti_dlg.show_modal()
             if answer == Wx::ID_OK
               self.prodotto = ctrl.load_prodotto(prodotti_dlg.selected)
-              prodotto.calcola_residuo()
+              prodotto.calcola_residuo(:magazzino => owner.chce_magazzino.view_data)
               self.carico = Models::Carico.new(
                 :prodotto => prodotto,
+                :magazzino_id => owner.chce_magazzino.view_data,
                 :prezzo_acquisto => prodotto.prezzo_acquisto,
                 :prezzo_vendita => prodotto.prezzo_vendita,
                 :qta => 1,
                 :data => Date.today()
               )
-              
+
               transfer_carico_to_view()
               display_dati_prodotto()
               txt_qta.activate()
@@ -149,7 +150,6 @@ module Views
             end
 
             prodotti_dlg.destroy()
-
           end
         rescue Exception => e
           log_error(self, e)
@@ -170,9 +170,10 @@ module Views
           else
             Wx::BusyCursor.busy() do
               if self.prodotto = ctrl.load_prodotto_by_bar_code(barcode)
-                prodotto.calcola_residuo()
+                prodotto.calcola_residuo(:magazzino => owner.chce_magazzino.view_data)
                 self.carico = Models::Carico.new(
                   :prodotto => prodotto,
+                  :magazzino_id => owner.chce_magazzino.view_data,
                   :prezzo_acquisto => prodotto.prezzo_acquisto,
                   :prezzo_vendita => prodotto.prezzo_vendita,
                   :qta => 1,
@@ -200,43 +201,45 @@ module Views
 
       def btn_aggiungi_click(evt)
         begin
-          if prodotto
-            if qta_non_valida?
-              Wx::message_box("Quantità deve essere maggiore di 0",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+          if magazzino?
+            if prodotto
+              if qta_non_valida?
+                Wx::message_box("Quantità deve essere maggiore di 0",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-              txt_qta.activate()
+                txt_qta.activate()
 
-            elsif data_non_valida?
-              Wx::message_box("Data non valida o formalmente errata",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+              elsif data_non_valida?
+                Wx::message_box("Data non valida o formalmente errata",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-              txt_data.activate()
+                txt_data.activate()
 
-            else
-              transfer_carico_from_view()
-              self.carico.calcola_imponibile()
-              if((self.carico.prezzo_acquisto != prodotto.prezzo_acquisto) ||
-                    (self.carico.prezzo_vendita != prodotto.prezzo_vendita))
-                prodotto.update_attributes(
-                  :prezzo_acquisto => self.carico.prezzo_acquisto,
-                  :imponibile => self.carico.imponibile,
-                  :prezzo_vendita => self.carico.prezzo_vendita
-                )
+              else
+                transfer_carico_from_view()
+                self.carico.calcola_imponibile()
+                if((self.carico.prezzo_acquisto != prodotto.prezzo_acquisto) ||
+                      (self.carico.prezzo_vendita != prodotto.prezzo_vendita))
+                  prodotto.update_attributes(
+                    :prezzo_acquisto => self.carico.prezzo_acquisto,
+                    :imponibile => self.carico.imponibile,
+                    :prezzo_vendita => self.carico.prezzo_vendita
+                  )
+                end
+                self.result_set_lstrep_righe_carico << self.carico
+                lstrep_righe_carico.display(self.result_set_lstrep_righe_carico)
+                lstrep_righe_carico.force_visible(:last)
+                reset_gestione_riga()
+                lku_bar_code.activate()
               end
-              self.result_set_lstrep_righe_carico << self.carico
-              lstrep_righe_carico.display(self.result_set_lstrep_righe_carico)
-              lstrep_righe_carico.force_visible(:last)
-              reset_gestione_riga()
+            else
+              Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
               lku_bar_code.activate()
             end
-          else
-            Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
-              'Info',
-              Wx::OK | Wx::ICON_INFORMATION, self)
-            lku_bar_code.activate()
           end
         rescue Exception => e
           log_error(self, e)
@@ -384,6 +387,22 @@ module Views
           end
         end
         residuo
+      end
+
+      def magazzino?
+        unless owner.chce_magazzino.view_data
+            Wx::message_box("Selezionare un magazzino di riferimento.",
+              'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          owner.chce_magazzino.set_focus()
+
+          return false
+
+        end
+
+        return true
+
       end
 
     end

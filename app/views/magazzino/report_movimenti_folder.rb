@@ -10,20 +10,32 @@ module Views
 #      include Helpers::ODF::Report
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
-      
+
       attr_accessor :active_filter
-      
+
       def ui
         model :filtro => {:attrs => []}
         controller :magazzino
 
         logger.debug('initializing ReportMovimentiFolder...')
         xrc = Xrc.instance()
-        
+
         xrc.find('chce_movimento', self, :extends => ChoiceStringField) do |field|
           field.load_data([Models::Movimento::CARICO, Models::Movimento::SCARICO],
                 :include_blank => {:label => 'Tutti'},
                 :select => :first)
+
+        end
+
+        xrc.find('chce_magazzino', self, :extends => ChoiceField)
+
+        subscribe(:evt_dettaglio_magazzino_changed) do |data|
+          chce_magazzino.load_data(data,
+                  :label => :nome,
+                  :if => lambda {|magazzino| magazzino.attivo? },
+                  :include_blank => {:label => 'Tutti'},
+                  :select => :default,
+                  :default => (data.detect { |magazzino| magazzino.predefinito? }) || data.first)
 
         end
 
@@ -78,15 +90,15 @@ module Views
                           {:attr => lambda {|movimento| fattura_rif.call(movimento)}},
                           {:attr => :note}
                         ])
-          
+
         end
-        
+
         xrc.find('btn_ricerca', self)
         xrc.find('btn_pulisci', self)
         xrc.find('btn_stampa', self)
 
         map_events(self)
-        
+
         subscribe(:evt_azienda_changed) do
           reset_folder()
         end
@@ -96,22 +108,22 @@ module Views
           [ Wx::ACCEL_NORMAL, Wx::K_F5, btn_ricerca.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F9, btn_stampa.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F12, btn_pulisci.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
-      
+
       # viene chiamato al cambio folder
       def init_folder()
         txt_dal.activate()
       end
-      
+
       def reset_folder()
         lstrep_movimenti.reset()
         result_set_lstrep_movimenti.clear()
       end
-      
+
       # Gestione eventi
-      
+
       def btn_ricerca_click(evt)
         logger.debug("Cliccato sul bottone ricerca!")
         begin
@@ -138,7 +150,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def btn_stampa_click(evt)
         Wx::BusyCursor.busy() do
 

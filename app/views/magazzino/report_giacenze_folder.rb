@@ -10,9 +10,9 @@ module Views
 #      include Helpers::ODF::Report
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
-      
+
       attr_accessor :totale_magazzino, :active_filter
-      
+
       def ui
         model :filtro => {:attrs => []}
         controller :magazzino
@@ -20,7 +20,18 @@ module Views
         logger.debug('initializing ReportGiacenzeFolder...')
         xrc = Xrc.instance()
         # Anagrafica cliente
-        
+
+        xrc.find('chce_magazzino', self, :extends => ChoiceField)
+
+        subscribe(:evt_dettaglio_magazzino_changed) do |data|
+          chce_magazzino.load_data(data,
+                  :label => :nome,
+                  :if => lambda {|magazzino| magazzino.attivo? },
+                  :select => :default,
+                  :default => (data.detect { |magazzino| magazzino.predefinito? }) || data.first)
+
+        end
+
         xrc.find('chce_prodotto', self, :extends => ChoiceField)
 
         subscribe(:evt_prodotto_changed) do |data|
@@ -44,15 +55,15 @@ module Views
                             {:caption => 'Qta', :width => 80, :align => Wx::LIST_FORMAT_CENTRE},
                             {:caption => 'Prezzo Unit.', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
                             {:caption => 'Totale', :width => 100, :align => Wx::LIST_FORMAT_RIGHT}])
-                                      
+
           list.data_info([{:attr => :codice},
                           {:attr => :descrizione},
                           {:attr => :qta},
                           {:attr => :prezzo_acquisto, :format => :currency},
                           {:attr => lambda {|prodotto| (prodotto.qta.to_i * prodotto.prezzo_acquisto.to_f)}, :format => :currency}])
-          
+
         end
-        
+
         xrc.find('btn_ricerca', self)
         xrc.find('btn_pulisci', self)
         xrc.find('btn_stampa', self)
@@ -60,9 +71,9 @@ module Views
         xrc.find('lbl_totale_magazzino', self)
 
         reset_totali()
-        
+
         map_events(self)
-        
+
         subscribe(:evt_magazzino_changed) do
           if active_filter
             btn_ricerca_click(nil)
@@ -78,24 +89,24 @@ module Views
           [ Wx::ACCEL_NORMAL, Wx::K_F5, btn_ricerca.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F9, btn_stampa.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F12, btn_pulisci.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
-      
+
       # viene chiamato al cambio folder
       def init_folder()
         txt_al.view_data ||= Date.today
         txt_al.activate()
       end
-      
+
       def reset_folder()
         lstrep_giacenze.reset()
         result_set_lstrep_giacenze.clear()
         reset_totali()
       end
-      
+
       # Gestione eventi
-      
+
       def btn_ricerca_click(evt)
         logger.debug("Cliccato sul bottone ricerca!")
         begin
@@ -124,7 +135,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def btn_stampa_click(evt)
         Wx::BusyCursor.busy() do
 
@@ -197,7 +208,7 @@ module Views
 #      def render_footer(report, whatever=nil)
 #        report.add_field :tot_magazzino, self.lbl_totale_magazzino.label
 #      end
-      
+
       def reset_totali()
         self.totale_magazzino = 0.0
         self.lbl_totale_magazzino.label = ''

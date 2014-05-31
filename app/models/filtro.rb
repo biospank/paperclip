@@ -1,11 +1,11 @@
 # encoding: utf-8
 
 module Models
-  class Filtro 
+  class Filtro
     include Base::Model
 #    extend ActiveRecord::Validations::ClassMethods
 
-    attr_accessor :ricerca,  # indica il testo inserito dall'utente 
+    attr_accessor :ricerca,  # indica il testo inserito dall'utente
                   :categoria, # indica la categoria [clienti, fornitori]
                   :attivi, # indica tutte le occorrenze che hanno attivo = 1
                   :attive, # indica tutte le occorrenze che hanno attiva = 1
@@ -42,17 +42,18 @@ module Models
                   :data_storico_residuo, # viene utilizzato nei report delle scritture
                   :saldi_aperti, # utilizzato nei report dello scadenzario
                   :riepilogo, # utilizzato nei report della fatturazione
+                  :magazzino, # utilizzato nei report del magazzino
                   :movimento # utilizzato nei report del magazzino
-                  
-#    validates_presence_of :data_emissione, 
+
+#    validates_presence_of :data_emissione,
 #      :message => "Data inesistente o formalmente errata."
-    
+
     def build_conditions(query_str, parametri)
       if self.anno
         query_str << "#{to_sql_year('data_emissione')} = ? "
         parametri << self.anno
       end
-      
+
       query_str << self.sql_criteria if self.sql_criteria
       query_str << 'attivo = 1' if attivi
       query_str << 'attiva = 1' if attive
@@ -60,7 +61,7 @@ module Models
 
       self.cliente.build_conditions(query_str, parametri) if self.cliente
       self.fornitore.build_conditions(query_str, parametri) if self.fornitore
-      
+
     end
   end
 end

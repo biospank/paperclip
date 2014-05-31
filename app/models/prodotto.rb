@@ -43,16 +43,16 @@ module Models
     def residuo?
       self.residuo > 0
     end
-    
+
     def calcola_residuo(*args)
       opts = args.extract_options!
 
-      qta_caricate = self.carichi.sum(:qta, :conditions => ["data <= ?", (opts[:al] || Date.today)])
-      qta_scaricate = self.scarichi.sum(:qta, :conditions => ["data <= ?", (opts[:al] || Date.today)])
-      
+      qta_caricate = self.carichi.sum(:qta, :conditions => ["magazzino_id = ? and data <= ?", opts[:magazzino], (opts[:al] || Date.today)])
+      qta_scaricate = self.scarichi.sum(:qta, :conditions => ["magazzino_id = ? and data <= ?", opts[:magazzino], (opts[:al] || Date.today)])
+
       self.residuo = (qta_caricate - qta_scaricate)
     end
-    
+
     def before_create
       self.azienda = Azienda.current
     end
@@ -63,6 +63,6 @@ module Models
       num += Models::Scarico.count(:conditions => ["prodotto_id = ?", self.id])
       num == 0
     end
-  
+
   end
 end

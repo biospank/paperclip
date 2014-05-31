@@ -17,6 +17,17 @@ module Views
         logger.debug('initializing CaricoPanel...')
         xrc = Xrc.instance()
 
+        xrc.find('chce_magazzino', self, :extends => ChoiceField)
+
+        subscribe(:evt_dettaglio_magazzino_changed) do |data|
+          chce_magazzino.load_data(data,
+                  :label => :nome,
+                  :if => lambda {|magazzino| magazzino.attivo? },
+                  :select => :default,
+                  :default => (data.detect { |magazzino| magazzino.predefinito? }) || data.first)
+
+        end
+
         xrc.find('btn_salva', self)
         xrc.find('btn_pulisci', self)
 

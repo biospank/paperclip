@@ -326,6 +326,28 @@ module Views
 
       end
 
+      class DettaglioMagazzinoChangedEvent < Wx::NotifyEvent
+        # Create a new unique constant identifier, associate this class
+        # with events of that identifier, and create a shortcut 'evt_target'
+        # method for setting up this handler.
+        EVT_DETTAGLIO_MAGAZZINO_CHANGED = Wx::EvtHandler.register_class(self, nil, 'evt_dettaglio_magazzino_changed', 0)
+
+        def initialize(result_set)
+          # The constant id is the arg to super
+          super(EVT_DETTAGLIO_MAGAZZINO_CHANGED)
+          # client_data should be used to store any information associated
+          # with the event.
+          self.client_data = { :result_set => result_set  }
+      #          self.id = target.get_id
+        end
+
+        # Returns set associated with this event
+        def result_set
+          client_data[:result_set]
+        end
+
+      end
+
       class AnniContabiliNsChangedEvent < Wx::NotifyEvent
         # Create a new unique constant identifier, associate this class
         # with events of that identifier, and create a shortcut 'evt_target'

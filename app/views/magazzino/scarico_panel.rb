@@ -27,6 +27,17 @@ module Views
         xrc.find('txt_num', self, :extends => TextField)
         xrc.find('txt_data_emissione', self, :extends => DateField)
 
+        xrc.find('chce_magazzino', self, :extends => ChoiceField)
+
+        subscribe(:evt_dettaglio_magazzino_changed) do |data|
+          chce_magazzino.load_data(data,
+                  :label => :nome,
+                  :if => lambda {|magazzino| magazzino.attivo? },
+                  :select => :default,
+                  :default => (data.detect { |magazzino| magazzino.predefinito? }) || data.first)
+
+        end
+
         xrc.find('btn_cliente', self)
         xrc.find('btn_salva', self)
         xrc.find('btn_pulisci', self)
@@ -59,7 +70,7 @@ module Views
           reset_fattura_cliente()
 
           update_fattura_ui()
-          
+
           righe_scarico_panel.reset_panel()
 
           righe_scarico_panel.lku_bar_code.activate()
@@ -189,7 +200,7 @@ module Views
       def stampa_fattura()
 
       end
-      
+
       def btn_stampa_click(evt)
         Wx::BusyCursor.busy() do
           template = Helpers::MagazzinoHelper::ReportGiacenzeTemplatePath

@@ -6,14 +6,15 @@ module Views
       include Views::Base::Dialog
       include Helpers::MVCHelper
       include Models
-      
+
       def initialize(parent, attivi = true)
         super()
-        
+
         model :filtro => {:attrs => []}
         controller :magazzino
 
         filtro.attivi = attivi
+        filtro.magazzino = parent.magazzino_ref if parent.respond_to? 'magazzino_ref'
 
         xrc = Xrc.instance()
         xrc.resource.load_dialog_subclass(self, parent, "PRODOTTI_DLG")
@@ -28,16 +29,16 @@ module Views
         xrc.find('lstrep_prodotti', self, :extends => ReportField)
         xrc.find('wxID_OK', self, :extends => OkStdButton)
         xrc.find('wxID_CANCEL', self, :extends => CancelStdButton)
-        
+
         # lista prodotti
-        
+
         lstrep_prodotti.column_info([{:caption => 'Codice', :width => 80},
                                       {:caption => 'Descrizione', :width => 300}])
         lstrep_prodotti.data_info([{:attr => :codice},
                                    {:attr => :descrizione}])
 
         map_events(self)
-        
+
       end
 
       def btn_ricerca_click(evt)
@@ -47,7 +48,7 @@ module Views
           Wx::message_box("Nessun record trovato.",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
-          txt_ricerca.activate() 
+          txt_ricerca.activate()
         else
           lstrep_prodotti.display(result_set_lstrep_prodotti)
         end
@@ -67,7 +68,7 @@ module Views
         end
 
       end
-      
+
       def btn_nuovo_click(evt)
         end_modal(btn_nuovo.get_id)
       end

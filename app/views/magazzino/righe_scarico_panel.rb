@@ -8,7 +8,7 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
 
-      attr_accessor :aliquote_iva, :riepilogo_importi, :totale_prodotti, 
+      attr_accessor :aliquote_iva, :riepilogo_importi, :totale_prodotti,
                     :totale_imponibile, :totale_iva, :totale_fattura
 
       def ui
@@ -156,33 +156,36 @@ module Views
 
       def prodotti_dialog()
         begin
-          Wx::BusyCursor.busy() do
-            prodotti_dlg = Views::Dialog::ProdottiDialog.new(self)
-            prodotti_dlg.center_on_screen(Wx::BOTH)
-            answer = prodotti_dlg.show_modal()
-            if answer == Wx::ID_OK
-              self.prodotto = ctrl.load_prodotto(prodotti_dlg.selected)
-              prodotto.calcola_residuo()
-              self.scarico = Models::Scarico.new(
-                :prodotto => prodotto,
-                :imponibile => prodotto.imponibile,
-                :prezzo_vendita => prodotto.prezzo_vendita,
-                :qta => 1,
-                :data => Date.today()
-              )
+          if magazzino?
+            Wx::BusyCursor.busy() do
+              prodotti_dlg = Views::Dialog::ProdottiDialog.new(self)
+              prodotti_dlg.center_on_screen(Wx::BOTH)
+              answer = prodotti_dlg.show_modal()
+              if answer == Wx::ID_OK
+                self.prodotto = ctrl.load_prodotto(prodotti_dlg.selected)
+                prodotto.calcola_residuo(:magazzino => owner.chce_magazzino.view_data)
+                self.scarico = Models::Scarico.new(
+                  :prodotto => prodotto,
+                  :magazzino_id => owner.chce_magazzino.view_data,
+                  :imponibile => prodotto.imponibile,
+                  :prezzo_vendita => prodotto.prezzo_vendita,
+                  :qta => 1,
+                  :data => Date.today()
+                )
 
-              transfer_scarico_to_view()
-              display_dati_prodotto()
-              txt_qta.activate()
+                transfer_scarico_to_view()
+                display_dati_prodotto()
+                txt_qta.activate()
 
-            elsif answer == prodotti_dlg.btn_nuovo.get_id
-              evt_new = Views::Base::CustomEvent::NewEvent.new(:prodotto, :righe_scarico_panel)
-              # This sends the event for processing by listeners
-              process_event(evt_new)
+              elsif answer == prodotti_dlg.btn_nuovo.get_id
+                evt_new = Views::Base::CustomEvent::NewEvent.new(:prodotto, :righe_scarico_panel)
+                # This sends the event for processing by listeners
+                process_event(evt_new)
+              end
+
+              prodotti_dlg.destroy()
+
             end
-
-            prodotti_dlg.destroy()
-
           end
         rescue Exception => e
           log_error(self, e)
@@ -202,10 +205,11 @@ module Views
             lku_bar_code.activate()
           else
             Wx::BusyCursor.busy() do
-              if self.prodotto = ctrl.load_prodotto_by_bar_code(barcode)
-                prodotto.calcola_residuo()
+              if self.prodotto = ctrl.load_scarico_prodotto_by_bar_code(owner.chce_magazzino.view_data, barcode)
+                prodotto.calcola_residuo(:magazzino => owner.chce_magazzino.view_data)
                 self.scarico = Models::Scarico.new(
                   :prodotto => prodotto,
+                  :magazzino_id => owner.chce_magazzino.view_data,
                   :imponibile => prodotto.imponibile,
                   :prezzo_vendita => prodotto.prezzo_vendita,
                   :qta => 1,
@@ -234,36 +238,38 @@ module Views
 
       def btn_aggiungi_click(evt)
         begin
-          if prodotto
-            if qta_non_valida?
-              Wx::message_box("Quantità deve essere maggiore di 0",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+          if magazzino?
+            if prodotto
+              if qta_non_valida?
+                Wx::message_box("Quantità deve essere maggiore di 0",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-              txt_qta.activate()
+                txt_qta.activate()
 
-            elsif data_non_valida?
-              Wx::message_box("Data non valida o formalmente errata",
-                'Info',
-                Wx::OK | Wx::ICON_INFORMATION, self)
+              elsif data_non_valida?
+                Wx::message_box("Data non valida o formalmente errata",
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
 
-              txt_data.activate()
+                txt_data.activate()
 
+              else
+                transfer_scarico_from_view()
+                self.scarico.calcola_imponibile()
+                self.result_set_lstrep_righe_scarico << self.scarico
+                lstrep_righe_scarico.display(self.result_set_lstrep_righe_scarico)
+                lstrep_righe_scarico.force_visible(:last)
+                riepilogo_scarico()
+                reset_gestione_riga()
+                lku_bar_code.activate()
+              end
             else
-              transfer_scarico_from_view()
-              self.scarico.calcola_imponibile()
-              self.result_set_lstrep_righe_scarico << self.scarico
-              lstrep_righe_scarico.display(self.result_set_lstrep_righe_scarico)
-              lstrep_righe_scarico.force_visible(:last)
-              riepilogo_scarico()
-              reset_gestione_riga()
+              Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
+                'Info',
+                Wx::OK | Wx::ICON_INFORMATION, self)
               lku_bar_code.activate()
             end
-          else
-            Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
-              'Info',
-              Wx::OK | Wx::ICON_INFORMATION, self)
-            lku_bar_code.activate()
           end
         rescue Exception => e
           log_error(self, e)
@@ -457,6 +463,26 @@ module Views
         lbl_iva.label = Helpers::ApplicationHelper.currency(self.totale_iva)
         lbl_totale.label = Helpers::ApplicationHelper.currency(self.totale_fattura)
 
+      end
+
+      def magazzino?
+        unless magazzino_ref
+            Wx::message_box("Selezionare un magazzino di riferimento.",
+              'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          owner.chce_magazzino.set_focus()
+
+          return false
+
+        end
+
+        return true
+
+      end
+
+      def magazzino_ref
+        owner.chce_magazzino.view_data
       end
 
     end
