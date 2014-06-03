@@ -19,7 +19,7 @@ class CreateMagazzini < ActiveRecord::Migration
 
     Models::Azienda.all.each do |az|
       prod_ids = Models::Prodotto.find(:all, :conditions => ["azienda_id = ?", az.id]).map(&:id)
-      Models::Movimento.update_all("magazzino_id = #{az.magazzini.first.id}", ["prodotto_id in(?)", prod_ids.join(',')])
+      Models::Movimento.update_all("magazzino_id = #{az.magazzini.first.id}", ["prodotto_id in(?)", prod_ids])
     end
 
     execute "CREATE INDEX M_MAGAZZINO_FK_IDX ON movimenti (magazzino_id)"

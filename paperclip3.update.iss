@@ -15,6 +15,7 @@ AllowNoIcons=yes
 OutputBaseFilename=Paperclip-3.0-update
 Compression=lzma
 SolidCompression=yes
+PrivilegesRequired=poweruser
 
 [Languages]
 ;Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -38,4 +39,4 @@ Name: "{commondesktop}\Paperclip3"; Filename: "{app}\paperclip3.exe"; Tasks: des
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Paperclip3"; Filename: "{app}\paperclip3.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}";
 
 [Run]
-Filename: "{app}\paperclip3.exe"; Description: "{cm:LaunchProgram,Paperclip3}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\paperclip3.exe"; Description: "{cm:LaunchProgram,Paperclip3}"; Flags: nowait runascurrentuser postinstall skipifsilent

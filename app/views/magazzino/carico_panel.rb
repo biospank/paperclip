@@ -20,6 +20,7 @@ module Views
         xrc.find('chce_magazzino', self, :extends => ChoiceField)
 
         subscribe(:evt_dettaglio_magazzino_changed) do |data|
+          logger.debug("callback evt_dettaglio_magazzino_changed!")
           chce_magazzino.load_data(data,
                   :label => :nome,
                   :if => lambda {|magazzino| magazzino.attivo? },

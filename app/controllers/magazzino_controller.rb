@@ -88,12 +88,14 @@ module Controllers
     end
 
     def load_scarico_prodotto_by_bar_code(magazzino, barcode)
-      Prodotto.find_by_bar_code(barcode,
-        {:select => "prodotti.id, prodotti.codice, prodotti.descrizione",
-         :conditions => ["azienda_id = ?", Azienda.current]
-         :joins => :movimenti,
-         :group => "prodotti.id, prodotti.codice, prodotti.descrizione"}
-      )
+      if prd = Prodotto.find_by_bar_code(barcode,
+        {:select => "prodotti.id",
+           :conditions => ["prodotti.azienda_id = ? and movimenti.magazzino_id = ?", Azienda.current, magazzino],
+           :joins => :movimenti,
+           :group => "prodotti.id"}
+        )
+        Prodotto.find(prd)
+      end
     end
 
 
@@ -342,7 +344,7 @@ module Controllers
         :from => "prodotti p, (SELECT data, prodotto_id, magazzino_id, (CASE WHEN type = 'Carico' THEN qta ELSE -qta END) AS qta FROM movimenti) c",
         #:joins => "left join movimenti c on p.id = c.prodotto_id left join movimenti s on p.id = s.prodotto_id",
         :conditions => build_giacenze_report_conditions(),
-        :group => "p.id, p.codice, p.descrizione",
+        :group => "p.id, p.codice, p.descrizione, p.prezzo_acquisto",
         :order => "p.descrizione"
       ).map do |prodotto|
         if prodotto.qta.to_i > 0
