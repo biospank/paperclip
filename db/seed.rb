@@ -428,6 +428,17 @@ riba.pdc_avere = Models::Pdc.find_by_codice(33001)
 riba.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
 riba.save_with_validation(false)
 
+# per ogni azienda creo un magazzino di default
+Models::Azienda.all.each do |az|
+  Models::Magazzino.create(
+    :azienda_id => az.id
+    :nome => 'Default',
+    :descrizione => '',
+    :attivo => 1,
+    :predefinito => 1
+  )
+end
+
 # profilo utente
 ['Admin', 'User', 'Guest'].each do |profilo|
   Models::Profilo.create(
