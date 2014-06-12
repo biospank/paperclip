@@ -41,7 +41,6 @@ module Views
         xrc.find('btn_cliente', self)
         xrc.find('btn_salva', self)
         xrc.find('btn_pulisci', self)
-        xrc.find('btn_corrispettivo', self)
 
         map_events(self)
 
@@ -180,16 +179,6 @@ module Views
       def btn_pulisci_click(evt)
         begin
           self.reset_panel()
-        rescue Exception => e
-          log_error(self, e)
-        end
-
-        evt.skip()
-      end
-
-      def btn_corrispettivo_click(evt)
-        begin
-
         rescue Exception => e
           log_error(self, e)
         end
