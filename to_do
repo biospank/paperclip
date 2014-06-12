@@ -14,7 +14,6 @@ Modifiche generiche
 - configurazione automatica servizio windows (runassvc.exe --help per creare il servizio di start automatico pserver.rb)
 - SCRIVERE I TEST
 - documentazione contestuale (riassuntiva) e separata (dettagliata)
-- scegliere le viste da caricare in base alla configurazione su db
 - capire come suddividere il file ui.xrc e caricare solo i moduli necessari
 - settaggio della variabile d'ambiente (InnoSetup) durante l'istallazione per ritrovare il path in aggiornamento
 - distinguere l'attivita' merceologica nel caso di piu' aziende (nel file paperclip.yml - togliere la scelta)
@@ -30,7 +29,6 @@ Modifiche generiche
 - gestire gli eventi delle lookup in rete rivedere il caricamento delle lookup (load_data) scatenato durante l'inizializzazione.
   code_hash e instance_hash potrebbero essere obsoleti se i dati vengono aggiornati in rete.
 - dopo la login visualizzare messaggio/barra attesa caricamento dati
-- modelli autoload in un file separato (autoload.rb)
 
 Wkhtmltopdf
 - ottimizzazione caricamento css (da linea di comando)
@@ -57,7 +55,6 @@ Modifiche generiche
 
 Magazzino
 - completare modulo ordine (codice a barre)
-- gestione magazzini multipli
 - gestione soglia prodotti
 - disabilitare l'aliquota sui prodotti utilizzati
 - grafico sull'andamento del prodotto (trend)
