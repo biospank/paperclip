@@ -18,7 +18,6 @@ Rakefile
 attestazione.au3
 attestazione.exe
 init.rb
-/*.txt
 /*.sql
 /paperclip.*
 paperclip_server.*

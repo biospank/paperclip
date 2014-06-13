@@ -21,9 +21,10 @@ gem 'win32-service', '~> 0.8.4'
 gem "thor", '~> 0.19.1'
 # gem "ocra", "1.3.0"
 gem "ocra", '~> 1.3.1'
-# gem "debugger", "1.5.0", :require => "ruby-debug"
-# gem "debugger-linecache", "1.2.0"
-# gem "debugger-ruby_core_source", "1.2.0"
+
+group :development do
+  gem "pry"
+end
 
 # osx
 

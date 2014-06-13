@@ -7,7 +7,9 @@ require 'app/helpers/application_helper'
 require 'app/helpers/wx_helper'
 require 'app/views/main_frame'
 # debug
-#require 'ruby-debug' if configatron.env == 'development'
+unless defined?(Ocra)
+  require 'pry' if configatron.env == 'development'
+end
 
 include Wx
 

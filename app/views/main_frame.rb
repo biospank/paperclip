@@ -97,8 +97,11 @@ module Views
         @mnu_carta_intestata = mnu_fattura.find_item('Carta intestata')
         @menu_bar.find_item(@mnu_carta_intestata).check() if configatron.fatturazione.carta_intestata
         @mnu_iva_per_cassa = mnu_fattura.find_item('Iva per cassa')
-        configatron.fatturazione.set_default(:iva_per_cassa, false)
-        @menu_bar.find_item(@mnu_iva_per_cassa).check() if configatron.fatturazione.iva_per_cassa
+        if configatron.fatturazione.has_key?(:iva_per_cassa)
+          @menu_bar.find_item(@mnu_iva_per_cassa).check() if configatron.fatturazione.iva_per_cassa
+        else
+          configatron.fatturazione.iva_per_cassa = false
+        end
         @mnu_commercio = mnu_fattura.find_item('Commercio')
         @mnu_servizi = mnu_fattura.find_item('Servizi')
 
@@ -125,13 +128,19 @@ module Views
 
       mnu_bilancio = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Bilancio')).get_sub_menu()
         @mnu_bilancio_attivo = mnu_bilancio.find_item('Attivo')
-        configatron.bilancio.set_default(:attivo, false)
-        @menu_bar.find_item(@mnu_bilancio_attivo).check() if configatron.bilancio.attivo
+        if configatron.bilancio.has_key?(:attivo)
+          @menu_bar.find_item(@mnu_bilancio_attivo).check() if configatron.bilancio.attivo
+        else
+          configatron.bilancio.attivo = false
+        end
 
       mnu_liquidazioni = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Liquidazioni')).get_sub_menu()
         @mnu_liquidazioni_attivo = mnu_liquidazioni.find_item('Attivo')
-        configatron.liquidazioni.set_default(:attivo, false)
-        @menu_bar.find_item(@mnu_liquidazioni_attivo).check() if configatron.liquidazioni.attivo
+        if configatron.liquidazioni.has_key?(:attivo)
+          @menu_bar.find_item(@mnu_liquidazioni_attivo).check() if configatron.liquidazioni.attivo
+        else
+          configatron.liquidazioni.attivo = false
+        end
 
       @mnu_licenza = menu_bar.find_menu_item('Registra', 'Licenza')
 

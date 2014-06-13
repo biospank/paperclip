@@ -159,7 +159,7 @@ module PaperclipConfig
     configatron.env = (ENV['PAPERCLIP_ENV'] || 'development')
 
     # modalita di connessione al db
-    configatron.connection.set_default(:mode, :local)
+    configatron.connection.mode = :local unless configatron.connection.has_key?(:mode)
 
     ActiveRecord::Base.logger = logger = Helpers::Logger::LoggerHelper.instance()
 

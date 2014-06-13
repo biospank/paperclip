@@ -158,8 +158,18 @@ module Paperclip
 
     desc "restore", "Restore local/remote db"
     method_option :load_env, :type => :boolean, :default => true, :aliases => '-l', :banner => "false"
+    method_option :new_local_db, :type => :boolean, :default => true, :aliases => '-n', :banner => "false"
     def restore
-      load_environment! if options.load_env?
+      if options.load_env?
+        load_environment!
+        if options.new_local_db?
+          if configatron.env == 'production'
+            remove_file 'db/production/bra.db', :verbose => false
+          else
+            remove_file 'db/development/bra.db', :verbose => false
+          end
+        end
+      end
       invoke :schema_restore, :load_env => options.load_env?
       invoke :data_restore, :load_env => options.load_env?
     end
