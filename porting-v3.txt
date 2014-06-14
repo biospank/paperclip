@@ -9,11 +9,11 @@
 ##
 # porting paperclip v. 2.x a paperclip v. 3.x (versione Net/Cloud)
 # - scompattare lo zip del backup nella directory paperclip
-# - sostituire paperclip.yml col contenuto di paperclip.yml.example
+# - eliminare il file db/development/bra.db
+# - sostituire paperclip.yml col contenuto di paperclip.yml.example e le impostazioni del cliente
 # - cambiare la modalità di connessione da :remote a :local nel file paperclip.yml
 # - lanciare il comando 'ruby package restore'
 # - lanciare il comando 'ruby package migrate'
 # - copiare il file db da development a production
-# - reimpostare la modalità di connessione da :local a :remote nel file paperclip.yml
-# - lanciare il comando 'ruby package new --preserve-db=true'
+# - lanciare il comando 'ruby package new --preserve-db=true --remote=true'
 ##

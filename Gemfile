@@ -16,7 +16,7 @@ gem "rubyzip", '~> 1.1.3'
 gem "sqlite3", '~> 1.3.9'
 gem "wxruby-ruby19", "2.0.1"
 # gem "yamler", "0.1.0"
-gem 'win32-service', '~> 0.8.4'
+# gem 'win32-service', '~> 0.8.4'
 # gem "thor", "0.17.0"
 gem "thor", '~> 0.19.1'
 # gem "ocra", "1.3.0"

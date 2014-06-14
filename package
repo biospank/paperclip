@@ -1,5 +1,5 @@
 $:.unshift File.dirname(__FILE__)
-require 'bundler/setup'
+#require 'bundler/setup'
 require 'thor'
 require 'app/helpers/configurazione_helper'
 
@@ -17,6 +17,7 @@ module Paperclip
     desc "new", "Create brand new paperclip installation"
     method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx|server"
     method_option :preserve_db, :type => :boolean, :default => false, :aliases => '-d', :banner => "true"
+    method_option :remote, :type => :boolean, :default => false, :aliases => '-r', :banner => "true"
     def new()
       puts "platform: #{options.platform}"
       case options.platform
@@ -36,6 +37,8 @@ module Paperclip
         FileUtils.cp_r "bin/win", "pkg/paperclip/src/bin"
         FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
         purge! :dev
+        # in caso di porting dalla versione 2.x alla versione 3.x (Net/Cloud)
+        set_config_to_remote! if options.remote?
         FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip3.exe"
         run "iscc.exe paperclip3.dist.iss", :verbose => false
       when 'server'
@@ -196,6 +199,16 @@ module Paperclip
     end
 
     protected
+    
+    def set_config_to_remote!
+      require 'yaml'
+      require 'configatron'
+      configatron.configure_from_hash(YAML.load_file('conf/paperclip.yml'))
+      configatron.connection.mode = :remote
+      File.open("pkg/paperclip/src/conf/paperclip.yml", "w") { |f|
+        f.write(configatron.to_hash.to_yaml)
+      }
+    end
 
     def load_environment!
       require 'app/config/environment'
@@ -203,7 +216,7 @@ module Paperclip
 
     def ocra_command
       #command = "bundle exec ocra '#{executable}' --windows --no-enc --dll rubyw.exe.manifest --dll hstart.exe --dll pdftk.exe --dll wkhtmltopdf.exe --dll sumatra.exe --icon 'resources/images/paperclip.ico' "
-      command = "bundle exec ocra '#{executable}' --windows --no-enc --dll rubyw.exe.manifest --icon 'resources/images/paperclip.ico' "
+      command = "bundle exec ocra '#{executable}' --windows --gem-full --no-enc --dll rubyw.exe.manifest --icon 'resources/images/paperclip.ico' "
       command += (files - [executable]).map {|f| %["#{f}"]}.join(" ")
       command += " --output 'pkg/paperclip.exe' --debug-extract"
       command

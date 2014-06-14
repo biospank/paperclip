@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'rubygems'
 require 'wx'
 require 'app/config/environment'
 require 'app/helpers/application_helper'
