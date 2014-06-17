@@ -1,11 +1,13 @@
+#require 'pry'
+
 azienda = Models::Azienda.create(
-  :nome => 'TRENTA COSTRUZIONI SRL',
-  :attivita_merc => 2 # 1: commercio, 2: servizi
+  :nome => 'DEMO',
+  :attivita_merc => 1 # 1: commercio, 2: servizi
 )
 
 Models::DatiAzienda.create(
   :azienda => azienda,
-  :denominazione => 'TRENTA COSTRUZIONI SRL',
+  :denominazione => 'DEMO SRL',
   :p_iva => '1234567890',
   :cod_fisc => '1234567890',
   :indirizzo => '',
@@ -430,13 +432,7 @@ riba.save_with_validation(false)
 
 # per ogni azienda creo un magazzino di default
 Models::Azienda.all.each do |az|
-  Models::Magazzino.create(
-    :azienda_id => az.id
-    :nome => 'Default',
-    :descrizione => '',
-    :attivo => 1,
-    :predefinito => 1
-  )
+  conn.execute "insert into magazzini (id, azienda_id, nome, descrizione, attivo, predefinito) values (null, #{az.id}, 'Default', '', 1, 1)"
 end
 
 # profilo utente
@@ -455,9 +451,3 @@ end
 end
 
 
-# licenza data scadenza
-Models::Licenza.create(
-  :numero_seriale => '',
-  :data_scadenza => Date.today.months_since(4),
-  :versione => '2.4.0'
-)

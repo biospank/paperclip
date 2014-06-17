@@ -17,8 +17,6 @@ require 'uri'
 #require 'rinda/tuplespace'
 require 'app/models/postgres_db_server'
 
-
-
 module PaperclipConfig
   extend Versione
 
@@ -193,6 +191,10 @@ module PaperclipConfig
 #        raise "Aggiornare Paperclip: versione obsoleta."
 #      end
 
+#      require 'pry'
+#
+#      binding.pry
+
       # avvio il processo di migrazione
       if configatron.env == 'production'
         if File.directory? 'db/migrations'
@@ -203,9 +205,18 @@ module PaperclipConfig
           ActiveRecord::Migrator.migrate('db/migrations', nil)
         end
 
-        unless PaperclipConfig.update_version!
-          self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.")
+        if Models::Azienda.first.nome == 'DEMO'
+          unless Models::Licenza.first
+            # licenza data scadenza
+            Models::Licenza.create(
+              :numero_seriale => '',
+              :data_scadenza => PaperclipConfig.demo_period,
+              :versione => PaperclipConfig.release
+            )
+          end
         end
+
+        self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.") unless PaperclipConfig.update_version!
 
         load 'db/patch.rb' if File.exist?('db/patch.rb')
 
@@ -232,9 +243,18 @@ module PaperclipConfig
               ActiveRecord::Migrator.migrate('db/migrations', nil)
             end
 
-            unless PaperclipConfig.update_version!
-              self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.")
+            if Models::Azienda.first.nome == 'DEMO'
+              unless Models::Licenza.first
+                # licenza data scadenza
+                Models::Licenza.create(
+                  :numero_seriale => '',
+                  :data_scadenza => PaperclipConfig.demo_period,
+                  :versione => PaperclipConfig.release
+                )
+              end
             end
+
+            self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.") unless PaperclipConfig.update_version!
 
             load 'db/patch.rb' if File.exist?('db/patch.rb')
           end

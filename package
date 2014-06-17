@@ -1,7 +1,8 @@
 $:.unshift File.dirname(__FILE__)
-#require 'bundler/setup'
+require 'bundler/setup'
 require 'thor'
 require 'app/helpers/configurazione_helper'
+#require 'pry'
 
 module Paperclip
   class Package < Thor
@@ -18,11 +19,13 @@ module Paperclip
     method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx|server"
     method_option :preserve_db, :type => :boolean, :default => false, :aliases => '-d', :banner => "true"
     method_option :remote, :type => :boolean, :default => false, :aliases => '-r', :banner => "true"
+    method_option :category, :type => :numeric, :default => 1, :aliases => '-c', :banner => "1 (commercio)|2 (servizi)"
+    method_option :release, :type => :string, :default => "easy", :aliases => '-l', :banner => "easy|pro"
     def new()
       puts "platform: #{options.platform}"
       case options.platform
       when 'win'
-        invoke :new_schema unless options.preserve_db?
+        Paperclip::Package.new.invoke :new_schema unless options.preserve_db?
         remove_dir 'Output', :verbose => false
         remove_dir 'pkg', :verbose => false
         empty_directory 'pkg', :verbose => false
@@ -38,8 +41,8 @@ module Paperclip
         FileUtils.cp_r "db/migrations", "pkg/paperclip/src/db"
         purge! :dev
         # in caso di porting dalla versione 2.x alla versione 3.x (Net/Cloud)
-        set_config_to_remote! if options.remote?
         FileUtils.cp "paperclip3.exe", "pkg/paperclip/paperclip3.exe"
+        write_config! options
         run "iscc.exe paperclip3.dist.iss", :verbose => false
       when 'server'
         ENV['PAPERCLIP_ENV'] = options.platform
@@ -200,11 +203,19 @@ module Paperclip
 
     protected
     
-    def set_config_to_remote!
+    def write_config!(options)
       require 'yaml'
       require 'configatron'
       configatron.configure_from_hash(YAML.load_file('conf/paperclip.yml'))
-      configatron.connection.mode = :remote
+      configatron.connection.mode = :remote if options.remote?
+      configatron.attivita = options[:category] if options[:category]
+      if options[:release] == 'pro'
+        configatron.bilancio.attivo = true
+        configatron.liquidazioni.attivo = true
+      else
+        configatron.bilancio.attivo = false
+        configatron.liquidazioni.attivo = false
+      end
       File.open("pkg/paperclip/src/conf/paperclip.yml", "w") { |f|
         f.write(configatron.to_hash.to_yaml)
       }
