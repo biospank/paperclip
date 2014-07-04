@@ -209,7 +209,7 @@ module PaperclipConfig
           unless Models::Licenza.first
             # licenza data scadenza
             Models::Licenza.create(
-              :numero_seriale => '',
+              :numero_seriale => PaperclipConfig.demo_key,
               :data_scadenza => PaperclipConfig.demo_period,
               :versione => PaperclipConfig.release
             )
@@ -247,7 +247,7 @@ module PaperclipConfig
               unless Models::Licenza.first
                 # licenza data scadenza
                 Models::Licenza.create(
-                  :numero_seriale => '',
+                  :numero_seriale => PaperclipConfig.demo_key,
                   :data_scadenza => PaperclipConfig.demo_period,
                   :versione => PaperclipConfig.release
                 )

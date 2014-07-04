@@ -27,6 +27,10 @@ module Versione
     Date.today.months_since(DEMO_PERIOD)
   end
 
+  def demo_key
+    "31303030-31303030-#{self.demo_period}"
+  end
+
   def release
     RELEASE
   end

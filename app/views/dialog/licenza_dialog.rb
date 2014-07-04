@@ -34,10 +34,11 @@ module Views
         begin
           hash = Digest::SHA1.hexdigest(Date.today.to_s(:italian_date))
           lic = txt_codice.view_data
-          logger.debug("hash: " + hash)
-          logger.debug("codice: " + lic)
-          if lic.eql? hash
-            ctrl.registra_licenza()
+          if lic.split('-').size == 3
+#          logger.debug("hash: " + hash)
+#          logger.debug("codice: " + lic)
+#          if lic.eql? hash
+            ctrl.registra_licenza(lic)
           else
             lbl_messaggio_errore.label = 'Codice errato!'
             txt_codice.activate()

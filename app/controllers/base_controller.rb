@@ -270,8 +270,10 @@ module Controllers
       @@pagamenti ||= []
     end
 
-    def registra_licenza()
-      licenza.update_attribute(:data_scadenza, nil)
+    def registra_licenza(lic)
+      licenza.data_scadenza = Time.at(lic.split('-').last).to_date
+      licenza.numero_seriale = lic
+      licenza.save
     end
 
     def licenza()
