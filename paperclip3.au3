@@ -1,5 +1,6 @@
 #Include <Constants.au3>
 #NoTrayIcon
+#RequireAdmin
 
 EnvSet("PAPERCLIP_ENV", "production")
 
