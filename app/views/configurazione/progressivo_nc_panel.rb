@@ -78,37 +78,43 @@ module Views
       def btn_salva_click(evt)
         begin
           if btn_salva.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
-              # il progressivo puo' risultare a nil
-              if self.progressivo
-                transfer_progressivo_from_view()
-                if self.progressivo.valid?
-                  res = Wx::message_box("Confermi la modifica del progressivo nota di credito?",
-                    'Domanda',
-                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
+                # il progressivo puo' risultare a nil
+                if self.progressivo
+                  transfer_progressivo_from_view()
+                  if self.progressivo.valid?
+                    res = Wx::message_box("Confermi la modifica del progressivo nota di credito?",
+                      'Domanda',
+                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                  if res == Wx::YES
-                    ctrl.save_progressivo()
-                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                    if res == Wx::YES
+                      ctrl.save_progressivo()
+                      Wx::message_box('Salvataggio avvenuto correttamente.',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+                      reset_panel()
+                    end
+                  else
+                    Wx::message_box(self.progressivo.error_msg,
                       'Info',
                       Wx::OK | Wx::ICON_INFORMATION, self)
-                    reset_panel()
+
+                    focus_progressivo_error_field()
+
                   end
                 else
-                  Wx::message_box(self.progressivo.error_msg,
+                  Wx::message_box("Selezionare l'anno del progressivo da modificare.",
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-
-                  focus_progressivo_error_field()
-
                 end
               else
-                Wx::message_box("Selezionare l'anno del progressivo da modificare.",
+                Wx::message_box('Utente non autorizzato.',
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

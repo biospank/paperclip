@@ -28,7 +28,7 @@ module Versione
   end
 
   def demo_key
-    "31303030-31303030-#{self.demo_period}"
+    "31303030-31303030-#{self.demo_period.to_time.to_i.to_s.unpack('H*').join}"
   end
 
   def release

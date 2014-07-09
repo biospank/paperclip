@@ -271,7 +271,7 @@ module Controllers
     end
 
     def registra_licenza(lic)
-      licenza.data_scadenza = Time.at(lic.split('-').last).to_date
+      licenza.data_scadenza = Time.at([lic.split('-').last].pack('H*').to_i).to_date
       licenza.numero_seriale = lic
       licenza.save
     end

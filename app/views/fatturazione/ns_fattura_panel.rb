@@ -378,51 +378,57 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-                transfer_nota_spese_from_view()
-                if cliente? and check_ritenuta()
-                  unless nota_spese.num.strip.match(/^[0-9]*$/)
-                    res = Wx::message_box("La documento che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
-                      'Avvertenza',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                  transfer_nota_spese_from_view()
+                  if cliente? and check_ritenuta()
+                    unless nota_spese.num.strip.match(/^[0-9]*$/)
+                      res = Wx::message_box("La documento che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
+                        'Avvertenza',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    if res == Wx::YES
-                      return
-                    end
-                  end
-
-                  if self.nota_spese.valid?
-                    ctrl.save_nota_spese()
-
-                    notify(:evt_nota_spese_changed)
-                    # carico gli anni contabili dei progressivi nota spese
-                    progressivi_ns = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNotaSpese)
-                    notify(:evt_progressivo_ns, progressivi_ns)
-
-                    Wx::message_box('Salvataggio avvenuto correttamente',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-
-                    res_stampa = Wx::message_box("Vuoi stampare il documento?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res_stampa == Wx::YES
-                      stampa_nota_spese()
+                      if res == Wx::YES
+                        return
+                      end
                     end
 
-                    reset_panel()
-                  else
-                    Wx::message_box(self.nota_spese.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    if self.nota_spese.valid?
+                      ctrl.save_nota_spese()
 
-                    focus_nota_spese_error_field()
+                      notify(:evt_nota_spese_changed)
+                      # carico gli anni contabili dei progressivi nota spese
+                      progressivi_ns = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNotaSpese)
+                      notify(:evt_progressivo_ns, progressivi_ns)
 
+                      Wx::message_box('Salvataggio avvenuto correttamente',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      res_stampa = Wx::message_box("Vuoi stampare il documento?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                      if res_stampa == Wx::YES
+                        stampa_nota_spese()
+                      end
+
+                      reset_panel()
+                    else
+                      Wx::message_box(self.nota_spese.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_nota_spese_error_field()
+
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -443,28 +449,34 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-              if nota_spese.fatturata?
-                Wx::message_box("#{Models::NotaSpese::INTESTAZIONE[configatron.pre_fattura.intestazione.to_i]} gia' fatturata, non puo' essere eliminata.",
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                if nota_spese.fatturata?
+                  Wx::message_box("#{Models::NotaSpese::INTESTAZIONE[configatron.pre_fattura.intestazione.to_i]} gia' fatturata, non puo' essere eliminata.",
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
+                else
+                  res = Wx::message_box("Confermi la cancellazione?",
+                    'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                  if res == Wx::YES
+                    ctrl.delete_nota_spese()
+                    notify(:evt_nota_spese_changed)
+                    # carico gli anni contabili dei progressivi nota spese
+                    progressivi_ns = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNotaSpese)
+                    notify(:evt_progressivo_ns, progressivi_ns)
+                    reset_panel()
+                  end
+
+                end
+              else
+                Wx::message_box('Utente non autorizzato.',
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
-              else
-                res = Wx::message_box("Confermi la cancellazione?",
-                  'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                if res == Wx::YES
-                  ctrl.delete_nota_spese()
-                  notify(:evt_nota_spese_changed)
-                  # carico gli anni contabili dei progressivi nota spese
-                  progressivi_ns = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNotaSpese)
-                  notify(:evt_progressivo_ns, progressivi_ns)
-                  reset_panel()
-                end
-
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

@@ -214,6 +214,15 @@ module PaperclipConfig
               :versione => PaperclipConfig.release
             )
           end
+        else
+          unless Models::Licenza.first
+            # licenza data scadenza
+            Models::Licenza.create(
+              :numero_seriale => nil,
+              :data_scadenza => (Date.today + 10),
+              :versione => PaperclipConfig.release
+            )
+          end
         end
 
         self.error = RuntimeError.new("Aggiornare Paperclip: versione obsoleta.") unless PaperclipConfig.update_version!
@@ -249,6 +258,15 @@ module PaperclipConfig
                 Models::Licenza.create(
                   :numero_seriale => PaperclipConfig.demo_key,
                   :data_scadenza => PaperclipConfig.demo_period,
+                  :versione => PaperclipConfig.release
+                )
+              end
+            else
+              unless Models::Licenza.first
+                # licenza data scadenza
+                Models::Licenza.create(
+                  :numero_seriale => nil,
+                  :data_scadenza => (Date.today + 10),
                   :versione => PaperclipConfig.release
                 )
               end

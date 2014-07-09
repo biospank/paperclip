@@ -7,13 +7,25 @@ module Models
     set_table_name :licenza
   
     def scaduta?
-      unless self.data_scadenza.nil?
-        if self.data_scadenza < Date.today
-          return true
+      !attiva?
+    end
+    
+    def attiva?
+      if configatron.env = 'production'
+        return (self.get_data_scadenza >= Date.today)
+      else
+        true
+      end
+    end
+    
+    def get_data_scadenza
+      @data ||= begin
+        if self.numero_seriale
+          Time.at(self.numero_seriale.split('-').map {|chunk| [chunk].pack('H*')}.last.to_i).to_date
+        else
+          self.data_scadenza || Date.today
         end
       end
-    
-      return false
     end
   end  
 end

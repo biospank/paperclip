@@ -166,10 +166,10 @@ module Views
       else
         #tool_bar.init_panel()
         if ctrl.licenza.scaduta?
-          Wx::message_box("Contattare il fornitore per il rilascio della licenza.",
-            'Versione di prova',
+          Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza.",
+            'Info',
             Wx::OK | Wx::ICON_WARNING, self)
-          listbook_mgr.enable(false)
+          #listbook_mgr.enable(false)
         else
           Wx::BusyCursor.busy() do
             listbook_mgr.reset_folders()

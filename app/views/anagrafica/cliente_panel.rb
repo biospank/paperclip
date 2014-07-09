@@ -134,30 +134,36 @@ module Views
         begin
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::ANAGRAFICA
-                transfer_cliente_from_view()
-                if pdc_compatibile?
-                  if self.cliente.valid?
-                    ctrl.save_cliente()
-                    evt_chg = Views::Base::CustomEvent::ClienteChangedEvent.new(ctrl.search_clienti())
-                    # This sends the event for processing by listeners
-                    process_event(evt_chg)
-                    Wx::message_box('Salvataggio avvenuto correttamente.',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-                    reset_panel()
-                    process_event(Views::Base::CustomEvent::BackEvent.new())
-                  else
-                    Wx::message_box(self.cliente.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::ANAGRAFICA
+                  transfer_cliente_from_view()
+                  if pdc_compatibile?
+                    if self.cliente.valid?
+                      ctrl.save_cliente()
+                      evt_chg = Views::Base::CustomEvent::ClienteChangedEvent.new(ctrl.search_clienti())
+                      # This sends the event for processing by listeners
+                      process_event(evt_chg)
+                      Wx::message_box('Salvataggio avvenuto correttamente.',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+                      reset_panel()
+                      process_event(Views::Base::CustomEvent::BackEvent.new())
+                    else
+                      Wx::message_box(self.cliente.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
 
-                    focus_cliente_error_field()
+                      focus_cliente_error_field()
 
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -178,28 +184,34 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::ANAGRAFICA
-              if self.cliente.modificabile?
-                res = Wx::message_box("Confermi l'eliminazione del cliente?",
-                  'Domanda',
-                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::ANAGRAFICA
+                if self.cliente.modificabile?
+                  res = Wx::message_box("Confermi l'eliminazione del cliente?",
+                    'Domanda',
+                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                if res == Wx::YES
-                  Wx::BusyCursor.busy() do
-                    ctrl.delete_cliente()
-                    evt_chg = Views::Base::CustomEvent::ClienteChangedEvent.new(ctrl.search_clienti())
-                    # This sends the event for processing by listeners
-                    process_event(evt_chg)
-                    reset_panel()
+                  if res == Wx::YES
+                    Wx::BusyCursor.busy() do
+                      ctrl.delete_cliente()
+                      evt_chg = Views::Base::CustomEvent::ClienteChangedEvent.new(ctrl.search_clienti())
+                      # This sends the event for processing by listeners
+                      process_event(evt_chg)
+                      reset_panel()
+                    end
                   end
+                else
+                  Wx::message_box("Il cliente non puo' essere eliminato.",
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box("Il cliente non puo' essere eliminato.",
+                Wx::message_box('Utente non autorizzato.',
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

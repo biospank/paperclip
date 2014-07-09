@@ -201,38 +201,44 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
-                transfer_ordine_from_view()
-                if fornitore?
-                  if self.ordine.valid?
-                    ctrl.save_ordine()
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
+                  transfer_ordine_from_view()
+                  if fornitore?
+                    if self.ordine.valid?
+                      ctrl.save_ordine()
 
-                    #notify(:evt_magazzino_fornitori_changed)
+                      #notify(:evt_magazzino_fornitori_changed)
 
-                    Wx::message_box('Salvataggio avvenuto correttamente',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+                      Wx::message_box('Salvataggio avvenuto correttamente',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
 
-                    res_stampa = Wx::message_box("Vuoi stampare l'ordine?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+                      res_stampa = Wx::message_box("Vuoi stampare l'ordine?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    if res_stampa == Wx::YES
-                      btn_stampa_click(nil)
+                      if res_stampa == Wx::YES
+                        btn_stampa_click(nil)
+                      end
+
+                      reset_panel()
+                    else
+                      Wx::message_box(self.ordine.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_ordine_error_field()
+
                     end
-
-                    reset_panel()
-                  else
-                    Wx::message_box(self.ordine.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-
-                    focus_ordine_error_field()
-
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -253,20 +259,26 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
-              res = Wx::message_box("Confermi la cancellazione dell'ordine e tutte le righe collegate?",
-                'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
+                res = Wx::message_box("Confermi la cancellazione dell'ordine e tutte le righe collegate?",
+                  'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-              Wx::BusyCursor.busy() do
-                if res == Wx::YES
-                  ctrl.delete_ordine()
-                  #notify(:evt_magazzino_fornitori_changed)
-                  reset_panel()
+                Wx::BusyCursor.busy() do
+                  if res == Wx::YES
+                    ctrl.delete_ordine()
+                    #notify(:evt_magazzino_fornitori_changed)
+                    reset_panel()
+                  end
                 end
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

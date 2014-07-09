@@ -45,23 +45,29 @@ module Views
         begin
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
-                transfer_interesse_from_view()
-                if self.interesse.valid?
-                  ctrl.save_interessi_liquidazione_trimestrale()
-                  Wx::message_box('Salvataggio avvenuto correttamente.',
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
+                  transfer_interesse_from_view()
+                  if self.interesse.valid?
+                    ctrl.save_interessi_liquidazione_trimestrale()
+                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                  else
+                    Wx::message_box(self.norma.error_msg,
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+
+                    focus_interesse_error_field()
+
+                  end
                 else
-                  Wx::message_box(self.norma.error_msg,
+                  Wx::message_box('Utente non autorizzato.',
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-
-                  focus_interesse_error_field()
-
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end

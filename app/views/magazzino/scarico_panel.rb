@@ -115,50 +115,56 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
-                if righe_scarico_panel.lstrep_righe_scarico.get_item_count() > 0
-                  transfer_cliente_from_view()
-                  transfer_fattura_cliente_from_view()
-                  if fattura_cliente_valida?
-                    fattura = ctrl.save_movimenti_scarico(!self.cliente.denominazione.blank?)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::MAGAZZINO
+                  if righe_scarico_panel.lstrep_righe_scarico.get_item_count() > 0
+                    transfer_cliente_from_view()
+                    transfer_fattura_cliente_from_view()
+                    if fattura_cliente_valida?
+                      fattura = ctrl.save_movimenti_scarico(!self.cliente.denominazione.blank?)
 
-                    anni_contabili_movimenti = ctrl.load_anni_contabili(Models::Movimento, 'data')
-                    notify(:evt_anni_contabili_movimenti_changed, anni_contabili_movimenti)
+                      anni_contabili_movimenti = ctrl.load_anni_contabili(Models::Movimento, 'data')
+                      notify(:evt_anni_contabili_movimenti_changed, anni_contabili_movimenti)
 
-                    unless self.cliente.denominazione.blank?
-                      res_stampa = Wx::message_box("Salvataggio avvenuto correttamente: fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}\nVuoi stampare la fattura?",
-                       'Domanda',
-                       Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+                      unless self.cliente.denominazione.blank?
+                        res_stampa = Wx::message_box("Salvataggio avvenuto correttamente: fattura n. #{fattura.num} del #{fattura.data_emissione.to_s(:italian_date)}\nVuoi stampare la fattura?",
+                         'Domanda',
+                         Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                      if res_stampa == Wx::YES
-                        notify(:evt_stampa_fattura, fattura)
+                        if res_stampa == Wx::YES
+                          notify(:evt_stampa_fattura, fattura)
+                        end
+                        righe_scarico_panel.lku_bar_code.activate()
+                      else
+                        Wx::message_box('Salvataggio avvenuto correttamente',
+                          'Info',
+                          Wx::OK | Wx::ICON_INFORMATION, self)
                       end
+                      reset_panel()
                       righe_scarico_panel.lku_bar_code.activate()
                     else
-                      Wx::message_box('Salvataggio avvenuto correttamente',
+                      msg = self.fattura_cliente.error_msg
+                      msg << " (da fatturazione o scadenzario)" if msg =~ /fattura/
+                      Wx::message_box(msg,
                         'Info',
                         Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_fattura_cliente_error_field()
+
                     end
-                    reset_panel()
-                    righe_scarico_panel.lku_bar_code.activate()
                   else
-                    msg = self.fattura_cliente.error_msg
-                    msg << " (da fatturazione o scadenzario)" if msg =~ /fattura/
-                    Wx::message_box(msg,
+                    Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
                       'Info',
                       Wx::OK | Wx::ICON_INFORMATION, self)
-
-                    focus_fattura_cliente_error_field()
-
+                    righe_scarico_panel.lku_bar_code.activate()
                   end
                 else
-                  Wx::message_box("Leggere il codice a barre del prodotto oppure\npremere F5 per la ricerca manuale.",
+                  Wx::message_box('Utente non autorizzato.',
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-                  righe_scarico_panel.lku_bar_code.activate()
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
