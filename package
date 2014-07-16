@@ -14,6 +14,21 @@ module Paperclip
 
     # Binary gems included in app.
     BINARY_GEMS = %w[gosu texplay chipmunk]
+    
+    desc "key", "Create new key license"
+    method_option :customer, :type => :numeric, :default => 0, :aliases => '-c'
+    method_option :subscription, :type => :numeric, :default => 0, :aliases => '-s'
+    method_option :months, :type => :numeric, :default => 0, :aliases => '-m', :banner => "months since today"
+    def key()
+      require 'date'
+      require 'uri'
+      
+      key_code = [[(options.customer + 1000).to_s], [(options.subscription + 1000).to_s], [(Date.today.months_since(options.months).to_time.to_i).to_s]].map do |chunk|
+        URI.escape(chunk.pack('m'), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+      end.join('-')
+      
+      puts key_code
+    end
 
     desc "new", "Create brand new paperclip installation"
     method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx|server"
