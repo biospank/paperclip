@@ -34,7 +34,11 @@ module Views
       realize()
       
       map_events(self)
-      
+ 
+      subscribe(:evt_azienda_updated) do
+        init_panel()
+      end
+
     end
 
     def init_panel()

@@ -50,7 +50,6 @@ module Views
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_MAGAZZINO_VIEW, 9)
       self.set_page_image(Helpers::ApplicationHelper::WXBRA_CONFIGURAZIONE_VIEW, 11)
 
-      setup_listeners()
       xrc = Helpers::WxHelper::Xrc.instance()
       xrc.find('ANAGRAFICA_NOTEBOOK_MGR', self, :extends => Views::Anagrafica::AnagraficaNotebookMgr)
       anagrafica_notebook_mgr.ui()

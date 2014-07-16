@@ -1,3 +1,5 @@
+require 'uri'
+
 module Versione
   # da modificare ogni qual volta esce una nuova versione
   RELEASE = '3.0.0'
@@ -28,7 +30,8 @@ module Versione
   end
 
   def demo_key
-    "31303030-31303030-#{self.demo_period.to_time.to_i.to_s.unpack('H*').join}"
+    enc_data = URI.escape([self.demo_period.to_time.to_i.to_s].pack('m'), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+    "MTAwMA%3D%3D%0A-MTAwMA%3D%3D%0A-#{enc_data}"
   end
 
   def release

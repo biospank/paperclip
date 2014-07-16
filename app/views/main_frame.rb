@@ -44,7 +44,10 @@ module Views
                                     Wx::SPLASH_CENTRE_ON_SCREEN|Wx::SPLASH_NO_TIMEOUT,
                                     3000, self, -1)
 
+      setup_listeners()
+
       setup_menu_bar()
+
       xrc = Xrc.instance()
       xrc.find('TOOL_BAR', self, :extends => Views::ToolBar)
       tool_bar.ui()
@@ -166,16 +169,25 @@ module Views
       else
         #tool_bar.init_panel()
         if ctrl.licenza.scaduta?
-          Wx::message_box("Licenza scaduta il #{ctrl.licenza.data_scadenza.to_s(:italian_date)}. Rinnovare la licenza.",
-            'Info',
+          Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza.",
+            'Licenza',
             Wx::OK | Wx::ICON_WARNING, self)
           #listbook_mgr.enable(false)
         else
-          Wx::BusyCursor.busy() do
-            listbook_mgr.reset_folders()
-#            listbook_mgr.init_folders()
+          data_scadenza = ctrl.licenza.get_data_scadenza()
+          if((giorni_alla_scadenza = (data_scadenza - Date.today).to_i) < 7)
+            Wx::message_box("Mancano #{giorni_alla_scadenza} giorni alla scadenza.",
+              'Licenza',
+              Wx::OK | Wx::ICON_WARNING, self)
           end
+      
         end
+
+        Wx::BusyCursor.busy() do
+          listbook_mgr.reset_folders()
+#            listbook_mgr.init_folders()
+        end
+      
         tool_bar.chce_azienda.view_data = Models::Azienda.current.id
         logger.error("Nessun errore, abbi fede...")
       end

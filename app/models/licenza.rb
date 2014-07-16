@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'uri'
+
 module Models
   class Licenza < ActiveRecord::Base
     include Base::Model
@@ -12,18 +14,26 @@ module Models
     
     def attiva?
       if configatron.env = 'production'
-        return (self.get_data_scadenza >= Date.today)
+        (self.get_data_scadenza >= Date.today)
       else
         true
       end
     end
     
-    def get_data_scadenza
-      @data ||= begin
-        if self.numero_seriale
-          Time.at(self.numero_seriale.split('-').map {|chunk| [chunk].pack('H*')}.last.to_i).to_date
-        else
-          self.data_scadenza || Date.today
+    def get_data_scadenza(reload=false)
+      if reload
+        codice_scadenza = self.numero_seriale.split('-').last
+        @data = Time.at(URI.unescape(codice_scadenza).unpack('m').join.to_i).to_date
+      else
+        @data ||= begin
+          if self.numero_seriale
+            codice_scadenza = self.numero_seriale.split('-').last
+            Time.at(URI.unescape(codice_scadenza).unpack('m').join.to_i).to_date
+          else
+            Date.yesterday
+          end
+        rescue
+          Date.yesterday
         end
       end
     end
