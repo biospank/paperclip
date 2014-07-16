@@ -59,23 +59,38 @@ module Views
         begin
           if btn_elimina.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
-                if scrittura.esterna?
-                  Wx::message_box("Questa scrittura non puo' essere eliminata.",
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
-                else
-                  if scrittura.congelata?
-                    if scrittura.stornata?
-                      Wx::message_box("Questa scrittura è già stata stornata.",
-                        'Info',
-                        Wx::OK | Wx::ICON_INFORMATION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+                  if scrittura.esterna?
+                    Wx::message_box("Questa scrittura non puo' essere eliminata.",
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                  else
+                    if scrittura.congelata?
+                      if scrittura.stornata?
+                        Wx::message_box("Questa scrittura è già stata stornata.",
+                          'Info',
+                          Wx::OK | Wx::ICON_INFORMATION, self)
+                      else
+                        res = Wx::message_box("Si sta eliminando una scrittura definitiva:\nLa conferma effettuerà uno storno della stessa. Confermi?",
+                          'Domanda',
+                            Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+                        if res == Wx::YES
+                          ctrl.storno_scrittura(scrittura)
+                          if filtro.dal || filtro.al
+                            notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
+                          else
+                            notify(:evt_prima_nota_changed, ctrl.search_scritture())
+                          end
+                        end
+                      end
                     else
-                      res = Wx::message_box("Si sta eliminando una scrittura definitiva:\nLa conferma effettuerà uno storno della stessa. Confermi?",
+                      res = Wx::message_box("Confermi la cancellazione?",
                         'Domanda',
                           Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
                       if res == Wx::YES
-                        ctrl.storno_scrittura(scrittura)
+                        ctrl.delete_scrittura()
                         if filtro.dal || filtro.al
                           notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
                         else
@@ -83,23 +98,14 @@ module Views
                         end
                       end
                     end
-                  else
-                    res = Wx::message_box("Confermi la cancellazione?",
-                      'Domanda',
-                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res == Wx::YES
-                      ctrl.delete_scrittura()
-                      if filtro.dal || filtro.al
-                        notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
-                      else
-                        notify(:evt_prima_nota_changed, ctrl.search_scritture())
-                      end
-                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end

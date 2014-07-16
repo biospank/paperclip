@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'uri'
+
 module Controllers
   module BaseController
     include Helpers::Logger
@@ -271,9 +273,27 @@ module Controllers
     end
 
     def registra_licenza(lic)
-      licenza.data_scadenza = Time.at(lic.split('-').last).to_date
-      licenza.numero_seriale = lic
-      licenza.save
+      # MTAyMQ%3D%3D%0A-MTIzMw%3D%3D%0A-MTQwNzQ0ODgwMA%3D%3D%0A
+      begin
+        codice_scadenza = lic.split('-').last
+        scadenza = Time.at(URI.unescape(codice_scadenza).unpack('m').join.to_i).to_date
+        #logger.info("data scadenza: #{scadenza.to_s(:italian_date)}")
+        if scadenza > Date.today
+          licenza.data_scadenza = scadenza
+          licenza.numero_seriale = lic
+          licenza.save
+          Azienda.current.update_attribute(:nome, Azienda.current.dati_azienda.denominazione)
+          licenza.get_data_scadenza(true)
+        else
+          return false
+        end
+        
+      rescue Exception => e
+        logger.error("Errore durante il salvataggio della chiave: #{e.message}")
+        return false
+      end
+      
+      return true
     end
 
     def licenza()

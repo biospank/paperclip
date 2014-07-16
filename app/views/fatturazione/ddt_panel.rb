@@ -253,50 +253,56 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-                transfer_ddt_from_view()
-                if cliente?
-                  unless ddt.num.strip.match(/^[0-9]*$/)
-                    res = Wx::message_box("La documento che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
-                      'Avvertenza',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                  transfer_ddt_from_view()
+                  if cliente?
+                    unless ddt.num.strip.match(/^[0-9]*$/)
+                      res = Wx::message_box("La documento che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
+                        'Avvertenza',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    if res == Wx::NO
-                      return
-                    end
-                  end
-
-                  if self.ddt.valid?
-                    ctrl.save_ddt()
-
-                    # carico gli anni contabili dei progressivi ddt
-                    progressivi_ddt = ctrl.load_anni_contabili_progressivi(Models::ProgressivoDdt)
-                    notify(:evt_progressivo_ddt, progressivi_ddt)
-
-                    Wx::message_box('Salvataggio avvenuto correttamente',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-
-                    res_stampa = Wx::message_box("Vuoi stampare il documento?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res_stampa == Wx::YES
-                      stampa_ddt()
+                      if res == Wx::NO
+                        return
+                      end
                     end
 
-                    reset_panel()
-                  else
-                    Wx::message_box(self.ddt.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    if self.ddt.valid?
+                      ctrl.save_ddt()
 
-                    focus_ddt_error_field()
+                      # carico gli anni contabili dei progressivi ddt
+                      progressivi_ddt = ctrl.load_anni_contabili_progressivi(Models::ProgressivoDdt)
+                      notify(:evt_progressivo_ddt, progressivi_ddt)
 
+                      Wx::message_box('Salvataggio avvenuto correttamente',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      res_stampa = Wx::message_box("Vuoi stampare il documento?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                      if res_stampa == Wx::YES
+                        stampa_ddt()
+                      end
+
+                      reset_panel()
+                    else
+                      Wx::message_box(self.ddt.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_ddt_error_field()
+
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -317,22 +323,28 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-              res = Wx::message_box("Confermi la cancellazione?",
-                'Domanda',
-                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                res = Wx::message_box("Confermi la cancellazione?",
+                  'Domanda',
+                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-              if res == Wx::YES
-                ctrl.delete_ddt()
+                if res == Wx::YES
+                  ctrl.delete_ddt()
 
-                # carico gli anni contabili dei progressivi ddt
-                progressivi_ddt = ctrl.load_anni_contabili_progressivi(Models::ProgressivoDdt)
-                notify(:evt_progressivo_ddt, progressivi_ddt)
+                  # carico gli anni contabili dei progressivi ddt
+                  progressivi_ddt = ctrl.load_anni_contabili_progressivi(Models::ProgressivoDdt)
+                  notify(:evt_progressivo_ddt, progressivi_ddt)
 
-                reset_panel()
+                  reset_panel()
+                end
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

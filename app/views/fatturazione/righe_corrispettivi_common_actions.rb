@@ -30,6 +30,32 @@ module Views
 
       end
 
+      def lku_aliquota_after_change()
+        begin
+          transfer_riga_corrispettivo_from_view
+          if lku_aliquota.match_selection()
+            self.riga_corrispettivo.calcola_iva()
+            self.riga_corrispettivo.calcola_imponibile()
+            transfer_riga_corrispettivo_to_view
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
+      def lku_aliquota_loose_focus()
+        begin
+          transfer_riga_corrispettivo_from_view
+          if lku_aliquota.match_selection()
+            self.riga_corrispettivo.calcola_iva()
+            self.riga_corrispettivo.calcola_imponibile()
+            transfer_riga_corrispettivo_to_view
+          end
+        rescue Exception => e
+          log_error(self, e)
+        end
+      end
+
       def txt_importo_loose_focus()
         transfer_riga_corrispettivo_from_view
         if lku_aliquota.match_selection()

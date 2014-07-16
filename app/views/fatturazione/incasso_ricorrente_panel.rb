@@ -127,28 +127,34 @@ module Views
         begin
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-                transfer_cliente_from_view()
-                if cliente?
-                  transfer_incasso_ricorrente_from_view()
-                  if self.incasso_ricorrente.valid?
-                    ctrl.save_incasso_ricorrente()
-                    Wx::message_box('Salvataggio avvenuto correttamente.',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-                    reset_panel()
-                    process_event(Views::Base::CustomEvent::BackEvent.new())
-                  else
-                    Wx::message_box(self.incasso_ricorrente.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                  transfer_cliente_from_view()
+                  if cliente?
+                    transfer_incasso_ricorrente_from_view()
+                    if self.incasso_ricorrente.valid?
+                      ctrl.save_incasso_ricorrente()
+                      Wx::message_box('Salvataggio avvenuto correttamente.',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+                      reset_panel()
+                      process_event(Views::Base::CustomEvent::BackEvent.new())
+                    else
+                      Wx::message_box(self.incasso_ricorrente.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
 
-                    focus_incasso_ricorrente_error_field()
+                      focus_incasso_ricorrente_error_field()
 
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -169,19 +175,25 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-              res = Wx::message_box("Confermi l'eliminazione dell'incasso ricorrente?",
-                'Domanda',
-                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                res = Wx::message_box("Confermi l'eliminazione dell'incasso ricorrente?",
+                  'Domanda',
+                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-              if res == Wx::YES
-                Wx::BusyCursor.busy() do
-                  ctrl.delete_incasso_ricorrente()
-                  reset_panel()
+                if res == Wx::YES
+                  Wx::BusyCursor.busy() do
+                    ctrl.delete_incasso_ricorrente()
+                    reset_panel()
+                  end
                 end
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

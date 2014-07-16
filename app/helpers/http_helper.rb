@@ -59,6 +59,25 @@ module Helpers
     ensure
       Socket.do_not_reverse_lookup = orig
     end
+  
+    def send_verify
+      begin
+        if configatron.env == 'production'
+          uri = URI.parse("http://localhost:3000/license_verify")
+
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.read_timeout = 5
+          request = Net::HTTP::Get.new(uri.request_uri)
+          request.basic_auth("bratech", "8743342106303a9cb104d2484a6fcbf516d2f8be")
+          response = http.request(request)
+          response.body
+        else
+          :ok
+        end
+      rescue Net::ReadTimeout => e  
+        :ko
+      end
+    end
 
   end
 end

@@ -131,28 +131,34 @@ module Views
         begin
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
-                transfer_categoria_pdc_from_view()
-                if self.categoria_pdc.valid?
-                  ctrl.save_categoria_pdc()
-                  evt_chg = Views::Base::CustomEvent::CategoriaPdcChangedEvent.new(ctrl.search_categorie_pdc())
-                  # This sends the event for processing by listeners
-                  process_event(evt_chg)
-                  Wx::message_box('Salvataggio avvenuto correttamente.',
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
-                  reset_panel()
-                  process_event(Views::Base::CustomEvent::BackEvent.new())
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+                  transfer_categoria_pdc_from_view()
+                  if self.categoria_pdc.valid?
+                    ctrl.save_categoria_pdc()
+                    evt_chg = Views::Base::CustomEvent::CategoriaPdcChangedEvent.new(ctrl.search_categorie_pdc())
+                    # This sends the event for processing by listeners
+                    process_event(evt_chg)
+                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    reset_panel()
+                    process_event(Views::Base::CustomEvent::BackEvent.new())
+                  else
+                    Wx::message_box(self.categoria_pdc.error_msg,
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+
+                    focus_categoria_pdc_error_field()
+
+                  end
                 else
-                  Wx::message_box(self.categoria_pdc.error_msg,
+                  Wx::message_box('Utente non autorizzato.',
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-
-                  focus_categoria_pdc_error_field()
-
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -173,23 +179,29 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
-              res = Wx::message_box("Confermi l'eliminazione?",
-                'Domanda',
-                Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+                res = Wx::message_box("Confermi l'eliminazione?",
+                  'Domanda',
+                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-              if res == Wx::YES
-                Wx::BusyCursor.busy() do
-                  ctrl.delete_categoria_pdc()
-                  evt_chg = Views::Base::CustomEvent::CategoriaPdcChangedEvent.new(ctrl.search_categorie_pdc())
-                  # This sends the event for processing by listeners
-                  process_event(evt_chg)
-                  reset_panel()
+                if res == Wx::YES
+                  Wx::BusyCursor.busy() do
+                    ctrl.delete_categoria_pdc()
+                    evt_chg = Views::Base::CustomEvent::CategoriaPdcChangedEvent.new(ctrl.search_categorie_pdc())
+                    # This sends the event for processing by listeners
+                    process_event(evt_chg)
+                    reset_panel()
+                  end
                 end
-              end
 
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
+              end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

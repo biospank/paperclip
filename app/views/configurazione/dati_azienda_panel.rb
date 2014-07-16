@@ -72,28 +72,34 @@ module Views
       def btn_salva_click(evt)
         begin
           if btn_salva.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
-              transfer_dati_azienda_from_view()
-              if self.dati_azienda.valid?
-                Wx::BusyCursor.busy() do
-                  ctrl.save_dati_azienda()
-                  evt_upd = Views::Base::CustomEvent::AziendaUpdatedEvent.new()
-                  # This sends the event for processing by listeners
-                  process_event(evt_upd)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
+                transfer_dati_azienda_from_view()
+                if self.dati_azienda.valid?
+                  Wx::BusyCursor.busy() do
+                    ctrl.save_dati_azienda()
+                    evt_upd = Views::Base::CustomEvent::AziendaUpdatedEvent.new()
+                    # This sends the event for processing by listeners
+                    process_event(evt_upd)
+                  end
+                  Wx::message_box('Salvataggio avvenuto correttamente.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
+                else
+                  Wx::message_box(self.dati_azienda.error_msg,
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
+
+                  focus_dati_azienda_error_field()
+
                 end
-                Wx::message_box('Salvataggio avvenuto correttamente.',
-                  'Info',
-                  Wx::OK | Wx::ICON_INFORMATION, self)
               else
-                Wx::message_box(self.dati_azienda.error_msg,
+                Wx::message_box('Utente non autorizzato.',
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
-
-                focus_dati_azienda_error_field()
-
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

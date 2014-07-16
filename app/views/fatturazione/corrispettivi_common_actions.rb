@@ -122,25 +122,31 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-                ctrl.save_corrispettivi()
-                Wx::message_box('Salvataggio avvenuto correttamente',
-                  'Info',
-                  Wx::OK | Wx::ICON_INFORMATION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                  ctrl.save_corrispettivi()
+                  Wx::message_box('Salvataggio avvenuto correttamente',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
 
-                notify(:evt_load_corrispettivi)
+                  notify(:evt_load_corrispettivi)
 
-                scritture = search_scritture()
-                notify(:evt_prima_nota_changed, scritture)
+                  scritture = search_scritture()
+                  notify(:evt_prima_nota_changed, scritture)
 
-                if configatron.bilancio.attivo
-                  scritture = search_scritture_pd()
-                  # TODO gestire la notifica evt_partita_doppia_changed
-                  notify(:evt_partita_doppia_changed, scritture)
+                  if configatron.bilancio.attivo
+                    scritture = search_scritture_pd()
+                    # TODO gestire la notifica evt_partita_doppia_changed
+                    notify(:evt_partita_doppia_changed, scritture)
+                  end
+
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
-
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end

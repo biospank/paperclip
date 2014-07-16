@@ -27,3 +27,4 @@ porting
 test.rb
 wxbra.exe.manifest
 win192
+dist/*

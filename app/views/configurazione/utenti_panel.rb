@@ -90,27 +90,33 @@ module Views
         begin
           Wx::BusyCursor.busy() do
             if btn_salva.enabled?
-              if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
-                transfer_utente_from_view()
-                if self.utente.valid?
-                  ctrl.save_utente()
-                  Wx::message_box('Salvataggio avvenuto correttamente.',
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
-                  reset_panel()
-                  load_moduli(ctrl.load_moduli_azienda())
-                  reset_utente_command_state()
-                  txt_login.activate()
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
+                  transfer_utente_from_view()
+                  if self.utente.valid?
+                    ctrl.save_utente()
+                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    reset_panel()
+                    load_moduli(ctrl.load_moduli_azienda())
+                    reset_utente_command_state()
+                    txt_login.activate()
+                  else
+                    Wx::message_box(self.utente.error_msg,
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+
+                    focus_utente_error_field()
+
+                  end
                 else
-                  Wx::message_box(self.utente.error_msg,
+                  Wx::message_box('Utente non autorizzato.',
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-
-                  focus_utente_error_field()
-
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end

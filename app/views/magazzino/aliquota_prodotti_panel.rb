@@ -68,39 +68,45 @@ module Views
       def btn_salva_click(evt)
         begin
           if btn_salva.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
-              if chce_aliquota_da.view_data.nil?
-                Wx::message_box("Selezionare l'aliquota da sostituire",
-                  'Info',
-                  Wx::OK | Wx::ICON_INFORMATION, self)
-
-                chce_aliquota_da.activate()
-
-              elsif  chce_aliquota_a.view_data.nil?
-                Wx::message_box("Selezionare l'aliquota da sostituire",
-                  'Info',
-                  Wx::OK | Wx::ICON_INFORMATION, self)
-
-                chce_aliquota_a.activate()
-
-              else
-                # il progressivo puo' risultare a nil
-                res = Wx::message_box("Confermi la sostituzione dell'aliquota per tutti i prodotti?",
-                  'Domanda',
-                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                if res == Wx::YES
-                  Wx::BusyCursor.busy() do
-                    ctrl.save_aliquota_prodotti(chce_aliquota_da.view_data, chce_aliquota_a.view_data)
-                  end
-                  Wx::message_box('Salvataggio avvenuto correttamente.',
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::CONFIGURAZIONE
+                if chce_aliquota_da.view_data.nil?
+                  Wx::message_box("Selezionare l'aliquota da sostituire",
                     'Info',
                     Wx::OK | Wx::ICON_INFORMATION, self)
-                  reset_panel()
+
+                  chce_aliquota_da.activate()
+
+                elsif  chce_aliquota_a.view_data.nil?
+                  Wx::message_box("Selezionare l'aliquota da sostituire",
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
+
+                  chce_aliquota_a.activate()
+
+                else
+                  # il progressivo puo' risultare a nil
+                  res = Wx::message_box("Confermi la sostituzione dell'aliquota per tutti i prodotti?",
+                    'Domanda',
+                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                  if res == Wx::YES
+                    Wx::BusyCursor.busy() do
+                      ctrl.save_aliquota_prodotti(chce_aliquota_da.view_data, chce_aliquota_a.view_data)
+                    end
+                    Wx::message_box('Salvataggio avvenuto correttamente.',
+                      'Info',
+                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    reset_panel()
+                  end
                 end
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

@@ -38,9 +38,18 @@ module Views
 #          logger.debug("hash: " + hash)
 #          logger.debug("codice: " + lic)
 #          if lic.eql? hash
-            ctrl.registra_licenza(lic)
+            if ctrl.registra_licenza(lic)
+              evt_upd = Views::Base::CustomEvent::AziendaUpdatedEvent.new()
+              # This sends the event for processing by listeners
+              process_event(evt_upd)
+            else
+              lbl_messaggio_errore.label = 'Codice non valido!'
+              txt_codice.activate()
+
+              return
+            end
           else
-            lbl_messaggio_errore.label = 'Codice errato!'
+            lbl_messaggio_errore.label = 'Codice non valido!'
             txt_codice.activate()
 
             return

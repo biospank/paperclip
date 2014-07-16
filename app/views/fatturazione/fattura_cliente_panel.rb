@@ -523,66 +523,72 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-                transfer_fattura_cliente_from_view()
-                if cliente? and check_ritenuta()
-                  unless fattura_cliente.num.strip.match(/^[0-9]*$/)
-                    res = Wx::message_box("La fattura che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
-                      'Avvertenza',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                  transfer_fattura_cliente_from_view()
+                  if cliente? and check_ritenuta()
+                    unless fattura_cliente.num.strip.match(/^[0-9]*$/)
+                      res = Wx::message_box("La fattura che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
+                        'Avvertenza',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    if res == Wx::NO
-                      txt_num.activate()
-                      return
-                    end
-                  end
-
-                  if fattura_cliente.data_emissione.future?
-                    res = Wx::message_box("La data di emissione è maggiore della data odierna: Confermi?",
-                      'Avvertenza',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res == Wx::NO
-                      txt_data_emissione.activate()
-                      return
-                    end
-                  end
-
-                  if self.fattura_cliente.valid?
-                    ctrl.save_fattura_cliente()
-
-                    notify(:evt_fattura_changed)
-                    # carico gli anni contabili dei progressivi fattura
-                    progressivi_fattura = ctrl.load_anni_contabili_progressivi(Models::ProgressivoFatturaCliente)
-                    notify(:evt_progressivo_fattura, progressivi_fattura)
-                    # carico gli anni contabili dei progressivi nota di credito
-                    progressivi_nc = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNc)
-                    notify(:evt_progressivo_nc, progressivi_nc)
-
-                    Wx::message_box('Salvataggio avvenuto correttamente',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-
-                    res_stampa = Wx::message_box("Vuoi stampare la fattura?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res_stampa == Wx::YES
-                      stampa_fattura()
+                      if res == Wx::NO
+                        txt_num.activate()
+                        return
+                      end
                     end
 
-                    reset_panel()
-                  else
-                    Wx::message_box(self.fattura_cliente.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+                    if fattura_cliente.data_emissione.future?
+                      res = Wx::message_box("La data di emissione è maggiore della data odierna: Confermi?",
+                        'Avvertenza',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    focus_fattura_cliente_error_field()
+                      if res == Wx::NO
+                        txt_data_emissione.activate()
+                        return
+                      end
+                    end
 
+                    if self.fattura_cliente.valid?
+                      ctrl.save_fattura_cliente()
+
+                      notify(:evt_fattura_changed)
+                      # carico gli anni contabili dei progressivi fattura
+                      progressivi_fattura = ctrl.load_anni_contabili_progressivi(Models::ProgressivoFatturaCliente)
+                      notify(:evt_progressivo_fattura, progressivi_fattura)
+                      # carico gli anni contabili dei progressivi nota di credito
+                      progressivi_nc = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNc)
+                      notify(:evt_progressivo_nc, progressivi_nc)
+
+                      Wx::message_box('Salvataggio avvenuto correttamente',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      res_stampa = Wx::message_box("Vuoi stampare la fattura?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                      if res_stampa == Wx::YES
+                        stampa_fattura()
+                      end
+
+                      reset_panel()
+                    else
+                      Wx::message_box(self.fattura_cliente.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_fattura_cliente_error_field()
+
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -603,31 +609,37 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
-              if fattura_cliente.ha_registrazioni_in_prima_nota?
-                Wx::message_box("La fattura e' stata registrata in prima nota e non puo' essere eliminata.",
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
+                if fattura_cliente.ha_registrazioni_in_prima_nota?
+                  Wx::message_box("La fattura e' stata registrata in prima nota e non puo' essere eliminata.",
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
+                else
+                  res = Wx::message_box("Confermi la cancellazione?",
+                    'Domanda',
+                    Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                  if res == Wx::YES
+                    ctrl.delete_fattura_cliente()
+                    notify(:evt_fattura_changed)
+                    # carico gli anni contabili dei progressivi fattura
+                    progressivi_fattura = ctrl.load_anni_contabili_progressivi(Models::ProgressivoFatturaCliente)
+                    notify(:evt_progressivo_fattura, progressivi_fattura)
+                    # carico gli anni contabili dei progressivi nota di credito
+                    progressivi_nc = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNc)
+                    notify(:evt_progressivo_nc, progressivi_nc)
+                    reset_panel()
+                  end
+
+                end
+              else
+                Wx::message_box('Utente non autorizzato.',
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
-              else
-                res = Wx::message_box("Confermi la cancellazione?",
-                  'Domanda',
-                  Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                if res == Wx::YES
-                  ctrl.delete_fattura_cliente()
-                  notify(:evt_fattura_changed)
-                  # carico gli anni contabili dei progressivi fattura
-                  progressivi_fattura = ctrl.load_anni_contabili_progressivi(Models::ProgressivoFatturaCliente)
-                  notify(:evt_progressivo_fattura, progressivi_fattura)
-                  # carico gli anni contabili dei progressivi nota di credito
-                  progressivi_nc = ctrl.load_anni_contabili_progressivi(Models::ProgressivoNc)
-                  notify(:evt_progressivo_nc, progressivi_nc)
-                  reset_panel()
-                end
-
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end

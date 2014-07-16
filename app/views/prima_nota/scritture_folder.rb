@@ -438,73 +438,79 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
-                if scrittura.esterna? or scrittura.congelata?
-                  Wx::message_box("Questa scrittura non puo' essere modificata.",
-                    'Info',
-                    Wx::OK | Wx::ICON_INFORMATION, self)
-                else
-                  transfer_scrittura_from_view()
-                  if self.scrittura.post_datata?
-                    res = Wx::message_box("Si sta inserendo un movimento con data successiva alla data odierna.\nContinuare?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res == Wx::NO
-                      txt_data_operazione.activate()
-                      return
-                    end
-                  end
-
-                  if self.scrittura.con_importi_differenti?
-                    res = Wx::message_box("Gli importi inseriti sono diffenrenti.\nContinuare?",
-                      'Domanda',
-                      Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-
-                    if res == Wx::NO
-                      activate_field(txt_cassa_dare, txt_cassa_avere,
-                       txt_banca_dare, txt_banca_avere,
-                       txt_fuori_partita_dare, txt_fuori_partita_avere)
-                      return
-                    end
-                  end
-
-                  if self.scrittura.valid?
-                    if self.scrittura.con_importo_valido?
-                      if scrittura_compatibile?
-                        if self.scrittura.new_record?
-                          ctrl.save_scrittura()
-                          reset_filtro()
-                          notify(:evt_prima_nota_changed, ctrl.search_scritture())
-                        else
-                          ctrl.save_scrittura()
-                          if filtro.dal || filtro.al
-                            notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
-                          else
-                            notify(:evt_prima_nota_changed, ctrl.search_scritture())
-                          end
-                        end
-                      end
-                    else
-                      Wx::message_box("Inserire almeno un importo.",
-                        'Info',
-                        Wx::OK | Wx::ICON_INFORMATION, self)
-                      activate_field(txt_cassa_dare, txt_cassa_avere,
-                       txt_banca_dare, txt_banca_avere,
-                       txt_fuori_partita_dare, txt_fuori_partita_avere)
-
-                    end
-                  else
-                    Wx::message_box(self.scrittura.error_msg,
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::PRIMA_NOTA
+                  if scrittura.esterna? or scrittura.congelata?
+                    Wx::message_box("Questa scrittura non puo' essere modificata.",
                       'Info',
                       Wx::OK | Wx::ICON_INFORMATION, self)
+                  else
+                    transfer_scrittura_from_view()
+                    if self.scrittura.post_datata?
+                      res = Wx::message_box("Si sta inserendo un movimento con data successiva alla data odierna.\nContinuare?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
 
-                    focus_scrittura_error_field()
+                      if res == Wx::NO
+                        txt_data_operazione.activate()
+                        return
+                      end
+                    end
 
+                    if self.scrittura.con_importi_differenti?
+                      res = Wx::message_box("Gli importi inseriti sono diffenrenti.\nContinuare?",
+                        'Domanda',
+                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+
+                      if res == Wx::NO
+                        activate_field(txt_cassa_dare, txt_cassa_avere,
+                         txt_banca_dare, txt_banca_avere,
+                         txt_fuori_partita_dare, txt_fuori_partita_avere)
+                        return
+                      end
+                    end
+
+                    if self.scrittura.valid?
+                      if self.scrittura.con_importo_valido?
+                        if scrittura_compatibile?
+                          if self.scrittura.new_record?
+                            ctrl.save_scrittura()
+                            reset_filtro()
+                            notify(:evt_prima_nota_changed, ctrl.search_scritture())
+                          else
+                            ctrl.save_scrittura()
+                            if filtro.dal || filtro.al
+                              notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
+                            else
+                              notify(:evt_prima_nota_changed, ctrl.search_scritture())
+                            end
+                          end
+                        end
+                      else
+                        Wx::message_box("Inserire almeno un importo.",
+                          'Info',
+                          Wx::OK | Wx::ICON_INFORMATION, self)
+                        activate_field(txt_cassa_dare, txt_cassa_avere,
+                         txt_banca_dare, txt_banca_avere,
+                         txt_fuori_partita_dare, txt_fuori_partita_avere)
+
+                      end
+                    else
+                      Wx::message_box(self.scrittura.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      focus_scrittura_error_field()
+
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end

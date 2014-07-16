@@ -240,36 +240,42 @@ module Views
           # per controllare il tasto funzione F8 associato al salva
           if btn_salva.enabled?
             Wx::BusyCursor.busy() do
-              if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
-                transfer_fattura_fornitore_from_view()
-                if fornitore? && pdc_compilato? && pdc_compatibile? && pdc_totale_compatibile?
-                  if self.fattura_fornitore.valid?
-                    ctrl.save_fattura_fornitore()
+              if ctrl.licenza.attiva?
+                if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
+                  transfer_fattura_fornitore_from_view()
+                  if fornitore? && pdc_compilato? && pdc_compatibile? && pdc_totale_compatibile?
+                    if self.fattura_fornitore.valid?
+                      ctrl.save_fattura_fornitore()
 
-                    notify(:evt_scadenzario_fornitori_changed)
+                      notify(:evt_scadenzario_fornitori_changed)
 
-                    Wx::message_box('Salvataggio avvenuto correttamente',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-                    reset_panel()
-                    # l'evento di controllo delle scadenze viene processato
-                    # automaticamente dal programma ogni 5 min.
-                    # lancio l'evento per il controllo delle scadenze
-                    # utile nel caso venga salvato l'ultimo movimento in sospese
-                    evt_scadenza = Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()
-                    # This sends the event for processing by listeners
-                    process_event(evt_scadenza)
-                  else
-                    Wx::message_box(self.fattura_fornitore.error_msg,
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
+                      Wx::message_box('Salvataggio avvenuto correttamente',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+                      reset_panel()
+                      # l'evento di controllo delle scadenze viene processato
+                      # automaticamente dal programma ogni 5 min.
+                      # lancio l'evento per il controllo delle scadenze
+                      # utile nel caso venga salvato l'ultimo movimento in sospese
+                      evt_scadenza = Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()
+                      # This sends the event for processing by listeners
+                      process_event(evt_scadenza)
+                    else
+                      Wx::message_box(self.fattura_fornitore.error_msg,
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
 
-                    focus_fattura_fornitore_error_field()
+                      focus_fattura_fornitore_error_field()
 
+                    end
                   end
+                else
+                  Wx::message_box('Utente non autorizzato.',
+                    'Info',
+                    Wx::OK | Wx::ICON_INFORMATION, self)
                 end
               else
-                Wx::message_box('Utente non autorizzato.',
+                Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                   'Info',
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
@@ -290,32 +296,38 @@ module Views
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
-            if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
-              if self.fattura_fornitore.nota_di_credito?
-                res = Wx::message_box("Confermi la cancellazione della nota di credito?",
-                  'Domanda',
-                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-              else
-                res = Wx::message_box("Confermi la cancellazione della fattura e tutti gli pagamenti collegati?",
-                  'Domanda',
-                        Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
-              end
-
-              Wx::BusyCursor.busy() do
-                if res == Wx::YES
-                  ctrl.delete_fattura_fornitore()
-                  notify(:evt_scadenzario_fornitori_changed)
-                  reset_panel()
-                  # l'evento di controllo delle scadenze viene processato
-                  # automaticamente dal programma ogni 5 min.
-                  # lancio l'evento per il controllo delle scadenze
-                  #evt_scadenza = Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()
-                  # This sends the event for processing by listeners
-                  #process_event(evt_scadenza)
+            if ctrl.licenza.attiva?
+              if can? :write, Helpers::ApplicationHelper::Modulo::SCADENZARIO
+                if self.fattura_fornitore.nota_di_credito?
+                  res = Wx::message_box("Confermi la cancellazione della nota di credito?",
+                    'Domanda',
+                          Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
+                else
+                  res = Wx::message_box("Confermi la cancellazione della fattura e tutti gli pagamenti collegati?",
+                    'Domanda',
+                          Wx::YES | Wx::NO | Wx::ICON_QUESTION, self)
                 end
+
+                Wx::BusyCursor.busy() do
+                  if res == Wx::YES
+                    ctrl.delete_fattura_fornitore()
+                    notify(:evt_scadenzario_fornitori_changed)
+                    reset_panel()
+                    # l'evento di controllo delle scadenze viene processato
+                    # automaticamente dal programma ogni 5 min.
+                    # lancio l'evento per il controllo delle scadenze
+                    #evt_scadenza = Views::Base::CustomEvent::ScadenzaInSospesoEvent.new()
+                    # This sends the event for processing by listeners
+                    #process_event(evt_scadenza)
+                  end
+                end
+              else
+                Wx::message_box('Utente non autorizzato.',
+                  'Info',
+                  Wx::OK | Wx::ICON_INFORMATION, self)
               end
             else
-              Wx::message_box('Utente non autorizzato.',
+              Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza. ",
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end
