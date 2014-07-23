@@ -32,7 +32,7 @@ module Views
 
       def btn_ok_click(evt)
         begin
-          hash = Digest::SHA1.hexdigest(Date.today.to_s(:italian_date))
+#          hash = Digest::SHA1.hexdigest(Date.today.to_s(:italian_date))
           lic = txt_codice.view_data
           if lic.split('-').size == 3
 #          logger.debug("hash: " + hash)

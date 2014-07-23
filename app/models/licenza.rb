@@ -13,7 +13,7 @@ module Models
     end
     
     def attiva?
-      if configatron.env = 'production'
+      if configatron.env == 'production'
         (self.get_data_scadenza >= Date.today)
       else
         true

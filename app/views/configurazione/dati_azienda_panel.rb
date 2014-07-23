@@ -51,6 +51,10 @@ module Views
           data ? enable_widgets([chce_liquidazione_iva]) : disable_widgets([chce_liquidazione_iva])
         end
 
+        subscribe(:evt_liquidazioni_attivo) do |data|
+          data ? enable_widgets([chce_liquidazione_iva]) : disable_widgets([chce_liquidazione_iva])
+        end
+
         acc_table = Wx::AcceleratorTable[
           [ Wx::ACCEL_NORMAL, Wx::K_F8, btn_salva.get_id ]
         ]                            

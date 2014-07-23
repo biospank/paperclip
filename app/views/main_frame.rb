@@ -169,14 +169,14 @@ module Views
       else
         #tool_bar.init_panel()
         if ctrl.licenza.scaduta?
-          Wx::message_box("Licenza scaduta il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza.",
+          Wx::message_box("Periodo di attivazione scaduto il #{ctrl.licenza.get_data_scadenza.to_s(:italian_date)}. Rinnovare la licenza.",
             'Licenza',
             Wx::OK | Wx::ICON_WARNING, self)
           #listbook_mgr.enable(false)
         else
           data_scadenza = ctrl.licenza.get_data_scadenza()
           if((giorni_alla_scadenza = (data_scadenza - Date.today).to_i) < 7)
-            Wx::message_box("Mancano #{giorni_alla_scadenza} giorni alla scadenza.",
+            Wx::message_box("Mancano #{giorni_alla_scadenza} giorni alla scadenza del periodo di attivazione.",
               'Licenza',
               Wx::OK | Wx::ICON_WARNING, self)
           end
@@ -189,7 +189,15 @@ module Views
         end
       
         tool_bar.chce_azienda.view_data = Models::Azienda.current.id
-        logger.error("Nessun errore, abbi fede...")
+      
+        if Models::Azienda.current.dati_azienda.denominazione =~ /DEMO/
+          listbook_mgr.set_selection(Helpers::ApplicationHelper::WXBRA_CONFIGURAZIONE_VIEW)
+          listbook_mgr.configurazione_notebook_mgr.set_selection(Helpers::ConfigurazioneHelper::WXBRA_AZIENDA_FOLDER)
+          Wx::message_box("Compila i dati dell'azienda per una corretta gestione delle stampe.",
+            'Licenza',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+        end
+        
       end
 
     end

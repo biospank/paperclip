@@ -95,6 +95,7 @@ module Helpers
       private
 
       def wk_cmd
+        logger.debug("env: #{configatron.env}")
         if configatron.env == 'production'
           '.\bin\hstart.exe /NOCONSOLE /WAIT "./bin/wkhtmltopdf.exe %s"'
         else

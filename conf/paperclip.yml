@@ -3,7 +3,7 @@
   __locked: false
   attributes:
     :intestazione: 1
-:env: development
+:env: production
 :connection: !ruby/object:Configatron::Store
   __locked: false
   attributes:
