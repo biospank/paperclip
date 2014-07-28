@@ -4,10 +4,10 @@
 [Setup]
 AppName=Paperclip3
 AppVerName=Paperclip 3
-AppPublisher=bra-tech
-AppPublisherURL=http://www.bra-tech.net/
-AppSupportURL=http://www.bra-tech.net/
-AppUpdatesURL=http://www.bra-tech.net/
+AppPublisher=papergest
+AppPublisherURL=http://www.papergest.com/
+AppSupportURL=http://www.papergest.com/
+AppUpdatesURL=http://www.papergest.com/
 DefaultDirName={pf}\Paperclip3
 DisableDirPage=yes
 DefaultGroupName=Paperclip3

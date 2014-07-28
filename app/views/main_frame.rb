@@ -198,6 +198,9 @@ module Views
             Wx::OK | Wx::ICON_INFORMATION, self)
         end
         
+    
+        logger.info("nessun errore...")
+
       end
 
     end

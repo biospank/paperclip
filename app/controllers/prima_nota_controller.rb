@@ -41,11 +41,9 @@ module Controllers
 
 
     def create_scrittura_partita_doppia()
-
+      
       scrittura_pd = ScritturaPd.new(:azienda => Azienda.current,
-                              :importo => (scrittura.cassa_dare || scrittura.cassa_avere ||
-                                  scrittura.banca_dare || scrittura.banca_avere ||
-                                  scrittura.fuori_partita_dare || scrittura.fuori_partita_avere),
+                              :importo => scrittura.importo,
                               :descrizione => scrittura.descrizione,
                               :pdc_dare => scrittura.pdc_dare,
                               :pdc_avere => scrittura.pdc_avere,
