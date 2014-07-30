@@ -443,7 +443,7 @@ module Controllers
             update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_DELETE
 #            delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
-            pdc.dettaglio_fattura_cliente_partita_doppia.destroy
+            pdc.dettaglio_fattura_cliente_partita_doppia.destroy_all
             pdc.destroy
           end
         end
@@ -464,7 +464,7 @@ module Controllers
             update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
           when RigaFatturaPdc::ST_DELETE
 #            delete_scrittura_dettaglio_fattura_partita_doppia(pdc)
-            pdc.dettaglio_fattura_fornitore_partita_doppia.destroy
+            pdc.dettaglio_fattura_fornitore_partita_doppia.destroy_all
             pdc.destroy
           end
         end
@@ -474,7 +474,7 @@ module Controllers
     def elimina_scritture_dettaglio_fattura_partita_doppia()
       unless self.righe_fattura_pdc.blank?
         self.righe_fattura_pdc.each do |pdc|
-          pdc.dettaglio_fattura_fornitore_partita_doppia.destroy
+          pdc.dettaglio_fattura_fornitore_partita_doppia.destroy_all
           pdc.destroy
         end
       end
@@ -1183,9 +1183,9 @@ module Controllers
 
     def update_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
       if fattura.is_a? Models::FatturaFornitore
-        pdc.dettaglio_fattura_fornitore_partita_doppia.destroy
+        pdc.dettaglio_fattura_fornitore_partita_doppia.destroy_all
       else
-        pdc.dettaglio_fattura_cliente_partita_doppia.destroy
+        pdc.dettaglio_fattura_cliente_partita_doppia.destroy_all
       end
       create_scrittura_dettaglio_fattura_partita_doppia(fattura, pdc)
     end

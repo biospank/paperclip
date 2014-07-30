@@ -23087,7 +23087,7 @@
 			<object class="wxMenu" name="m_menu2">
 				<label>Opzioni</label>
 				<object class="wxMenu" name="prefattura">
-					<label>Prefattura</label>
+					<label>Proforma</label>
 					<object class="wxMenuItem" name="nota_spese">
 						<label>Nota spese</label>
 						<help></help>

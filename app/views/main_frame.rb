@@ -115,7 +115,7 @@ module Views
         @menu_bar.find_item(@mnu_servizi).check()
       end
 
-      mnu_prefattura = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Prefattura')).get_sub_menu()
+      mnu_prefattura = @menu_bar.find_item(menu_bar.find_menu_item('Opzioni', 'Proforma')).get_sub_menu()
         @mnu_nota_spese = mnu_prefattura.find_item('Nota spese')
         @mnu_avviso_fattura = mnu_prefattura.find_item('Avviso fattura')
         @mnu_avviso_parcella = mnu_prefattura.find_item('Avviso parcella')

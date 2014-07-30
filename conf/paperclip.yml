@@ -2,7 +2,7 @@
 :pre_fattura: !ruby/object:Configatron::Store
   __locked: false
   attributes:
-    :intestazione: 1
+    :intestazione: 2
 :env: development
 :connection: !ruby/object:Configatron::Store
   __locked: false

@@ -195,7 +195,7 @@ module Controllers
             end
           end
         end
-        corrispettivo.corrispettivo_partita_doppia.destroy
+        corrispettivo.corrispettivo_partita_doppia.destroy_all
         corrispettivo.destroy
       end
 
