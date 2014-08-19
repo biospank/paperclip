@@ -253,7 +253,11 @@ module Views
       evt_dettaglio_magazzino_changed do | evt |
         notify(:evt_dettaglio_magazzino_changed, evt.result_set)
       end
-      
+
+      evt_prodotto_changed do | evt |
+        notify(:evt_prodotto_changed, evt.result_set)
+      end
+
       evt_scadenza_in_sospeso do | evt |
         begin
           unless Models::Utente.system?
@@ -399,7 +403,7 @@ module Views
           log_error(self, e)
         end
       end
-      
+
       # carico tutti i dati che non dipendono
       # dall'azienda selezionata
 
