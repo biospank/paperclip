@@ -275,24 +275,30 @@ module Controllers
     def registra_licenza(lic)
       # MTAyMQ%3D%3D%0A-MTIzMw%3D%3D%0A-MTQwNzQ0ODgwMA%3D%3D%0A
       begin
-        codice_scadenza = lic.split('-').last
-        scadenza = Time.at(URI.unescape(codice_scadenza).unpack('m').join.to_i).to_date
+        curr_customer, curr_subscription, curr_expiry_date = *licenza.numero_seriale.split('-')
+        customer, subscription, expiry_date = *lic.split('-')
+        scadenza = Time.at(URI.unescape(expiry_date).unpack('m').join.to_i).to_date
+        sottoscrizione = URI.unescape(curr_subscription).unpack('m').join.to_i
+        nuova_sottoscrizione = URI.unescape(subscription).unpack('m').join.to_i
         #logger.info("data scadenza: #{scadenza.to_s(:italian_date)}")
-        if scadenza > Date.today
-          licenza.data_scadenza = scadenza
-          licenza.numero_seriale = lic
-          licenza.save
-          Azienda.current.update_attribute(:nome, Azienda.current.dati_azienda.denominazione)
-          licenza.get_data_scadenza(true)
+        if nuova_sottoscrizione >= sottoscrizione
+          if scadenza > Date.today
+            licenza.data_scadenza = scadenza
+            licenza.numero_seriale = lic
+            licenza.save
+            Azienda.current.update_attribute(:nome, Azienda.current.dati_azienda.denominazione)
+            licenza.get_data_scadenza(true)
+          else
+            return false
+          end
         else
           return false
         end
-        
       rescue Exception => e
         logger.error("Errore durante il salvataggio della chiave: #{e.message}")
         return false
       end
-      
+
       return true
     end
 

@@ -14,27 +14,40 @@ module Paperclip
 
     # Binary gems included in app.
     BINARY_GEMS = %w[gosu texplay chipmunk]
-    
+
     desc "key", "Create new key license"
     method_option :customer, :type => :numeric, :default => 0, :aliases => '-c'
-    method_option :subscription, :type => :numeric, :default => 0, :aliases => '-s'
+    method_option :subscription, :type => :numeric, :default => 0, :aliases => '-s', :banner => "1 (single) | 2 (net) | 3 (cloud)"
     method_option :months, :type => :numeric, :default => 0, :aliases => '-m', :banner => "months since today"
     def key()
       require 'date'
       require 'uri'
-      
+
       key_code = [[(options.customer + 1000).to_s], [(options.subscription + 1000).to_s], [(Date.today.months_since(options.months).to_time.to_i).to_s]].map do |chunk|
         URI.escape(chunk.pack('m'), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
       end.join('-')
-      
+
       puts key_code
+    end
+
+    desc "decode", "Decode key license"
+    def decode(key)
+      require 'date'
+      require 'uri'
+
+      customer, subscription, expiry_date = *key.split('-')
+
+      puts "customer: #{URI.unescape(customer).unpack('m').join}"
+      puts "subscription: #{URI.unescape(subscription).unpack('m').join}"
+      puts "expiry date: #{Time.at(URI.unescape(expiry_date).unpack('m').join.to_i).to_date}"
+
     end
 
     desc "new", "Create brand new paperclip installation"
     method_option :platform, :type => :string, :default => "win", :aliases => '-p', :banner => "win|osx|server"
     method_option :preserve_db, :type => :boolean, :default => false, :aliases => '-d', :banner => "true"
     method_option :remote, :type => :boolean, :default => false, :aliases => '-r', :banner => "true"
-    method_option :category, :type => :numeric, :default => 1, :aliases => '-c', :banner => "1 (commercio)|2 (servizi)"
+    method_option :category, :type => :numeric, :default => 1, :aliases => '-c', :banner => "1 (commercio) | 2 (servizi)"
     method_option :release, :type => :string, :default => "easy", :aliases => '-l', :banner => "easy|pro"
     def new()
       puts "platform: #{options.platform}"
@@ -217,7 +230,7 @@ module Paperclip
     end
 
     protected
-    
+
     def write_config!(options)
       require 'yaml'
       require 'configatron'
