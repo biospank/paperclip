@@ -40,6 +40,24 @@ module Controllers
     end
 
 
+    def save_scrittura_diversi()
+      prg_diversi = Models::ProgressivoDiversi.next_sequence()
+      Scrittura.transaction do
+        result_set_lstrep_righe_diversi.each do |scrittura|
+          scrittura.diversi = prg_diversi
+          scrittura.save!
+
+          if scrittura.new_record?
+            create_scrittura_partita_doppia()
+          else
+            update_scrittura_partita_doppia()
+          end
+        end
+      end
+
+      return true
+    end
+
     def create_scrittura_partita_doppia()
       
       scrittura_pd = ScritturaPd.new(:azienda => Azienda.current,

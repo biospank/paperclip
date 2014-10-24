@@ -5,6 +5,7 @@ require 'app/helpers/prima_nota_helper'
 require 'app/views/dialog/causali_dialog'
 require 'app/views/dialog/banche_dialog'
 require 'app/views/dialog/pdc_dialog'
+require 'app/views/dialog/diversi_dialog'
 require 'app/views/prima_nota/scritture_common_actions'
 
 module Views
@@ -74,6 +75,9 @@ module Views
         end
 
         xrc.find('txt_descrizione_pdc_avere', self, :extends => TextField)
+        
+        xrc.find('btn_diversi', self)
+
 
         # il pdc delle scritture deve caricare anche i conti dei clienti e dei fornitori
         lku_pdc_dare.load_data(Models::Pdc.search(:all,
@@ -309,6 +313,25 @@ module Views
           else
             evt.skip()
           end
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+      end
+
+      def btn_diversi_click(evt)
+        begin
+          dlg = Views::Dialog::DiversiDialog.new(self)
+          dlg.center_on_screen(Wx::BOTH)
+          answer = dlg.show_modal()
+          if answer == Wx::ID_OK
+            if filtro.dal || filtro.al
+              notify(:evt_prima_nota_changed, ctrl.ricerca_scritture())
+            else
+              notify(:evt_prima_nota_changed, ctrl.search_scritture())
+            end
+          end
+          dlg.destroy()
         rescue Exception => e
           log_error(self, e)
         end
