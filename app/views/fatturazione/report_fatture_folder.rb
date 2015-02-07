@@ -11,9 +11,9 @@ module Views
 #      include Helpers::ODF::Report
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
-      
+
       attr_accessor :totale_imponibile, :totale_iva, :totale_fatture, :ripresa_saldo, :active_filter
-      
+
       def ui
         model :filtro => {:attrs => []}
         controller :fatturazione
@@ -21,22 +21,21 @@ module Views
         logger.debug('initializing ReportFattureFolder...')
         xrc = Xrc.instance()
         # Anagrafica cliente
-        
+
         xrc.find('chce_anno', self, :extends => ChoiceStringField)
-        xrc.find('chce_cliente', self, :extends => ChoiceField) 
+        xrc.find('chce_cliente', self, :extends => ChoiceField)
 
         subscribe(:evt_cliente_changed) do |data|
-          chce_cliente.load_data(data, 
-                  :label => :denominazione, 
+          chce_cliente.load_data(data,
+                  :label => :denominazione,
                   :if => lambda {|cliente| cliente.attivo? },
                   :include_blank => {:label => 'Tutti'},
                   :select => :first)
 
         end
 
-        subscribe(:evt_anni_contabili_ns_changed) do |data|
+        subscribe(:evt_anni_contabili_fattura_cliente_changed) do |data|
           chce_anno.load_data(data, :select => :last)
-
         end
 
         xrc.find('txt_dal', self, :extends => DateField)
@@ -50,16 +49,16 @@ module Views
                             {:caption => 'Imponibile', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
                             {:caption => 'Iva', :width => 100, :align => Wx::LIST_FORMAT_RIGHT},
                             {:caption => 'Totale', :width => 100, :align => Wx::LIST_FORMAT_RIGHT}])
-                                      
+
           list.data_info([{:attr => :cliente},
                           {:attr => :fattura},
                           {:attr => :data, :format => :date, :if => lambda {|content| content.is_a? Date}},
                           {:attr => :imponibile, :format => :currency},
                           {:attr => :iva, :format => :currency},
                           {:attr => :importo, :format => :currency}])
-          
+
         end
-        
+
         xrc.find('btn_ricerca', self)
         xrc.find('btn_pulisci', self)
         xrc.find('btn_stampa_report', self)
@@ -70,9 +69,9 @@ module Views
         xrc.find('lbl_totale_fatture', self)
 
         map_events(self)
-        
+
         reset_totali()
-        
+
         subscribe(:evt_azienda_changed) do
           reset_folder()
         end
@@ -94,23 +93,23 @@ module Views
           [ Wx::ACCEL_NORMAL, Wx::K_F5, btn_ricerca.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F9, btn_stampa_report.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F12, btn_pulisci.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
-      
+
       # viene chiamato al cambio folder
       def init_folder()
         txt_dal.activate()
       end
-      
+
       def reset_folder()
         lstrep_fatture.reset()
         result_set_lstrep_fatture.clear()
         reset_totali()
       end
-      
+
       # Gestione eventi
-      
+
       def btn_ricerca_click(evt)
         logger.debug("Cliccato sul bottone ricerca!")
         begin
@@ -141,7 +140,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def btn_stampa_report_click(evt)
         Wx::BusyCursor.busy() do
 
@@ -228,7 +227,7 @@ module Views
 #        report.add_field :tot_iva, self.lbl_totale_iva.label
 #        report.add_field :tot_doc, self.lbl_totale_fatture.label
 #      end
-      
+
       def lstrep_fatture_item_activated(evt)
         if ident = evt.get_item().get_data()
           begin
@@ -237,10 +236,10 @@ module Views
             Wx::message_box("Fattura eliminata: aggiornare il report.",
               'Info',
               Wx::OK | Wx::ICON_INFORMATION, self)
-            
+
             return
           end
-          
+
           # lancio l'evento per la richiesta di dettaglio fattura
           evt_dettaglio_fattura = Views::Base::CustomEvent::DettaglioFatturaFatturazioneEvent.new(fattura)
           # This sends the event for processing by listeners
@@ -249,7 +248,7 @@ module Views
       end
 
       private
-      
+
       def reset_totali()
         self.totale_imponibile = 0.0
         self.totale_iva = 0.0
