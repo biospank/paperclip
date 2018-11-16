@@ -72,6 +72,28 @@ module Helpers
       {:id => '12', :descrizione => 'Dicembre'}
     ]
 
+    module Fatturazione
+      REGIMI_FISCALI = [
+        {:id => 'RF01', :descrizione => 'Ordinario'},
+        {:id => 'RF02', :descrizione => 'Contribuenti minimi (art. 1, c.96-117, L. 244/2007)'},
+        {:id => 'RF04', :descrizione => 'Agricoltura e attivita connesse e pesca (artt. 34 e 34-bis, D.P.R. 633/1972)'},
+        {:id => 'RF05', :descrizione => 'Vendita sali e tabacchi (art. 74, c.1, D.P.R. 633/1972)'},
+        {:id => 'RF06', :descrizione => 'Commercio dei fiammiferi (art. 74, c.1, D.P.R. 633/1972)'},
+        {:id => 'RF07', :descrizione => 'Editoria (art. 74, c.1, D.P.R. 633/1972)'},
+        {:id => 'RF08', :descrizione => 'Gestione di servizi di telefonia pubblica (art. 74, c.1, D.P.R. 633/1972)'},
+        {:id => 'RF09', :descrizione => 'Rivendita di documenti di trasporto pubblico e di sosta (art. 74, c.1, D.P.R. 633/1972)'},
+        {:id => 'RF10', :descrizione => 'Intrattenimenti, giochi e altre attivita di cui alla tariffa allegata al D.P.R. n. 640/72 (art. 74, c.6, D.P.R. 633/1972)'},
+        {:id => 'RF11', :descrizione => 'Agenzie di viaggi e turismo (art. 74-ter, D.P.R. 633/1972)'},
+        {:id => 'RF12', :descrizione => 'Agriturismo (art. 5, c.2, L. 413/1991)'},
+        {:id => 'RF13', :descrizione => 'Vendite a domicilio (art. 25-bis, c.6, D.P.R. 600/1973)'},
+        {:id => 'RF14', :descrizione => "Rivendita di beni usati, di oggetti d'arte, d'antiquariato o da collezione (art. 36, D.L. 41/1995)"},
+        {:id => 'RF15', :descrizione => "Agenzie di vendite all'asta di oggetti d'arte, antiquariato o da collezione (art. 40-bis, D.L. 41/1995)"},
+        {:id => 'RF16', :descrizione => 'IVA per cassa P.A. (art. 6, c.5, D.P.R. 633/1972)'},
+        {:id => 'RF18', :descrizione => 'Altro'},
+        {:id => 'RF19', :descrizione => 'Forfettario (art.1, c. 54-89, L. 190/2014)'},
+      ]
+    end
+
     module Liquidazione
       MENSILE = 1
       TRIMESTRALE = 2

@@ -16,7 +16,7 @@
 						<style>wxLB_LEFT</style>
 						<object class="listbookpage">
 							<label>Anagrafica</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="ANAGRAFICA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -29,7 +29,7 @@
 											<style>wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Anagrafica</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="ANAGRAFICA_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -887,7 +887,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -906,7 +906,7 @@
 																<style>wxNB_FIXEDWIDTH</style>
 																<object class="notebookpage">
 																	<label>Clienti</label>
-																	<selected>0</selected>
+																	<selected>1</selected>
 																	<object class="wxPanel" name="REPORT_CLIENTI_FOLDER">
 																		<style>wxTAB_TRAVERSAL</style>
 																		<object class="wxBoxSizer">
@@ -1034,7 +1034,7 @@
 																</object>
 																<object class="notebookpage">
 																	<label>Fornitori</label>
-																	<selected>1</selected>
+																	<selected>0</selected>
 																	<object class="wxPanel" name="REPORT_FORNITORI_FOLDER">
 																		<style>wxTAB_TRAVERSAL</style>
 																		<object class="wxBoxSizer">
@@ -3599,7 +3599,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Corrispettivi</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="CORRISPETTIVI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -5392,7 +5392,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -7792,7 +7792,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Clienti</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="SCADENZARIO_CLIENTI_BILANCIO_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -9080,7 +9080,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Fornitori</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="SCADENZARIO_FORNITORI_BILANCIO_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -19189,7 +19189,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Magazzino</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="MAGAZZINO_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -19202,7 +19202,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Ordine</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="ORDINE_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -19557,7 +19557,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -21680,7 +21680,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Azienda</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="AZIENDA_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -21797,6 +21797,23 @@
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="wxID_STATIC1281">
+																					<label>Comune:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxTextCtrl" name="txt_comune">
+																					<value></value>
+																					<maxlength>0</maxlength>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
 																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
 																				<border>3</border>
 																				<object class="wxStaticText" name="wxID_STATIC128">
@@ -21810,6 +21827,42 @@
 																				<object class="wxTextCtrl" name="txt_citta">
 																					<value></value>
 																					<maxlength>0</maxlength>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="wxID_STATIC1282">
+																					<label>Provincia:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxTextCtrl" name="txt_provincia">
+																					<size>30,-1</size>
+																					<value></value>
+																					<maxlength>2</maxlength>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="m_staticText6171">
+																					<label>Regime fiscale:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxChoice" name="chce_regime_fiscale">
+																					<size>200,-1</size>
+																					<selection>0</selection>
+																					<content />
 																				</object>
 																			</object>
 																			<object class="sizeritem">
@@ -22356,7 +22409,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Progressivi</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="PROGRESSIVI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxStaticBoxSizer">

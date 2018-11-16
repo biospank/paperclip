@@ -7,7 +7,7 @@ module Views
     module DatiAziendaPanel
       include Views::Base::Panel
       include Helpers::MVCHelper
-      
+
       def ui
 
         model :dati_azienda => {:attrs => []}
@@ -22,6 +22,9 @@ module Views
         xrc.find('txt_indirizzo', self, :extends => TextField)
         xrc.find('txt_cap', self, :extends => TextField)
         xrc.find('txt_citta', self, :extends => TextField)
+        xrc.find('chce_regime_fiscale', self, :extends => ChoiceField)do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Fatturazione::REGIMI_FISCALI)
+        end
         xrc.find('chce_liquidazione_iva', self, :extends => ChoiceField) do |chce|
           chce.load_data(Helpers::ApplicationHelper::Liquidazione::PERIODO,
             :label => :descrizione,
@@ -42,7 +45,7 @@ module Views
         xrc.find('btn_salva', self)
 
         map_events(self)
-        
+
         subscribe(:evt_azienda_changed) do
           reset_panel()
         end
@@ -57,8 +60,8 @@ module Views
 
         acc_table = Wx::AcceleratorTable[
           [ Wx::ACCEL_NORMAL, Wx::K_F8, btn_salva.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
 
       def init_panel()
@@ -66,13 +69,13 @@ module Views
         transfer_dati_azienda_to_view()
         img_logo.refresh
       end
-      
+
       def reset_panel()
         reset_dati_azienda()
         init_panel()
       end
       # Gestione eventi
-      
+
       def btn_salva_click(evt)
         begin
           if btn_salva.enabled?
@@ -112,7 +115,7 @@ module Views
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
