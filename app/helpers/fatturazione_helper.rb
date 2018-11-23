@@ -8,7 +8,7 @@ module Helpers
     WXBRA_DDT_FOLDER = 3
     WXBRA_IMPOSTAZIONI_FOLDER = 4
     WXBRA_REPORT_FOLDER = 5
-    
+
     # subfolder
     WXBRA_REPORT_ESTRATTO_FOLDER = 0
     WXBRA_REPORT_FATTURE_FOLDER = 1
@@ -27,11 +27,11 @@ module Helpers
     NotaSpeseServiziTemplatePath = "resources/models/nota_spese/servizi.odt"
     NotaSpeseCommercioLogoTemplatePath = "resources/models/nota_spese/commercio_logo.odt"
     NotaSpeseServiziLogoTemplatePath = "resources/models/nota_spese/servizi_logo.odt"
-    
+
     # Modelli Ddt
     DdtTemplatePath = "resources/models/ddt/ddt.odt"
     DdtTemplateLogoPath = "resources/models/ddt/ddt_logo.odt"
-    
+
     # Modelli Report
     EstrattoTemplatePath = "resources/models/report/fatturazione/estratto.odt"
     FattureTemplatePath = "resources/models/report/fatturazione/fatture.odt"
@@ -44,6 +44,7 @@ module Helpers
     FatturaHeaderTemplatePath = 'resources/templates/fattura/fattura_header.html.erb'
     FatturaBodyTemplatePath = 'resources/templates/fattura/fattura_body.html.erb'
     FatturaFooterTemplatePath = 'resources/templates/fattura/fattura_footer.html.erb'
+    FatturaXmlTemplatePath = 'resources/templates/fattura/fattura.xml.erb'
 
     # nota spese
     NotaSpeseHeaderTemplatePath = 'resources/templates/nota_spese/nota_spese_header.html.erb'

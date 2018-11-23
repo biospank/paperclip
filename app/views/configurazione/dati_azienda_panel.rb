@@ -22,6 +22,8 @@ module Views
         xrc.find('txt_indirizzo', self, :extends => TextField)
         xrc.find('txt_cap', self, :extends => TextField)
         xrc.find('txt_citta', self, :extends => TextField)
+        xrc.find('txt_comune', self, :extends => TextField)
+        xrc.find('txt_provincia', self, :extends => TextField)
         xrc.find('chce_regime_fiscale', self, :extends => ChoiceField)do |chce|
           chce.load_data(Helpers::ApplicationHelper::Fatturazione::REGIMI_FISCALI)
         end

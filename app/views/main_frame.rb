@@ -3,6 +3,7 @@
 require 'erb'
 require 'app/helpers/printer_helper'
 require 'app/helpers/wk_helper'
+require 'app/helpers/xml_helper'
 require 'app/controllers/base_controller'
 require 'app/views/tool_bar'
 require 'app/views/listbook_mgr'
@@ -180,16 +181,16 @@ module Views
               'Licenza',
               Wx::OK | Wx::ICON_WARNING, self)
           end
-      
+
         end
 
         Wx::BusyCursor.busy() do
           listbook_mgr.reset_folders()
 #            listbook_mgr.init_folders()
         end
-      
+
         tool_bar.chce_azienda.view_data = Models::Azienda.current.id
-      
+
         if Models::Azienda.current.dati_azienda.denominazione =~ /DEMO/
           listbook_mgr.set_selection(Helpers::ApplicationHelper::WXBRA_CONFIGURAZIONE_VIEW)
           listbook_mgr.configurazione_notebook_mgr.set_selection(Helpers::ConfigurazioneHelper::WXBRA_AZIENDA_FOLDER)
@@ -197,8 +198,8 @@ module Views
             'Licenza',
             Wx::OK | Wx::ICON_INFORMATION, self)
         end
-        
-    
+
+
         logger.info("nessun errore...")
 
       end

@@ -13,21 +13,22 @@ module Views
       include Views::Base::Panel
       include Helpers::MVCHelper
       #include Helpers::ODF::Report
+      include Helpers::Xml
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
-      
+
       attr_accessor :lista_ns, # mantiene gli identificativi delle note spese associate alla fattura (permette il controllo dei duplicati)
       :dialog_sql_criteria # utilizzato nelle dialog
-      
-    
+
+
       def ui(container=nil)
-        
+
         self.lista_ns = []
-        
+
         model :cliente => {:attrs => [:denominazione, :p_iva]},
-          :fattura_cliente_fatturazione => {:attrs => [:num, 
-            :data_emissione, 
-            :nota_di_credito, 
+          :fattura_cliente_fatturazione => {:attrs => [:num,
+            :data_emissione,
+            :nota_di_credito,
             :ritenuta,
             :destinatario,
             :indirizzo_dest,
@@ -37,13 +38,13 @@ module Views
             :rif_pagamento,
             :iva_diff],
           :alias => :fattura_cliente}
-        
+
         controller :fatturazione
 
         logger.debug('initializing FatturaClientePanel...')
         xrc = Xrc.instance()
         # Fattura cliente
-        
+
         xrc.find('txt_denominazione', self, :extends => TextField)
         xrc.find('txt_p_iva', self, :extends => TextField)
         xrc.find('chce_anno', self, :extends => ChoiceStringField)
@@ -72,7 +73,7 @@ module Views
             :view => Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW,
             :folder => Helpers::FatturazioneHelper::WXBRA_FATTURA_FOLDER)
         end
-        
+
         subscribe(:evt_ritenuta_changed) do |data|
           lku_ritenuta.load_data(data)
         end
@@ -112,7 +113,7 @@ module Views
           transfer_cliente_to_view()
           transfer_fattura_cliente_to_view()
           chce_anno.view_data = self.fattura_cliente.data_emissione.to_s(:year)
-          
+
           righe_fattura_cliente_panel.display_righe_fattura_cliente(self.fattura_cliente)
           righe_fattura_cliente_panel.riepilogo_fattura()
 
@@ -135,7 +136,7 @@ module Views
           righe_fattura_cliente_panel.txt_descrizione.activate()
 
         end
-        
+
         xrc.find('btn_variazione', self)
         xrc.find('btn_stampa', self)
         xrc.find('btn_salva', self)
@@ -143,35 +144,35 @@ module Views
         xrc.find('btn_pulisci', self)
 
         map_events(self)
-        
+
         case configatron.attivita
         when Models::Azienda::ATTIVITA[:commercio]
-          xrc.find('RIGHE_FATTURA_SERVIZI_PANEL', container, 
+          xrc.find('RIGHE_FATTURA_SERVIZI_PANEL', container,
             :force_parent => self)
-          
+
           righe_fattura_servizi_panel.hide()
-          
-          xrc.find('RIGHE_FATTURA_COMMERCIO_PANEL', container, 
-            :extends => Views::Fatturazione::RigheFatturaCommercioPanel, 
+
+          xrc.find('RIGHE_FATTURA_COMMERCIO_PANEL', container,
+            :extends => Views::Fatturazione::RigheFatturaCommercioPanel,
             :force_parent => self,
             :alias => :righe_fattura_cliente_panel)
-          
+
           righe_fattura_commercio_panel.show()
-          
-          
+
+
         when Models::Azienda::ATTIVITA[:servizi]
-          xrc.find('RIGHE_FATTURA_COMMERCIO_PANEL', container, 
+          xrc.find('RIGHE_FATTURA_COMMERCIO_PANEL', container,
             :force_parent => self)
-          
+
           righe_fattura_commercio_panel.hide()
 
-          xrc.find('RIGHE_FATTURA_SERVIZI_PANEL', container, 
-            :extends => Views::Fatturazione::RigheFatturaServiziPanel, 
+          xrc.find('RIGHE_FATTURA_SERVIZI_PANEL', container,
+            :extends => Views::Fatturazione::RigheFatturaServiziPanel,
             :force_parent => self,
             :alias => :righe_fattura_cliente_panel)
-          
+
           righe_fattura_servizi_panel.show()
-         
+
         end
 
         # dati aggiuntivi
@@ -197,31 +198,31 @@ module Views
       def init_panel()
         # carico gli anni contabili
         #        chce_anno.load_data(ctrl.load_anni_contabili(fattura_cliente.class), :select => :last) if chce_anno.empty?
-        
+
         # calcolo il progressivo
         txt_num.view_data = Models::ProgressivoFatturaCliente.next_sequence(chce_anno.string_selection()) if txt_num.view_data.blank?
         # imposto la data di oggi
         txt_data_emissione.view_data = Date.today if txt_data_emissione.view_data.blank?
-        
+
         reset_fattura_cliente_command_state()
-        
+
         righe_fattura_cliente_panel.init_panel()
-        
+
         txt_num.enabled? ? txt_num.activate() : righe_fattura_cliente_panel.txt_descrizione.activate()
       end
-      
+
       # Resetta il pannello reinizializzando il modello
       def reset_panel()
         begin
           reset_cliente()
           reset_fattura_cliente()
-          
+
           # resetto la lista delle note spese collegate
           lista_ns.clear()
-          
+
           # carico gli anni contabili
           chce_anno.load_data(ctrl.load_anni_contabili(fattura_cliente.class), :select => :last) if chce_anno.empty?
-        
+
           chce_anno.select_last()
 
           # calcolo il progressivo
@@ -249,15 +250,15 @@ module Views
           righe_fattura_cliente_panel.reset_panel()
 
           txt_num.activate()
-          
+
         rescue Exception => e
           log_error(self, e)
         end
-        
+
       end
 
       # Gestione eventi
-      
+
       def txt_num_keypress(evt)
         begin
           case evt.get_key_code
@@ -320,7 +321,7 @@ module Views
         rescue Exception => e
           log_error(self, e)
         end
-        
+
         evt.skip()
       end
 
@@ -354,7 +355,7 @@ module Views
                   chk_ritenuta_flag,
                 ]
                 if self.fattura_cliente.ritenuta
-                  enable_widgets [lku_ritenuta] 
+                  enable_widgets [lku_ritenuta]
                   chk_nota_di_credito.view_data = nil
                 end
               else
@@ -366,7 +367,7 @@ module Views
                   chk_ritenuta_flag,
                   lku_ritenuta
                 ]
-                
+
               end
 
               calcola_progressivo(chce_anno.string_selection())
@@ -383,7 +384,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def chce_anno_select(evt)
         begin
           anno = evt.get_event_object().view_data()
@@ -392,16 +393,16 @@ module Views
           else
             txt_data_emissione.view_data = Date.new(anno.to_i).end_of_year()
           end
-          
+
           calcola_progressivo(anno)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
 
         evt.skip()
       end
-      
+
       def btn_variazione_click(evt)
         begin
           Wx::BusyCursor.busy() do
@@ -459,9 +460,9 @@ module Views
         end
 
         evt.skip()
-        
+
       end
-      
+
       def chk_nota_di_credito_click(evt)
         begin
           calcola_progressivo(chce_anno.string_selection())
@@ -515,9 +516,9 @@ module Views
         rescue Exception => e
           log_error(self, e)
         end
-        
+
       end
-      
+
       def btn_salva_click(evt)
         begin
           # per controllare il tasto funzione F8 associato al salva
@@ -598,14 +599,14 @@ module Views
           Wx::message_box("Il documento e' stato modificato da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
 
         evt.skip()
       end
-      
+
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
@@ -648,14 +649,14 @@ module Views
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
 
         evt.skip()
       end
-      
+
       def btn_pulisci_click(evt)
         begin
           self.reset_panel()
@@ -665,7 +666,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def reset_fattura_cliente_command_state()
         if fattura_cliente.new_record?
           enable_widgets [btn_salva,btn_cliente,btn_variazione]
@@ -689,7 +690,7 @@ module Views
           Wx::message_box('Selezionare un cliente',
             'Info',
             Wx::OK | Wx::ICON_INFORMATION, self)
-            
+
           btn_cliente.set_focus()
           return false
         else
@@ -703,7 +704,7 @@ module Views
           Wx::message_box('Inserire un codice ritenuta valido, oppure premere F5',
             'Info',
             Wx::OK | Wx::ICON_INFORMATION, self)
-            
+
           lku_ritenuta.activate()
           return false
         else
@@ -718,22 +719,22 @@ module Views
       def fattura_sql_criteria
         "(da_scadenzario = 0 or da_scadenzario = 1) and da_fatturazione = 1"
       end
-      
+
       def nota_spese_associata?(id_ns)
         self.lista_ns.detect {|id| id == id_ns} != nil
       end
 
       private
-      
+
       def calcola_progressivo(anno)
         if chk_nota_di_credito.checked?
           txt_num.view_data = Models::ProgressivoNc.next_sequence(anno)
         else
           txt_num.view_data = Models::ProgressivoFatturaCliente.next_sequence(anno)
         end
-        
+
       end
-      
+
 #      def stampa_fattura_odf
 #        if self.fattura_cliente.new_record?
 #          Wx::message_box("Per avviare il processo di stampa è necessario salvare la fattura.",
@@ -764,7 +765,7 @@ module Views
 #          end
 #        end
 #      end
-      
+
       def stampa_fattura
         if self.fattura_cliente.new_record?
           Wx::message_box("Per avviare il processo di stampa è necessario salvare la fattura.",
@@ -776,6 +777,10 @@ module Views
             dati_azienda = Models::Azienda.current.dati_azienda
             fattura = Models::FatturaClienteFatturazione.find(self.fattura_cliente.id, :include => [:cliente, {:righe_fattura_cliente => [:aliquota]}])
 
+            generate_xml(:fattura,
+              :dati_azienda => dati_azienda,
+              :fattura => fattura
+            )
             generate(:fattura,
               :margin_top => 90,
               :margin_bottom => 65,
@@ -822,6 +827,52 @@ module Views
           )
 
         end
+      end
+
+      def render_xml(opts={})
+        dati_azienda = opts[:dati_azienda]
+        fattura = opts[:fattura]
+
+        # dati footer
+        riepilogo_importi = righe_fattura_cliente_panel.riepilogo_importi
+        aliquote = righe_fattura_cliente_panel.lku_aliquota.instance_hash
+        totale_imponibile = righe_fattura_cliente_panel.totale_imponibile
+        totale_iva = righe_fattura_cliente_panel.totale_iva
+        totale_fattura = righe_fattura_cliente_panel.totale_fattura
+        totale_ritenuta = righe_fattura_cliente_panel.totale_ritenuta
+
+        riepilogo_imposte = []
+        riepilogo_importi.each_pair do |key, importo|
+          riepilogo_imposte << OpenStruct.new({:percentuale => aliquote[key].percentuale,
+              :descrizione => aliquote[key].descrizione,
+              :imponibile => Helpers::ApplicationHelper.number_text(importo),
+              :totale => Helpers::ApplicationHelper.number_text(((importo * aliquote[key].percentuale) / 100))})
+        end
+
+        totali = []
+        totali << OpenStruct.new({:descrizione => 'Imponibile',
+            :importo => Helpers::ApplicationHelper.currency(totale_imponibile)})
+
+        totali << OpenStruct.new({:descrizione => 'Iva',
+            :importo => Helpers::ApplicationHelper.currency(totale_iva)})
+
+        totali << OpenStruct.new({:descrizione => 'TOTALE',
+            :importo => Helpers::ApplicationHelper.currency(totale_fattura)})
+
+        if ritenuta = fattura.ritenuta
+          totali << OpenStruct.new({:descrizione => "Ritenuta #{Helpers::ApplicationHelper.percentage(ritenuta.percentuale, 0)}",
+              :importo => Helpers::ApplicationHelper.currency(totale_ritenuta)})
+
+          totali << OpenStruct.new({:descrizione => "NETTO A PAGARE",
+              :importo => Helpers::ApplicationHelper.currency(totale_fattura - totale_ritenuta)})
+
+        end
+
+        xml.write(
+          ERB.new(
+            IO.read(Helpers::FatturazioneHelper::FatturaXmlTemplatePath)
+          ).result(binding)
+        )
       end
 
       def render_header(opts={})
@@ -1095,7 +1146,7 @@ module Views
 #        report.add_field :rea_num, dati_azienda.num_rea
 #
 #      end
-      
+
     end
   end
 end
