@@ -16,7 +16,7 @@
 						<style>wxLB_LEFT</style>
 						<object class="listbookpage">
 							<label>Anagrafica</label>
-							<selected>1</selected>
+							<selected>0</selected>
 							<object class="wxPanel" name="ANAGRAFICA_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -1172,7 +1172,7 @@
 						</object>
 						<object class="listbookpage">
 							<label>Fatturazione</label>
-							<selected>0</selected>
+							<selected>1</selected>
 							<object class="wxPanel" name="FATTURAZIONE_VIEW">
 								<style>wxTAB_TRAVERSAL</style>
 								<object class="wxBoxSizer">
@@ -2159,7 +2159,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Fattura</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="FATTURA_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -2250,33 +2250,27 @@
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxTOP|wxRIGHT|wxLEFT</flag>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
 																				<border>3</border>
-																				<object class="wxStaticText" name="wxID_STATIC9">
-																					<label>A credito:</label>
+																				<object class="wxStaticText" name="m_staticText791">
+																					<label>Tipo documento:</label>
 																				</object>
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
-																				<flag>wxTOP|wxEXPAND</flag>
-																				<border>5</border>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																				<border>3</border>
+																				<object class="wxChoice" name="chce_tipo_documento">
+																					<selection>0</selection>
+																					<content />
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxEXPAND|wxTOP</flag>
+																				<border>3</border>
 																				<object class="wxBoxSizer">
 																					<orient>wxHORIZONTAL</orient>
-																					<object class="sizeritem">
-																						<option>0</option>
-																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-																						<border>3</border>
-																						<object class="wxCheckBox" name="chk_nota_di_credito">
-																							<label></label>
-																							<checked>0</checked>
-																						</object>
-																					</object>
-																					<object class="spacer">
-																						<option>1</option>
-																						<flag></flag>
-																						<border>3</border>
-																						<size>0,0</size>
-																					</object>
 																					<object class="sizeritem">
 																						<option>0</option>
 																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
@@ -2294,6 +2288,14 @@
 																							<checked>0</checked>
 																						</object>
 																					</object>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>1</option>
+																				<flag>wxEXPAND</flag>
+																				<border>3</border>
+																				<object class="wxBoxSizer">
+																					<orient>wxHORIZONTAL</orient>
 																					<object class="sizeritem">
 																						<option>0</option>
 																						<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
@@ -2312,6 +2314,35 @@
 																							<tooltip>Premere F3 per la ricerca</tooltip>
 																							<value></value>
 																							<maxlength>0</maxlength>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>0</option>
+																						<flag>wxALL</flag>
+																						<border>3</border>
+																						<object class="wxTextCtrl" name="txt_descrizione_ritenuta">
+																							<size>120,-1</size>
+																							<enabled>0</enabled>
+																							<value></value>
+																							<maxlength>0</maxlength>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>0</option>
+																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																						<border>3</border>
+																						<object class="wxStaticText" name="m_staticText799">
+																							<label>Tipo:</label>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>1</option>
+																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																						<border>3</border>
+																						<object class="wxChoice" name="chce_tipo_ritenuta">
+																							<enabled>0</enabled>
+																							<selection>0</selection>
+																							<content />
 																						</object>
 																					</object>
 																				</object>
@@ -2373,23 +2404,21 @@
 																							<maxlength>10</maxlength>
 																						</object>
 																					</object>
-																				</object>
-																			</object>
-																			<object class="sizeritem">
-																				<option>0</option>
-																				<flag>wxTOP|wxLEFT</flag>
-																				<border>2</border>
-																				<object class="wxBoxSizer">
-																					<orient>wxHORIZONTAL</orient>
 																					<object class="sizeritem">
 																						<option>0</option>
 																						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
 																						<border>3</border>
-																						<object class="wxTextCtrl" name="txt_descrizione_ritenuta">
-																							<size>120,-1</size>
-																							<enabled>0</enabled>
-																							<value></value>
-																							<maxlength>0</maxlength>
+																						<object class="wxStaticText" name="wxID_STATIC910">
+																							<label>A credito:</label>
+																						</object>
+																					</object>
+																					<object class="sizeritem">
+																						<option>0</option>
+																						<flag>wxALL</flag>
+																						<border>3</border>
+																						<object class="wxCheckBox" name="chk_nota_di_credito">
+																							<label></label>
+																							<checked>0</checked>
 																						</object>
 																					</object>
 																				</object>
@@ -2751,7 +2780,7 @@
 																						<object class="wxNotebook" name="dati_aggiuntivi_notebook">
 																							<object class="notebookpage">
 																								<label>I.V.A.</label>
-																								<selected>1</selected>
+																								<selected>0</selected>
 																								<object class="wxPanel" name="iva_panel">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxFlexGridSizer">
@@ -2907,7 +2936,7 @@
 																							</object>
 																							<object class="notebookpage">
 																								<label>Pagamento</label>
-																								<selected>0</selected>
+																								<selected>1</selected>
 																								<object class="wxPanel" name="pagamento_panel">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxFlexGridSizer">
@@ -2932,6 +2961,23 @@
 																											<object class="wxTextCtrl" name="txt_rif_pagamento">
 																												<value></value>
 																												<maxlength>100</maxlength>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																											<border>3</border>
+																											<object class="wxStaticText" name="m_staticText800">
+																												<label>Causale:</label>
+																											</object>
+																										</object>
+																										<object class="sizeritem">
+																											<option>0</option>
+																											<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																											<border>3</border>
+																											<object class="wxChoice" name="chce_causale_pagamento">
+																												<selection>0</selection>
+																												<content />
 																											</object>
 																										</object>
 																									</object>
@@ -5392,7 +5438,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -15221,7 +15267,7 @@
 											<style>wxBK_DEFAULT|wxNB_FIXEDWIDTH</style>
 											<object class="notebookpage">
 												<label>Scritture</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="SCRITTURE_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -16673,7 +16719,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Causali</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="CAUSALI_BILANCIO_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -19557,7 +19603,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -21053,7 +21099,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Report</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="REPORT_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -22014,10 +22060,27 @@
 																			</object>
 																			<object class="sizeritem">
 																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="wxID_STATIC1301">
+																					<label>Codice identificativo:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxTextCtrl" name="txt_codice_identificativo">
+																					<value></value>
+																					<maxlength>7</maxlength>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
 																				<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
 																				<border>3</border>
 																				<object class="wxStaticText" name="wxID_STATIC131">
-																					<label>E-Mail:</label>
+																					<label>E-Mail Pec:</label>
 																				</object>
 																			</object>
 																			<object class="sizeritem">

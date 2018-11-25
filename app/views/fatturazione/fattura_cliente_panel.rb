@@ -61,6 +61,9 @@ module Views
           field.evt_char { |evt| txt_data_emissione_keypress(evt) }
         end
 
+        xrc.find('chce_tipo_documento', self, :extends => ChoiceField)do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Fatturazione::TIPI_DOCUMENTO)
+        end
         # NumberCheckField per mantenere il tipo di dato altrimenti interferisce con il metodo changed?
         xrc.find('chk_nota_di_credito', self, :extends => NumberCheckField)
         xrc.find('chk_ritenuta_flag', self, :extends => FkCheckField)
@@ -72,6 +75,9 @@ module Views
             :default => lambda {|ritenuta| ritenuta.predefinita?},
             :view => Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW,
             :folder => Helpers::FatturazioneHelper::WXBRA_FATTURA_FOLDER)
+        end
+        xrc.find('chce_tipo_ritenuta', self, :extends => ChoiceField)do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Fatturazione::TIPI_RITENUTA)
         end
 
         subscribe(:evt_ritenuta_changed) do |data|
@@ -182,6 +188,9 @@ module Views
         xrc.find('txt_citta_dest', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
         xrc.find('txt_rif_ddt', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
         xrc.find('txt_rif_pagamento', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
+        xrc.find('chce_causale_pagamento', self, :extends => ChoiceField)do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Fatturazione::CAUSALI_PAGAMENTO)
+        end
         xrc.find('chk_iva_diff', righe_fattura_cliente_panel, :extends => NumberCheckField, :force_parent => self)
 
         righe_fattura_cliente_panel.ui()
@@ -469,7 +478,7 @@ module Views
           if chk_nota_di_credito.checked?
             self.chk_ritenuta_flag.view_data = nil
             self.lku_ritenuta.view_data = nil
-            disable_widgets [chk_ritenuta_flag, lku_ritenuta]
+            disable_widgets [chk_ritenuta_flag, lku_ritenuta, chce_tipo_ritenuta]
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
           else
@@ -489,14 +498,14 @@ module Views
           if chk_ritenuta_flag.checked?
             self.chk_nota_di_credito.view_data = false
             disable_widgets [chk_nota_di_credito]
-            enable_widgets [lku_ritenuta]
+            enable_widgets [lku_ritenuta, chce_tipo_ritenuta]
             lku_ritenuta.set_default()
             lku_ritenuta.activate()
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
           else
             enable_widgets [chk_nota_di_credito]
-            disable_widgets [lku_ritenuta]
+            disable_widgets [lku_ritenuta, chce_tipo_ritenuta]
             lku_ritenuta.view_data = nil
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
@@ -706,6 +715,17 @@ module Views
             Wx::OK | Wx::ICON_INFORMATION, self)
 
           lku_ritenuta.activate()
+          return false
+        else
+          return true
+        end
+
+        if chk_ritenuta_flag.checked? and chce_tipo_ritenuta.view_data.nil?
+          Wx::message_box('Selezionare un tipo ritenuta',
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          chce_tipo_ritenuta.activate()
           return false
         else
           return true

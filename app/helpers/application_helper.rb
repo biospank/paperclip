@@ -90,7 +90,30 @@ module Helpers
         {:id => 'RF15', :descrizione => "Agenzie di vendite all'asta di oggetti d'arte, antiquariato o da collezione (art. 40-bis, D.L. 41/1995)"},
         {:id => 'RF16', :descrizione => 'IVA per cassa P.A. (art. 6, c.5, D.P.R. 633/1972)'},
         {:id => 'RF18', :descrizione => 'Altro'},
-        {:id => 'RF19', :descrizione => 'Forfettario (art.1, c. 54-89, L. 190/2014)'},
+        {:id => 'RF19', :descrizione => 'Forfettario (art.1, c. 54-89, L. 190/2014)'}
+      ]
+
+      TIPI_DOCUMENTO = [
+        {:id => 'TD01', :descrizione => 'Fattura'},
+        {:id => 'TD02', :descrizione => 'Accounto/Anticipo su fattura'},
+        {:id => 'TD03', :descrizione => 'Acconto/Anticipo su parcella'},
+        {:id => 'TD04', :descrizione => 'Nota di Credito'},
+        {:id => 'TD05', :descrizione => 'Nota di Debio'},
+        {:id => 'TD06', :descrizione => 'Parcella'}
+      ]
+
+      TIPI_RITENUTA = [
+        {:id => 'RT01', :descrizione => 'Ritenuta persone fisiche'},
+        {:id => 'RT02', :descrizione => 'Ritenuta persone giuridiche'}
+      ]
+
+      CAUSALI_PAGAMENTO = [
+        {:id => 'A', :descrizione => 'Descrizione A'},
+        {:id => 'B', :descrizione => 'Descrizione B'},
+        {:id => 'C', :descrizione => 'Descrizione C'},
+        {:id => 'D', :descrizione => 'Descrizione D'},
+        {:id => 'E', :descrizione => 'Descrizione E'},
+        {:id => 'F', :descrizione => 'Descrizione F'}
       ]
     end
 

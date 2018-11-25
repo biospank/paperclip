@@ -40,6 +40,7 @@ module Views
         xrc.find('txt_telefono', self, :extends => TextField)
         xrc.find('txt_fax', self, :extends => TextField)
         xrc.find('txt_e_mail', self, :extends => TextField)
+        xrc.find('txt_codice_identificativo', self, :extends => TextField)
         xrc.find('img_logo', self, :extends => ImageLogoField)
 
         xrc.find('btn_logo', self)
