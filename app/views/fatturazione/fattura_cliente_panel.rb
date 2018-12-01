@@ -28,8 +28,11 @@ module Views
         model :cliente => {:attrs => [:denominazione, :p_iva]},
           :fattura_cliente_fatturazione => {:attrs => [:num,
             :data_emissione,
+            :tipo_documento,
             :nota_di_credito,
             :ritenuta,
+            :tipo_ritenuta,
+            :causale_pagamento,
             :destinatario,
             :indirizzo_dest,
             :cap_dest,
@@ -78,6 +81,9 @@ module Views
         end
         xrc.find('chce_tipo_ritenuta', self, :extends => ChoiceField)do |chce|
           chce.load_data(Helpers::ApplicationHelper::Fatturazione::TIPI_RITENUTA)
+        end
+        xrc.find('chce_causale_pagamento', self, :extends => ChoiceField)do |chce|
+          chce.load_data(Helpers::ApplicationHelper::Fatturazione::CAUSALI_PAGAMENTO)
         end
 
         subscribe(:evt_ritenuta_changed) do |data|
@@ -188,9 +194,6 @@ module Views
         xrc.find('txt_citta_dest', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
         xrc.find('txt_rif_ddt', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
         xrc.find('txt_rif_pagamento', righe_fattura_cliente_panel, :extends => TextField, :force_parent => self)
-        xrc.find('chce_causale_pagamento', self, :extends => ChoiceField)do |chce|
-          chce.load_data(Helpers::ApplicationHelper::Fatturazione::CAUSALI_PAGAMENTO)
-        end
         xrc.find('chk_iva_diff', righe_fattura_cliente_panel, :extends => NumberCheckField, :force_parent => self)
 
         righe_fattura_cliente_panel.ui()
@@ -241,6 +244,8 @@ module Views
           txt_data_emissione.view_data = Date.today
 
           chk_ritenuta_flag.view_data = nil
+          chce_tipo_ritenuta.view_data = nil
+          chce_causale_pagamento.view_data = nil
 
           enable_widgets [
             txt_num,
@@ -251,7 +256,9 @@ module Views
           ]
 
           disable_widgets [
-            lku_ritenuta
+            lku_ritenuta,
+            chce_tipo_ritenuta,
+            chce_causale_pagamento
           ]
 
           reset_fattura_cliente_command_state()
@@ -412,6 +419,16 @@ module Views
         evt.skip()
       end
 
+      def chce_causale_pagamento_select(evt)
+        begin
+
+        rescue Exception => e
+          log_error(self, e)
+        end
+
+        evt.skip()
+      end
+
       def btn_variazione_click(evt)
         begin
           Wx::BusyCursor.busy() do
@@ -478,7 +495,7 @@ module Views
           if chk_nota_di_credito.checked?
             self.chk_ritenuta_flag.view_data = nil
             self.lku_ritenuta.view_data = nil
-            disable_widgets [chk_ritenuta_flag, lku_ritenuta, chce_tipo_ritenuta]
+            disable_widgets [chk_ritenuta_flag, lku_ritenuta, chce_tipo_ritenuta, chce_causale_pagamento]
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
           else
@@ -498,15 +515,17 @@ module Views
           if chk_ritenuta_flag.checked?
             self.chk_nota_di_credito.view_data = false
             disable_widgets [chk_nota_di_credito]
-            enable_widgets [lku_ritenuta, chce_tipo_ritenuta]
+            enable_widgets [lku_ritenuta, chce_tipo_ritenuta, chce_causale_pagamento]
             lku_ritenuta.set_default()
             lku_ritenuta.activate()
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
           else
             enable_widgets [chk_nota_di_credito]
-            disable_widgets [lku_ritenuta, chce_tipo_ritenuta]
+            disable_widgets [lku_ritenuta, chce_tipo_ritenuta, chce_causale_pagamento]
             lku_ritenuta.view_data = nil
+            chce_tipo_ritenuta.view_data = nil
+            chce_causale_pagamento.view_data = nil
             transfer_fattura_cliente_from_view()
             righe_fattura_cliente_panel.riepilogo_fattura()
           end
@@ -726,6 +745,17 @@ module Views
             Wx::OK | Wx::ICON_INFORMATION, self)
 
           chce_tipo_ritenuta.activate()
+          return false
+        else
+          return true
+        end
+
+        if chk_ritenuta_flag.checked? and chce_causale_pagamento.view_data.nil?
+          Wx::message_box('Selezionare una causale pagamento',
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          chce_causale_pagamento.activate()
           return false
         else
           return true

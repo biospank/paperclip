@@ -10,9 +10,11 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
         <IdCodice><%= dati_azienda.cod_fisc %></IdCodice>
       </IdTrasmittente>
       <ProgressivoInvio><%= fattura.num %></ProgressivoInvio>
-      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
-      <CodiceDestinatario>??0000000?? 1.1.4</CodiceDestinatario>
-      <PECDestinatario>?? 1.1.6</PECDestinatario>
+      <FormatoTrasmissione>??FPR12??</FormatoTrasmissione>
+      <CodiceDestinatario><%= cliente.codice_identificativo %></CodiceDestinatario>
+      <% if cliente.codice_identificativo == '0000000' && !cliente.e_mail.blank? %>
+        <PECDestinatario><%= cliente.email %></PECDestinatario>
+      <% end %>
       <ContattiTrasmittente/>
     </DatiTrasmissione>
     <CedentePrestatore>
@@ -66,21 +68,16 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
         <Numero><%= fattura.num %></Numero>
         <% if ritenuta = fattura.ritenuta %>
           <DatiRitenuta>
-            <TipoRitenuta>???</TipoRitenuta>
-            <ImportoRitenuta>???</ImportoRitenuta>
-            <AliquotaRitenuta><%= ritenuta.percentuale %></AliquotaRitenuta>
-            <CausalePagamento>???</CausalePagamento>
+            <TipoRitenuta><%= fattura.tipo_ritenuta %></TipoRitenuta>
+            <ImportoRitenuta><%= Helpers::ApplicationHelper.number_text(totale_ritenuta) %></ImportoRitenuta>
+            <AliquotaRitenuta><%= Helpers::ApplicationHelper.percentage(fattura.ritenuta.percentuale, 0) %></AliquotaRitenuta>
+            <CausalePagamento><%= fattura.causale_pagamento %></CausalePagamento>
           </DatiRitenuta>
         <% end %>
         <ImportoTotaleDocumento><%= Helpers::ApplicationHelper.number_text(fattura.importo) %></ImportoTotaleDocumento>
         <Causale>???</Causale>
         <Causale>SEGUE DESCRIZIONE CAUSALE NEL CASO IN CUI NON SIANO STATI SUFFICIENTI 200 CARATTERI AAAAAAAAAAA BBBBBBBBBBBBBBBBB</Causale>
       </DatiGeneraliDocumento>
-      <DatiOrdineAcquisto>
-        <RiferimentoNumeroLinea>???</RiferimentoNumeroLinea>
-        <IdDocumento>???</IdDocumento>
-        <NumItem>???</NumItem>
-      </DatiOrdineAcquisto>
       <DatiContratto>
   	    <RiferimentoNumeroLinea>???</RiferimentoNumeroLinea>
   	    <IdDocumento>???</IdDocumento>

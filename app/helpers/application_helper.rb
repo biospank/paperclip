@@ -98,7 +98,7 @@ module Helpers
         {:id => 'TD02', :descrizione => 'Accounto/Anticipo su fattura'},
         {:id => 'TD03', :descrizione => 'Acconto/Anticipo su parcella'},
         {:id => 'TD04', :descrizione => 'Nota di Credito'},
-        {:id => 'TD05', :descrizione => 'Nota di Debio'},
+        {:id => 'TD05', :descrizione => 'Nota di Debito'},
         {:id => 'TD06', :descrizione => 'Parcella'}
       ]
 

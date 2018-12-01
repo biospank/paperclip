@@ -9,7 +9,7 @@ module Views
     module ClientePanel
       include Views::Base::Panel
       include Helpers::MVCHelper
-      
+
       attr_accessor :dialog_sql_criteria # utilizzato nelle dialog
 
       def ui
@@ -28,6 +28,7 @@ module Views
                                       :telefono,
                                       :fax,
                                       :e_mail,
+                                      :codice_identificativo,
                                       :pdc,
                                       :note,
                                       :attivo
@@ -50,6 +51,7 @@ module Views
         xrc.find('txt_cellulare', self, :extends => TextField)
         xrc.find('txt_telefono', self, :extends => TextField)
         xrc.find('txt_fax', self, :extends => TextField)
+        xrc.find('txt_codice_identificativo', self, :extends => TextField)
         xrc.find('txt_e_mail', self, :extends => TextField)
 
         xrc.find('lku_pdc', self, :extends => LookupField) do |field|
@@ -70,7 +72,7 @@ module Views
         xrc.find('btn_nuovo', self)
 
         map_events(self)
-        
+
         subscribe(:evt_azienda_changed) do
           reset_panel()
         end
@@ -92,19 +94,19 @@ module Views
           [ Wx::ACCEL_NORMAL, Wx::K_F8, btn_salva.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F10, btn_elimina.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F12, btn_nuovo.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
 
       def init_panel()
         reset_cliente_command_state()
       end
       # Gestione eventi
-      
+
       def chk_no_p_iva_click(evt)
         update_ui()
       end
-      
+
       def btn_variazione_click(evt)
         logger.debug("Cliccato sul bottone variazione!")
         begin
@@ -173,7 +175,7 @@ module Views
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
@@ -220,7 +222,7 @@ module Views
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
@@ -274,7 +276,7 @@ module Views
         chk_attivo.value = true
         txt_denominazione.activate()
       end
-			
+
       def update_ui()
         if chk_no_p_iva.checked?
           txt_p_iva.clear()
@@ -283,7 +285,7 @@ module Views
           txt_p_iva.enable(true)
         end
       end
-      
+
       def reset_cliente_command_state()
         if cliente.new_record?
           disable_widgets [btn_elimina]
