@@ -555,7 +555,7 @@ module Views
               if ctrl.licenza.attiva?
                 if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
                   transfer_fattura_cliente_from_view()
-                  if cliente? and check_ritenuta()
+                  if cliente? and check_ritenuta() and check_documento()
                     unless fattura_cliente.num.strip.match(/^[0-9]*$/)
                       res = Wx::message_box("La fattura che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
                         'Avvertenza',
@@ -728,34 +728,48 @@ module Views
       end
 
       def check_ritenuta()
-        if chk_ritenuta_flag.checked? and lku_ritenuta.view_data.nil?
-          Wx::message_box('Inserire un codice ritenuta valido, oppure premere F5',
-            'Info',
-            Wx::OK | Wx::ICON_INFORMATION, self)
+        if chk_ritenuta_flag.checked?
+          if lku_ritenuta.view_data.nil?
+            Wx::message_box('Inserire un codice ritenuta valido, oppure premere F5',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
 
-          lku_ritenuta.activate()
-          return false
+            lku_ritenuta.activate()
+            return false
+          end
+
+          if chce_tipo_ritenuta.view_data.nil?
+            Wx::message_box('Selezionare il tipo ritenuta',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+
+            chce_tipo_ritenuta.activate()
+            return false
+          end
+
+          if chce_causale_pagamento.view_data.nil?
+            Wx::message_box('Selezionare la causale ritenuta',
+              'Info',
+              Wx::OK | Wx::ICON_INFORMATION, self)
+
+            chce_causale_pagamento.activate()
+            return false
+          end
+
+          return true
         else
           return true
         end
+      end
 
-        if chk_ritenuta_flag.checked? and chce_tipo_ritenuta.view_data.nil?
-          Wx::message_box('Selezionare un tipo ritenuta',
+      def check_documento()
+        if chce_tipo_documento.view_data.nil?
+          Wx::message_box('Selezionare il tipo documento',
             'Info',
             Wx::OK | Wx::ICON_INFORMATION, self)
 
-          chce_tipo_ritenuta.activate()
-          return false
-        else
-          return true
-        end
+          chce_tipo_documento.activate()
 
-        if chk_ritenuta_flag.checked? and chce_causale_pagamento.view_data.nil?
-          Wx::message_box('Selezionare una causale pagamento',
-            'Info',
-            Wx::OK | Wx::ICON_INFORMATION, self)
-
-          chce_causale_pagamento.activate()
           return false
         else
           return true
@@ -894,6 +908,7 @@ module Views
         riepilogo_imposte = []
         riepilogo_importi.each_pair do |key, importo|
           riepilogo_imposte << OpenStruct.new({:percentuale => aliquote[key].percentuale,
+              :tipo_esenzione => aliquote[key].tipo_esenzione,
               :descrizione => aliquote[key].descrizione,
               :imponibile => Helpers::ApplicationHelper.number_text(importo),
               :totale => Helpers::ApplicationHelper.number_text(((importo * aliquote[key].percentuale) / 100))})

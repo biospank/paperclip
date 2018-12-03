@@ -72,6 +72,19 @@ module Helpers
       {:id => '12', :descrizione => 'Dicembre'}
     ]
 
+    module Aliquote
+      TIPI_ESENZIONE = [
+        {:id => nil, :descrizione => ''},
+        {:id => 'N1', :descrizione => 'escluse ex art. 15'},
+        {:id => 'N2', :descrizione => 'non soggette'},
+        {:id => 'N3', :descrizione => 'non imponibili'},
+        {:id => 'N4', :descrizione => 'esenti'},
+        {:id => 'N5', :descrizione => 'regime del margine/IVA non esposta in fattura'},
+        {:id => 'N6', :descrizione => 'inversione contabile'},
+        {:id => 'N7', :descrizione => 'IVA assolta in altro stato UE'}
+      ]
+    end
+
     module Fatturazione
       REGIMI_FISCALI = [
         {:id => 'RF01', :descrizione => 'Ordinario'},

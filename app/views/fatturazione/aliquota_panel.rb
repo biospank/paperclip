@@ -8,32 +8,37 @@ module Views
     module AliquotaPanel
       include Views::Base::Panel
       include Helpers::MVCHelper
-      
+
       def ui()
 
-        model :aliquota => {:attrs => [:codice, :percentuale, :descrizione, :attiva, :predefinita]}
-        
+        model :aliquota => {:attrs => [:codice, :percentuale, :tipo_esenzione, :descrizione, :attiva, :predefinita]}
+
         controller :fatturazione
 
         logger.debug('initializing AliquotaPanel...')
         xrc = Xrc.instance()
         # NotaSpese
-        
+
         xrc.find('txt_codice', self, :extends => LookupTextField) do |field|
           field.evt_char { |evt| txt_codice_keypress(evt) }
         end
         xrc.find('txt_percentuale', self, :extends => DecimalField)
+        xrc.find('chce_tipo_esenzione', self, :extends => ChoiceField) do |chce|
+          chce.load_data(
+            Helpers::ApplicationHelper::Aliquote::TIPI_ESENZIONE
+          )
+        end
         xrc.find('chk_attiva', self, :extends => CheckField)
         xrc.find('chk_predefinita', self, :extends => CheckField)
         xrc.find('txt_descrizione', self, :extends => TextField)
-        
+
         xrc.find('btn_variazione', self)
         xrc.find('btn_salva', self)
         xrc.find('btn_elimina', self)
         xrc.find('btn_nuova', self)
 
         disable_widgets [btn_elimina]
-        
+
         map_events(self)
 
         subscribe(:evt_azienda_changed) do
@@ -49,22 +54,22 @@ module Views
           [ Wx::ACCEL_NORMAL, Wx::K_F8, btn_salva.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F10, btn_elimina.get_id ],
           [ Wx::ACCEL_NORMAL, Wx::K_F12, btn_nuova.get_id ]
-        ]                            
-        self.accelerator_table = acc_table  
+        ]
+        self.accelerator_table = acc_table
       end
-      
+
       def reset_panel()
         begin
           reset_aliquota()
-          
+
           reset_aliquota_command_state()
 
           txt_codice.activate()
-          
+
         rescue Exception => e
           log_error(self, e)
         end
-        
+
       end
 
       # Gestione eventi
@@ -93,7 +98,7 @@ module Views
       def chk_attiva_click(evt)
         update_ui()
       end
-      
+
       def btn_variazione_click(evt)
         begin
           # se esiste ricerca solo le occorrenze associate ad un cliente
@@ -106,7 +111,7 @@ module Views
             update_ui()
             reset_aliquota_command_state()
             txt_codice.activate()
-            
+
           else
             logger.debug("You pressed Cancel")
           end
@@ -119,7 +124,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def btn_salva_click(evt)
         begin
           if btn_salva.enabled?
@@ -128,15 +133,17 @@ module Views
                 if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
                   transfer_aliquota_from_view()
                   if self.aliquota.valid?
-                    ctrl.save_aliquota()
-                    evt_chg = Views::Base::CustomEvent::AliquotaChangedEvent.new(ctrl.search_aliquote())
-                    # This sends the event for processing by listeners
-                    process_event(evt_chg)
-                    Wx::message_box('Salvataggio avvenuto correttamente.',
-                      'Info',
-                      Wx::OK | Wx::ICON_INFORMATION, self)
-                    reset_panel()
-                    process_event(Views::Base::CustomEvent::BackEvent.new())
+                    if check_esenzione()
+                      ctrl.save_aliquota()
+                      evt_chg = Views::Base::CustomEvent::AliquotaChangedEvent.new(ctrl.search_aliquote())
+                      # This sends the event for processing by listeners
+                      process_event(evt_chg)
+                      Wx::message_box('Salvataggio avvenuto correttamente.',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+                      reset_panel()
+                      process_event(Views::Base::CustomEvent::BackEvent.new())
+                    end
                   else
                     Wx::message_box(self.aliquota.error_msg,
                       'Info',
@@ -156,19 +163,19 @@ module Views
                   Wx::OK | Wx::ICON_INFORMATION, self)
               end
             end
-          end          
+          end
         rescue ActiveRecord::StaleObjectError
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
 
         evt.skip()
       end
-      
+
       def btn_elimina_click(evt)
         begin
           if btn_elimina.enabled?
@@ -198,21 +205,21 @@ module Views
                 'Info',
                 Wx::OK | Wx::ICON_INFORMATION, self)
             end
-              
+
             txt_codice.activate()
-          end          
+          end
         rescue ActiveRecord::StaleObjectError
           Wx::message_box("I dati sono stati modificati da un processo esterno.\nRicaricare i dati aggiornati prima del salvataggio.",
             'ATTENZIONE!!',
             Wx::OK | Wx::ICON_WARNING, self)
-          
+
         rescue Exception => e
           log_error(self, e)
         end
 
         evt.skip()
       end
-      
+
       def btn_nuova_click(evt)
         begin
           self.reset_panel()
@@ -222,7 +229,7 @@ module Views
 
         evt.skip()
       end
-      
+
       def reset_aliquota_command_state()
         if aliquota.new_record?
           disable_widgets [btn_elimina]
@@ -245,6 +252,18 @@ module Views
         end
       end
 
+      def check_esenzione()
+        if aliquota.percentuale.zero? and aliquota.tipo_esenzione.nil?
+          Wx::message_box('La percentuale è pari a 0: selezionare il tipo di esenzione',
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          chce_tipo_esenzione.activate()
+          return false
+        else
+          return true
+        end
+      end
     end
   end
 end

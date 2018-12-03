@@ -10,7 +10,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
         <IdCodice><%= dati_azienda.cod_fisc %></IdCodice>
       </IdTrasmittente>
       <ProgressivoInvio><%= fattura.num %></ProgressivoInvio>
-      <FormatoTrasmissione>??FPR12??</FormatoTrasmissione>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
       <CodiceDestinatario><%= cliente.codice_identificativo %></CodiceDestinatario>
       <% if cliente.codice_identificativo == '0000000' && !cliente.e_mail.blank? %>
         <PECDestinatario><%= cliente.email %></PECDestinatario>
@@ -75,29 +75,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
           </DatiRitenuta>
         <% end %>
         <ImportoTotaleDocumento><%= Helpers::ApplicationHelper.number_text(fattura.importo) %></ImportoTotaleDocumento>
-        <Causale>???</Causale>
-        <Causale>SEGUE DESCRIZIONE CAUSALE NEL CASO IN CUI NON SIANO STATI SUFFICIENTI 200 CARATTERI AAAAAAAAAAA BBBBBBBBBBBBBBBBB</Causale>
       </DatiGeneraliDocumento>
-      <DatiContratto>
-  	    <RiferimentoNumeroLinea>???</RiferimentoNumeroLinea>
-  	    <IdDocumento>???</IdDocumento>
-  	    <Data>???</Data>
-  	    <NumItem>???</NumItem>
-  	    <CodiceCUP>???</CodiceCUP>
-  	    <CodiceCIG>456def</CodiceCIG>
-      </DatiContratto>
-      <DatiTrasporto>???
-  	    <DatiAnagraficiVettore>
-  	      <IdFiscaleIVA>
-  	        <IdPaese>IT</IdPaese>
-  	        <IdCodice>24681012141</IdCodice>
-  	      </IdFiscaleIVA>
-      	  <Anagrafica>
-  	        <Denominazione>Trasporto spa</Denominazione>
-  	      </Anagrafica>
-  	    </DatiAnagraficiVettore>
-	    <DataOraConsegna>2012-10-22T16:46:12.000+02:00</DataOraConsegna>
-      </DatiTrasporto>
     </DatiGenerali>
     <DatiBeniServizi>
       <% if configatron.attivita == Models::Azienda::ATTIVITA[:commercio] %>
@@ -134,19 +112,14 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
       <% riepilogo_imposte.each do |imposta| %>
         <DatiRiepilogo>
           <AliquotaIVA><%= Helpers::ApplicationHelper.number_text(imposta.percentuale) %></AliquotaIVA>
+          <% if imposta.percentuale.zero? %>
+            <Natura><%= imposta.tipo_esenzione %></Natura>
+          <% end %>
           <ImponibileImporto><%= imposta.imponibile %></ImponibileImporto>
           <Imposta><%= imposta.totale %></Imposta>
-          <EsigibilitaIVA>???</EsigibilitaIVA>
+          <EsigibilitaIVA><%= fattura.iva_diff? ? 'D' : 'I' %></EsigibilitaIVA>
         </DatiRiepilogo>
       <% end %>
     </DatiBeniServizi>
-    <DatiPagamento>
-      <CondizioniPagamento>???</CondizioniPagamento>
-      <DettaglioPagamento>
-        <ModalitaPagamento>???</ModalitaPagamento>
-        <DataScadenzaPagamento>???</DataScadenzaPagamento>
-        <ImportoPagamento>???</ImportoPagamento>
-      </DettaglioPagamento>
-    </DatiPagamento>
   </FatturaElettronicaBody>
 </p:FatturaElettronica>

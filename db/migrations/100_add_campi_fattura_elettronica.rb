@@ -7,6 +7,7 @@ class AddCampiFatturaElettronica < ActiveRecord::Migration
     add_column :fatture_clienti, :tipo_documento, :string, :limit => 50
     add_column :fatture_clienti, :tipo_ritenuta, :string, :limit => 50
     add_column :fatture_clienti, :causale_pagamento, :string, :limit => 50
+    add_column :aliquote, :tipo_esenzione, :string, :limit => 50
   end
 
   def self.down
@@ -17,5 +18,6 @@ class AddCampiFatturaElettronica < ActiveRecord::Migration
     remove_column :fatture_clienti, :tipo_documento
     remove_column :fatture_clienti, :tipo_ritenuta
     remove_column :fatture_clienti, :causale_pagamento
+    remove_column :aliquote, :tipo_esenzione
   end
 end

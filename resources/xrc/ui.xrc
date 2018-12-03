@@ -2176,7 +2176,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Fattura</label>
-												<selected>1</selected>
+												<selected>0</selected>
 												<object class="wxPanel" name="FATTURA_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -2815,7 +2815,7 @@
 																						<object class="wxNotebook" name="dati_aggiuntivi_notebook">
 																							<object class="notebookpage">
 																								<label>I.V.A.</label>
-																								<selected>0</selected>
+																								<selected>1</selected>
 																								<object class="wxPanel" name="iva_panel">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxFlexGridSizer">
@@ -2971,7 +2971,7 @@
 																							</object>
 																							<object class="notebookpage">
 																								<label>Pagamento</label>
-																								<selected>1</selected>
+																								<selected>0</selected>
 																								<object class="wxPanel" name="pagamento_panel">
 																									<style>wxTAB_TRAVERSAL</style>
 																									<object class="wxFlexGridSizer">
@@ -5456,7 +5456,7 @@
 											</object>
 											<object class="notebookpage">
 												<label>Impostazioni</label>
-												<selected>0</selected>
+												<selected>1</selected>
 												<object class="wxPanel" name="IMPOSTAZIONI_FOLDER">
 													<style>wxTAB_TRAVERSAL</style>
 													<object class="wxBoxSizer">
@@ -5517,6 +5517,23 @@
 																					<size>40,-1</size>
 																					<value></value>
 																					<maxlength>0</maxlength>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>3</border>
+																				<object class="wxStaticText" name="m_staticText7912">
+																					<label>Tipo esenzione:</label>
+																				</object>
+																			</object>
+																			<object class="sizeritem">
+																				<option>0</option>
+																				<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+																				<border>3</border>
+																				<object class="wxChoice" name="chce_tipo_esenzione">
+																					<selection>0</selection>
+																					<content />
 																				</object>
 																			</object>
 																			<object class="sizeritem">
