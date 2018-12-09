@@ -121,12 +121,16 @@ module Helpers
       ]
 
       CAUSALI_PAGAMENTO = [
-        {:id => 'A', :descrizione => 'Descrizione A'},
-        {:id => 'B', :descrizione => 'Descrizione B'},
-        {:id => 'C', :descrizione => 'Descrizione C'},
-        {:id => 'D', :descrizione => 'Descrizione D'},
-        {:id => 'E', :descrizione => 'Descrizione E'},
-        {:id => 'F', :descrizione => 'Descrizione F'}
+        {:id => 'A', :descrizione => "Lavoro autonomo abituale"},
+        {:id => 'B', :descrizione => "Diritti d'autore opere e ingegno"},
+        {:id => 'H', :descrizione => "Cessazione dei rapporti di agenzia"},
+        {:id => 'L', :descrizione => "Diritti d'autore da parte di soggetto diverso dall'autore"},
+        {:id => 'M', :descrizione => "Lavoro autonomo non esercitato abitualmente"},
+        {:id => 'Q', :descrizione => "Provvigioni agente o rappresentante di commercio monomandatario"},
+        {:id => 'R', :descrizione => "Provvigioni agente o rappresentante di commercio plurimandatario"},
+        {:id => 'U', :descrizione => "Provvigioni corrispote a procacciatori di affari"},
+        {:id => 'W', :descrizione => "Corrispettivi erogati nel 2013 per prestazioni contratti d'appalto"},
+        {:id => 'Z', :descrizione => "Titolo diverso dai precedenti"}
       ]
     end
 

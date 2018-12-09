@@ -64,7 +64,7 @@ module Views
           field.evt_char { |evt| txt_data_emissione_keypress(evt) }
         end
 
-        xrc.find('chce_tipo_documento', self, :extends => ChoiceField)do |chce|
+        xrc.find('chce_tipo_documento', self, :extends => ChoiceField) do |chce|
           chce.load_data(Helpers::ApplicationHelper::Fatturazione::TIPI_DOCUMENTO)
         end
         # NumberCheckField per mantenere il tipo di dato altrimenti interferisce con il metodo changed?
@@ -79,10 +79,10 @@ module Views
             :view => Helpers::ApplicationHelper::WXBRA_FATTURAZIONE_VIEW,
             :folder => Helpers::FatturazioneHelper::WXBRA_FATTURA_FOLDER)
         end
-        xrc.find('chce_tipo_ritenuta', self, :extends => ChoiceField)do |chce|
+        xrc.find('chce_tipo_ritenuta', self, :extends => ChoiceField) do |chce|
           chce.load_data(Helpers::ApplicationHelper::Fatturazione::TIPI_RITENUTA)
         end
-        xrc.find('chce_causale_pagamento', self, :extends => ChoiceField)do |chce|
+        xrc.find('chce_causale_pagamento', self, :extends => ChoiceField) do |chce|
           chce.load_data(Helpers::ApplicationHelper::Fatturazione::CAUSALI_PAGAMENTO)
         end
 
@@ -133,9 +133,12 @@ module Views
             txt_num,
             chce_anno,
             txt_data_emissione,
+            chce_tipo_documento,
             chk_nota_di_credito,
             chk_ritenuta_flag,
-            lku_ritenuta
+            lku_ritenuta,
+            chce_tipo_ritenuta,
+            chce_causale_pagamento
           ]
 
           if fattura_cliente.ha_registrazioni_in_prima_nota?
@@ -251,8 +254,11 @@ module Views
             txt_num,
             chce_anno,
             txt_data_emissione,
+            chce_tipo_documento,
             chk_nota_di_credito,
-            chk_ritenuta_flag
+            chk_ritenuta_flag,
+            chce_tipo_ritenuta,
+            chce_causale_pagamento
           ]
 
           disable_widgets [
@@ -367,11 +373,12 @@ module Views
                   txt_num,
                   chce_anno,
                   txt_data_emissione,
+                  chce_tipo_documento,
                   chk_nota_di_credito,
-                  chk_ritenuta_flag,
+                  chk_ritenuta_flag
                 ]
                 if self.fattura_cliente.ritenuta
-                  enable_widgets [lku_ritenuta]
+                  enable_widgets [lku_ritenuta, chce_tipo_ritenuta, chce_causale_pagamento]
                   chk_nota_di_credito.view_data = nil
                 end
               else
@@ -379,9 +386,12 @@ module Views
                   txt_num,
                   chce_anno,
                   txt_data_emissione,
+                  chce_tipo_documento,
                   chk_nota_di_credito,
                   chk_ritenuta_flag,
-                  lku_ritenuta
+                  lku_ritenuta,
+                  chce_tipo_ritenuta,
+                  chce_causale_pagamento
                 ]
 
               end
@@ -450,10 +460,13 @@ module Views
               disable_widgets [
                 txt_num,
                 chce_anno,
+                chce_tipo_documento,
                 txt_data_emissione,
                 chk_nota_di_credito,
                 chk_ritenuta_flag,
-                lku_ritenuta
+                lku_ritenuta,
+                chce_tipo_ritenuta,
+                chce_causale_pagamento
               ]
 
               if fattura_cliente.ha_registrazioni_in_prima_nota?
