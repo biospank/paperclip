@@ -568,7 +568,7 @@ module Views
               if ctrl.licenza.attiva?
                 if can? :write, Helpers::ApplicationHelper::Modulo::FATTURAZIONE
                   transfer_fattura_cliente_from_view()
-                  if cliente? and check_ritenuta() and check_documento()
+                  if cliente? and check_dati_azienda() and check_ritenuta() and check_documento()
                     unless fattura_cliente.num.strip.match(/^[0-9]*$/)
                       res = Wx::message_box("La fattura che si sta salvando non segue la numerazione standard:\nnon verra' fatto alcun controllo sulla validita'.\nProcedo con il savataggio dei dati?",
                         'Avvertenza',
@@ -770,6 +770,20 @@ module Views
           end
 
           return true
+        else
+          return true
+        end
+      end
+
+      def check_dati_azienda()
+        dati_azienda = Models::Azienda.current.dati_azienda
+        if dati_azienda.comune.nil? || dati_azienda.provincia.nil? ||
+          dati_azienda.regime_fiscale.nil?
+          Wx::message_box('Dati azienda incompleti per la stampa della fattura elettronica.',
+            'Info',
+            Wx::OK | Wx::ICON_INFORMATION, self)
+
+          return false
         else
           return true
         end

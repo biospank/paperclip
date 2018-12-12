@@ -8,6 +8,10 @@ module Helpers
       self.xml = File.new("./tmp/#{template}.xml", 'w')
       render_xml(opts)
       xml.close
+
+      Thread.fork do
+        system("cmd /c start ./tmp/#{template}.xml")
+      end
     end
 
     def render_xml(opts={})
