@@ -580,6 +580,16 @@ module Views
                       end
                     end
 
+                    if fattura_cliente.data_emissione.blank?
+                      Wx::message_box('Inserire la data di emissione del documento',
+                        'Info',
+                        Wx::OK | Wx::ICON_INFORMATION, self)
+
+                      txt_data_emissione.activate()
+                      
+                      return
+                    end
+
                     if fattura_cliente.data_emissione.future?
                       res = Wx::message_box("La data di emissione è maggiore della data odierna: Confermi?",
                         'Avvertenza',
