@@ -15,7 +15,6 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
       <% if cliente.codice_identificativo == '0000000' && !cliente.e_mail.blank? %>
         <PECDestinatario><%= cliente.e_mail %></PECDestinatario>
       <% end %>
-      <ContattiTrasmittente/>
     </DatiTrasmissione>
     <CedentePrestatore>
       <DatiAnagrafici>
@@ -105,8 +104,6 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
           <DettaglioLinee>
             <NumeroLinea><%= idx + 1 %></NumeroLinea>
             <Descrizione><%= riga.descrizione %></Descrizione>
-            <Quantita/>
-            <PrezzoUnitario/>
             <PrezzoTotale><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoTotale>
             <AliquotaIVA><%= Helpers::ApplicationHelper.number_text(riga.aliquota.percentuale) %></AliquotaIVA>
           </DettaglioLinee>
