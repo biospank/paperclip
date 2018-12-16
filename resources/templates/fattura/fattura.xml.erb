@@ -108,6 +108,9 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
             <PrezzoUnitario><%= Helpers::ApplicationHelper.number_text(riga.importo) %><PrezzoUnitario/>
             <PrezzoTotale><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoTotale>
             <AliquotaIVA><%= Helpers::ApplicationHelper.number_text(riga.aliquota.percentuale) %></AliquotaIVA>
+            <% if riga.aliquota.percentuale.zero? %>
+              <Natura><%= riga.aliquota.tipo_esenzione %></Natura>
+            <% end %>
           </DettaglioLinee>
         <% end %>
       <% end %>
