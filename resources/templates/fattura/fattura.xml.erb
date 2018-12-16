@@ -13,7 +13,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
       <FormatoTrasmissione>FPR12</FormatoTrasmissione>
       <CodiceDestinatario><%= cliente.codice_identificativo %></CodiceDestinatario>
       <% if cliente.codice_identificativo == '0000000' && !cliente.e_mail.blank? %>
-        <PECDestinatario><%= cliente.email %></PECDestinatario>
+        <PECDestinatario><%= cliente.e_mail %></PECDestinatario>
       <% end %>
       <ContattiTrasmittente/>
     </DatiTrasmissione>
