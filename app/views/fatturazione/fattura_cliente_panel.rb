@@ -16,6 +16,7 @@ module Views
       include Helpers::Xml
       include Helpers::Wk::HtmlToPdf
       include ERB::Util
+      include Helpers::ZipHelper
 
       attr_accessor :lista_ns, # mantiene gli identificativi delle note spese associate alla fattura (permette il controllo dei duplicati)
       :dialog_sql_criteria # utilizzato nelle dialog
@@ -586,7 +587,7 @@ module Views
                         Wx::OK | Wx::ICON_INFORMATION, self)
 
                       txt_data_emissione.activate()
-                      
+
                       return
                     end
 
@@ -880,7 +881,8 @@ module Views
 
             generate_xml(:fattura,
               :dati_azienda => dati_azienda,
-              :fattura => fattura
+              :fattura => fattura,
+              :preview => true
             )
             generate(:fattura,
               :margin_top => 90,
@@ -918,7 +920,11 @@ module Views
               :fattura => fattura,
               :preview => false
             )
-
+            generate_xml(fattura.num.to_s,
+              :dati_azienda => dati_azienda,
+              :fattura => fattura,
+              :preview => false
+            )
           end
 
           reset_panel()
@@ -926,7 +932,34 @@ module Views
           merge_all(fatture,
             :output => :fatture
           )
+          create_fatture_zip(fatture)
 
+        end
+      end
+
+      def create_fatture_zip(fatture)
+        begin
+          fatture_zip = File.join('tmp', Models::Azienda.current.dati_azienda.denominazione.strip + '_' + Time.now.strftime("%d_%m_%Y_%H_%M_%S") + '.fatture.zip')
+          filename = Models::Azienda.current.dati_azienda.denominazione.strip + '_' + Time.now.strftime("%d_%m_%Y_%H_%M_%S") + '.fatture.zip'
+          filetype = "*.zip"
+
+          fatture_nums = Models::FatturaCliente.find(fatture).map {|fattura| "tmp/#{fattura.num}.xml"}
+
+          create_archive(fatture_zip, *fatture_nums)
+
+          dlg = Wx::FileDialog.new(self, "Salva con nome...", Dir.getwd(), filename, filetype, Wx::SAVE)
+          #          dlg.set_filter_index(2)
+          if dlg.show_modal() == Wx::ID_OK
+            Wx::BusyCursor.busy() do
+              path = dlg.get_path()
+              logger.debug("You selected " + path)
+              logger.debug("CWD: " + Dir.getwd())
+              logger.debug("fatture_zip: " + fatture_zip)
+              FileUtils.cp fatture_zip, path
+            end
+          end
+        rescue Exception => e
+          log_error(self, e)
         end
       end
 

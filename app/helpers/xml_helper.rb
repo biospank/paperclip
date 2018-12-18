@@ -10,7 +10,7 @@ module Helpers
       xml.close
 
       Thread.fork do
-        system("cmd /c start notepad ./tmp/#{template}.xml")
+        system("cmd /c start notepad ./tmp/#{template}.xml") if opts[:preview]
       end
     end
 

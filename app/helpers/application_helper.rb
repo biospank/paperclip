@@ -121,16 +121,16 @@ module Helpers
       ]
 
       CAUSALI_PAGAMENTO = [
-        {:id => 'A', :descrizione => "Lavoro autonomo abituale"},
-        {:id => 'B', :descrizione => "Diritti d'autore opere e ingegno"},
-        {:id => 'H', :descrizione => "Cessazione dei rapporti di agenzia"},
-        {:id => 'L', :descrizione => "Diritti d'autore da parte di soggetto diverso dall'autore"},
-        {:id => 'M', :descrizione => "Lavoro autonomo non esercitato abitualmente"},
-        {:id => 'Q', :descrizione => "Provvigioni agente o rappresentante di commercio monomandatario"},
-        {:id => 'R', :descrizione => "Provvigioni agente o rappresentante di commercio plurimandatario"},
-        {:id => 'U', :descrizione => "Provvigioni corrispote a procacciatori di affari"},
-        {:id => 'W', :descrizione => "Corrispettivi erogati nel 2013 per prestazioni contratti d'appalto"},
-        {:id => 'Z', :descrizione => "Titolo diverso dai precedenti"}
+        {:id => 'A', :descrizione => "A - Lavoro autonomo abituale"},
+        {:id => 'B', :descrizione => "B - Diritti d'autore opere e ingegno"},
+        {:id => 'H', :descrizione => "H - Cessazione dei rapporti di agenzia"},
+        {:id => 'L', :descrizione => "L - Diritti d'autore da parte di soggetto diverso dall'autore"},
+        {:id => 'M', :descrizione => "M - Lavoro autonomo non esercitato abitualmente"},
+        {:id => 'Q', :descrizione => "Q - Provvigioni agente o rappresentante di commercio monomandatario"},
+        {:id => 'R', :descrizione => "R - Provvigioni agente o rappresentante di commercio plurimandatario"},
+        {:id => 'U', :descrizione => "U - Provvigioni corrispote a procacciatori di affari"},
+        {:id => 'W', :descrizione => "W - Corrispettivi erogati nel 2013 per prestazioni contratti d'appalto"},
+        {:id => 'Z', :descrizione => "Z - Titolo diverso dai precedenti"}
       ]
     end
 
