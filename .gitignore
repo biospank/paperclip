@@ -1,8 +1,7 @@
 .svn/
 /Output/
 /pkg/
-/tmp/*.html
-/tmp/*.pdf
+/tmp/*
 /db/*.yml
 /db/backup/*
 /db/development/*
@@ -11,6 +10,7 @@
 /updates/
 /web/
 /resources/models/
+/resources/xrc/zip.exe
 Migrate
 /log/paperclip.log
 Recover
