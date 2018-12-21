@@ -5,7 +5,7 @@
 # - copiare il file db da development a production
 # - generare la chiave 'ruby package key -c 100 -s 1 -m 6' e metterla nella licenza
 # - cambiare la versione nella licenza
-# - lanciare il comando 'ruby package new --preserve-db=true'
+# - lanciare il comando 'ruby package new --preserve-db=true --category=(1/2)'
 ##
 
 ##
@@ -19,5 +19,5 @@
 # - copiare il file db da development a production
 # - generare la chiave 'ruby package key -c 100 -s (2 net/3 cloud) -m 6' e metterla nella licenza
 # - cambiare la versione nella licenza
-# - lanciare il comando 'ruby package new --preserve-db=true --remote=true'
+# - lanciare il comando 'ruby package new --preserve-db=true --remote=true --category=(1/2)'
 ##
