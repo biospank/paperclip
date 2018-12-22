@@ -12,7 +12,7 @@ class CreateMagazzini < ActiveRecord::Migration
     execute "CREATE INDEX M_AZIENDA_FK_IDX ON magazzini (azienda_id)"
 
     Models::Azienda.all.each do |az|
-      execute "insert into magazzini (id, azienda_id, nome, descrizione, attivo, predefinito) values (null, #{az.id}, 'Default', '', 1, 1)"
+      execute "insert into magazzini (azienda_id, nome, descrizione, attivo, predefinito) values (#{az.id}, 'Default', '', 1, 1)"
     end
 
     add_column :movimenti, :magazzino_id, :integer, :null => false, :default => 1

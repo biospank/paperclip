@@ -18,72 +18,72 @@ class AddContoTipiPagamento < ActiveRecord::Migration
 
     contanti = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 1 and descrizione = 'CONTANTI'"])
-    contanti.pdc_dare = Models::Pdc.find_by_codice(34100)
-    contanti.nc_pdc_avere = Models::Pdc.find_by_codice(34100)
+    contanti.pdc_dare = Models::Pdc.find_by_codice("34100")
+    contanti.nc_pdc_avere = Models::Pdc.find_by_codice("34100")
     contanti.save_with_validation(false)
 
     assegno = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 1 and descrizione = 'ASSEGNO'"])
-    assegno.pdc_dare = Models::Pdc.find_by_codice(34105)
-    assegno.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
+    assegno.pdc_dare = Models::Pdc.find_by_codice("34105")
+    assegno.nc_pdc_avere = Models::Pdc.find_by_codice("33001")
     assegno.save_with_validation(false)
 
     bonifico = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 1 and descrizione = 'BONIFICO'"])
-    bonifico.pdc_dare = Models::Pdc.find_by_codice(33001)
-    bonifico.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
+    bonifico.pdc_dare = Models::Pdc.find_by_codice("33001")
+    bonifico.nc_pdc_avere = Models::Pdc.find_by_codice("33001")
     bonifico.save_with_validation(false)
 
     cambiali = Models::TipoPagamento.find(:first,
       :conditions => "categoria_id = 1 and descrizione like 'CAMBIALI%'",
       :order => 'id'
     )
-    cambiali.pdc_dare = Models::Pdc.find_by_codice(33001)
-    cambiali.pdc_avere = Models::Pdc.find_by_codice(29301)
-    cambiali.nc_pdc_dare = Models::Pdc.find_by_codice(49801)
-    cambiali.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
+    cambiali.pdc_dare = Models::Pdc.find_by_codice("33001")
+    cambiali.pdc_avere = Models::Pdc.find_by_codice("29301")
+    cambiali.nc_pdc_dare = Models::Pdc.find_by_codice("49801")
+    cambiali.nc_pdc_avere = Models::Pdc.find_by_codice("33001")
     cambiali.save_with_validation(false)
 
     riba = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 1 and descrizione = 'RI.BA.'"])
-    riba.pdc_dare = Models::Pdc.find_by_codice(33001)
-    riba.nc_pdc_avere = Models::Pdc.find_by_codice(33001)
+    riba.pdc_dare = Models::Pdc.find_by_codice("33001")
+    riba.nc_pdc_avere = Models::Pdc.find_by_codice("33001")
     riba.save_with_validation(false)
 
     # pdc associati ai pagamenti impostati da sistema
 
     contanti = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 2 and descrizione = 'CONTANTI'"])
-    contanti.pdc_avere = Models::Pdc.find_by_codice(34100)
-    contanti.nc_pdc_dare = Models::Pdc.find_by_codice(34100)
+    contanti.pdc_avere = Models::Pdc.find_by_codice("34100")
+    contanti.nc_pdc_dare = Models::Pdc.find_by_codice("34100")
     contanti.save_with_validation(false)
 
     assegno = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 2 and descrizione = 'ASSEGNO'"])
-    assegno.pdc_avere = Models::Pdc.find_by_codice(33001)
-    assegno.nc_pdc_dare = Models::Pdc.find_by_codice(34105)
+    assegno.pdc_avere = Models::Pdc.find_by_codice("33001")
+    assegno.nc_pdc_dare = Models::Pdc.find_by_codice("34105")
     assegno.save_with_validation(false)
 
     bonifico = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 2 and descrizione = 'BONIFICO'"])
-    bonifico.pdc_avere = Models::Pdc.find_by_codice(33001)
-    bonifico.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
+    bonifico.pdc_avere = Models::Pdc.find_by_codice("33001")
+    bonifico.nc_pdc_dare = Models::Pdc.find_by_codice("33001")
     bonifico.save_with_validation(false)
 
     cambiali = Models::TipoPagamento.find(:first,
       :conditions => "categoria_id = 2 and descrizione like 'CAMBIALI%'",
       :order => 'id'
     )
-    cambiali.pdc_dare = Models::Pdc.find_by_codice(49801)
-    cambiali.pdc_avere = Models::Pdc.find_by_codice(33001)
-    cambiali.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
-    cambiali.nc_pdc_avere = Models::Pdc.find_by_codice(29301)
+    cambiali.pdc_dare = Models::Pdc.find_by_codice("49801")
+    cambiali.pdc_avere = Models::Pdc.find_by_codice("33001")
+    cambiali.nc_pdc_dare = Models::Pdc.find_by_codice("33001")
+    cambiali.nc_pdc_avere = Models::Pdc.find_by_codice("29301")
     cambiali.save_with_validation(false)
 
     riba = Models::TipoPagamento.find(:first,
       :conditions => ["categoria_id = 2 and descrizione = 'RI.BA.'"])
-    riba.pdc_avere = Models::Pdc.find_by_codice(33001)
-    riba.nc_pdc_dare = Models::Pdc.find_by_codice(33001)
+    riba.pdc_avere = Models::Pdc.find_by_codice("33001")
+    riba.nc_pdc_dare = Models::Pdc.find_by_codice("33001")
     riba.save_with_validation(false)
 
   end
