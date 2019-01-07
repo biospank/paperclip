@@ -7,52 +7,52 @@ module Models
     include Base::Model
 
     set_table_name :clienti
-    
+
     belongs_to :azienda
     belongs_to :pdc, :foreign_key => 'pdc_id'
-    
+
     has_many :ddt, :as => :cliente
-    
+
     searchable_by :denominazione, :cod_fisc, :p_iva
-    
-    validates_presence_of :denominazione, 
+
+    validates_presence_of :denominazione,
       :message => "Inserire la denominazione"
-    validates_presence_of :p_iva, 
+    validates_presence_of :p_iva,
       :unless => Proc.new { |cliente| cliente.no_p_iva? },
       :message => "Inserire la partita iva"
-    validates_length_of :p_iva, 
-      :is => 11, 
+    validates_length_of :p_iva,
+      :is => 11,
       :unless => Proc.new { |cliente| cliente.no_p_iva? },
       :message => "La partita iva deve essere di 11 caratteri"
-    validates_presence_of :cod_fisc, 
+    validates_presence_of :cod_fisc,
       :if => Proc.new { |cliente| cliente.errors.empty? },
       :message => "Inserire il codice fiscale"
-    validates_length_of :cod_fisc, 
-      :is => 11, 
+    validates_length_of :cod_fisc,
+      :is => 11,
       :if => Proc.new { |cliente| cliente.cod_fisc and cliente.cod_fisc.match(/^[0-9]+$/) },
       :message => "Il codice fiscale deve essere di 11 caratteri"
-    validates_length_of :cod_fisc, 
-      :is => 16, 
+    validates_length_of :cod_fisc,
+      :is => 16,
       :if => Proc.new { |cliente| cliente.cod_fisc =~ /(\D)+/ },
       :message => "Il codice fiscale deve essere di 16 caratteri"
 
-    validates_uniqueness_of :p_iva, 
+    validates_uniqueness_of :p_iva,
       :if => Proc.new { |cliente| cliente.no_p_iva == 0 and cliente.errors.empty? },
       :scope => :azienda_id,
       :message => "La partita iva inserita e' gia' utilizzata"
-    
-    validates_uniqueness_of :cod_fisc, 
+
+    validates_uniqueness_of :cod_fisc,
       :if => Proc.new { |cliente| cliente.errors.empty? },
       :scope => :azienda_id,
       :message => "Il codice fiscale inserito e' gia' utilizzato"
-    
+
     def before_validation_on_create
       self.azienda = Azienda.current
       (self.cod_fisc ||= '').upcase!
     end
 
     def before_create
-      cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", 220])
+      cat_pdc = Models::CategoriaPdc.find(:first, :conditions => ["codice = ?", "220"])
       self.conto = Models::ProgressivoCliente.next_sequence()
       Models::Pdc.create(
         :categoria_pdc => cat_pdc,
@@ -78,11 +78,11 @@ module Models
         query_str << "cliente_id = ?"
         parametri << self.id
       end
-      
+
     end
-    
+
     protected
-    
+
     def validate()
       unless no_p_iva?
         if(Cliente.count(:conditions => ["cod_fisc = ? and azienda_id = ? and id <> ?", p_iva, Azienda.current.id, self]) > 0 or
@@ -95,6 +95,6 @@ module Models
         errors.add(:cod_fisc, "Il codice fiscale inserito e' gia' utilizzato")
       end
     end
-    
+
   end
 end
