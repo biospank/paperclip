@@ -23,12 +23,12 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
           <IdCodice><%= dati_azienda.p_iva %></IdCodice>
         </IdFiscaleIVA>
         <Anagrafica>
-          <Denominazione><%= dati_azienda.denominazione %></Denominazione>
+          <Denominazione><![CDATA[<%= dati_azienda.denominazione %>]]></Denominazione>
         </Anagrafica>
         <RegimeFiscale><%= dati_azienda.regime_fiscale %></RegimeFiscale>
       </DatiAnagrafici>
       <Sede>
-        <Indirizzo><%= dati_azienda.indirizzo %></Indirizzo>
+        <Indirizzo><![CDATA[<%= dati_azienda.indirizzo.strip %>]]></Indirizzo>
         <CAP><%= dati_azienda.cap %></CAP>
         <Comune><%= dati_azienda.comune %></Comune>
         <Provincia><%= dati_azienda.provincia %></Provincia>
@@ -46,11 +46,11 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
           <CodiceFiscale><%= cliente.cod_fisc %></CodiceFiscale>
         <% end %>
         <Anagrafica>
-          <Denominazione><%= cliente.denominazione %></Denominazione>
+          <Denominazione><![CDATA[<%= cliente.denominazione %>]]></Denominazione>
         </Anagrafica>
       </DatiAnagrafici>
       <Sede>
-        <Indirizzo><%= cliente.indirizzo %></Indirizzo>
+        <Indirizzo><![CDATA[<%= cliente.indirizzo %>]]></Indirizzo>
         <CAP><%= cliente.cap %></CAP>
         <Comune><%= cliente.comune %></Comune>
         <Provincia><%= cliente.provincia %></Provincia>
@@ -81,7 +81,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
         <% fattura.righe_fattura_cliente.each_with_index do |riga, idx| %>
           <DettaglioLinee>
             <NumeroLinea><%= idx + 1 %></NumeroLinea>
-            <Descrizione><%= riga.descrizione %></Descrizione>
+            <Descrizione><![CDATA[<%= riga.descrizione %>]]></Descrizione>
             <Quantita><%= Helpers::ApplicationHelper.number_text(riga.qta) %></Quantita>
             <PrezzoUnitario><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoUnitario>
               <%
@@ -103,7 +103,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
         <% fattura.righe_fattura_cliente.each_with_index do |riga, idx| %>
           <DettaglioLinee>
             <NumeroLinea><%= idx + 1 %></NumeroLinea>
-            <Descrizione><%= riga.descrizione %></Descrizione>
+            <Descrizione><![CDATA[<%= riga.descrizione %>]]></Descrizione>
             <Quantita><%= Helpers::ApplicationHelper.number_text(1) %></Quantita>
             <PrezzoUnitario><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoUnitario>
             <PrezzoTotale><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoTotale>

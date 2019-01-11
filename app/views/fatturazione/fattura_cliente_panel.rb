@@ -879,7 +879,7 @@ module Views
             dati_azienda = Models::Azienda.current.dati_azienda
             fattura = Models::FatturaClienteFatturazione.find(self.fattura_cliente.id, :include => [:cliente, {:righe_fattura_cliente => [:aliquota]}])
 
-            generate_xml(:fattura,
+            generate_xml("IT#{dati_azienda.p_iva}_#{fattura.num}",
               :dati_azienda => dati_azienda,
               :fattura => fattura,
               :preview => true
@@ -920,7 +920,7 @@ module Views
               :fattura => fattura,
               :preview => false
             )
-            generate_xml(fattura.num.to_s,
+            generate_xml("IT#{dati_azienda.p_iva}_#{fattura.num}",
               :dati_azienda => dati_azienda,
               :fattura => fattura,
               :preview => false
@@ -943,7 +943,7 @@ module Views
           filename = Models::Azienda.current.dati_azienda.denominazione.strip + '_' + Time.now.strftime("%d_%m_%Y_%H_%M_%S") + '.fatture.zip'
           filetype = "*.zip"
 
-          fatture_nums = Models::FatturaCliente.find(fatture).map {|fattura| "tmp/#{fattura.num}.xml"}
+          fatture_nums = Models::FatturaCliente.find(fatture).map {|fattura| "tmp/IT#{Models::Azienda.current.dati_azienda.p_iva}_#{fattura.num}.xml"}
 
           create_archive(fatture_zip, *fatture_nums)
 
