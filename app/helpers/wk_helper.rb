@@ -94,20 +94,37 @@ module Helpers
 
       private
 
+#      def wk_cmd
+#        logger.debug("env: #{configatron.env}")
+#        if configatron.env == 'production'
+#          '.\bin\hstart.exe /NOCONSOLE /WAIT "./bin/wkhtmltopdf.exe %s"'
+#        else
+#          '.\bin\win\hstart.exe /NOCONSOLE /WAIT "./bin/win/wkhtmltopdf.exe %s"'
+#        end
+#      end
+
       def wk_cmd
         logger.debug("env: #{configatron.env}")
         if configatron.env == 'production'
-          '.\bin\hstart.exe /NOCONSOLE /WAIT "./bin/wkhtmltopdf.exe %s"'
+          "./bin/wkhtmltopdf.exe %s"
         else
-          '.\bin\win\hstart.exe /NOCONSOLE /WAIT "./bin/win/wkhtmltopdf.exe %s"'
+          "./bin/win/wkhtmltopdf.exe %s"
         end
       end
 
+#      def tk_cmd
+#        if configatron.env == 'production'
+#          '.\bin\hstart.exe /NOCONSOLE /WAIT "./bin/pdftk.exe %s"'
+#        else
+#          '.\bin\win\hstart.exe /NOCONSOLE /WAIT "./bin/win/pdftk.exe %s"'
+#        end
+#      end
+
       def tk_cmd
         if configatron.env == 'production'
-          '.\bin\hstart.exe /NOCONSOLE /WAIT "./bin/pdftk.exe %s"'
+          "./bin/pdftk.exe %s"
         else
-          '.\bin\win\hstart.exe /NOCONSOLE /WAIT "./bin/win/pdftk.exe %s"'
+          "./bin/win/pdftk.exe %s"
         end
       end
 
