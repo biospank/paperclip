@@ -82,7 +82,7 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
           <DettaglioLinee>
             <NumeroLinea><%= idx + 1 %></NumeroLinea>
             <Descrizione><![CDATA[<%= riga.descrizione %>]]></Descrizione>
-            <Quantita><%= Helpers::ApplicationHelper.number_text(riga.qta) %></Quantita>
+            <Quantita><%= Helpers::ApplicationHelper.number_text(riga.qta.zero? ? 1 : riga.qta) %></Quantita>
             <PrezzoUnitario><%= Helpers::ApplicationHelper.number_text(riga.importo) %></PrezzoUnitario>
               <%
                 importo_t = nil
