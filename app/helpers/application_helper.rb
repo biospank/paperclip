@@ -76,11 +76,25 @@ module Helpers
       TIPI_ESENZIONE = [
         {:id => nil, :descrizione => ''},
         {:id => 'N1', :descrizione => 'escluse ex art. 15'},
-        {:id => 'N2', :descrizione => 'non soggette'},
-        {:id => 'N3', :descrizione => 'non imponibili'},
+        {:id => 'N2.1', :descrizione => 'non soggette ad IVA ai sensi degli Art. da 7 a 7-septies del DPR 633/72'},
+        {:id => 'N2.2', :descrizione => 'non soggette - altri casi'},
+        {:id => 'N3.1', :descrizione => 'non imponibile - esportazioni'},
+        {:id => 'N3.2', :descrizione => 'non imponibile - cessioni intracomunitarie'},
+        {:id => 'N3.3', :descrizione => 'non imponibile - cessioni verso San Marino'},
+        {:id => 'N3.4', :descrizione => "non imponibile - operazioni assimilate alle cessioni all' esportazione"},
+        {:id => 'N3.5', :descrizione => 'non imponibile - a seguito di dichiarazioni di intento'},
+        {:id => 'N3.6', :descrizione => 'non imponibile - altre operazioni che non concorrono alla formazione del plafond'},
         {:id => 'N4', :descrizione => 'esenti'},
         {:id => 'N5', :descrizione => 'regime del margine/IVA non esposta in fattura'},
-        {:id => 'N6', :descrizione => 'inversione contabile'},
+        {:id => 'N6.1', :descrizione => 'inversione contabile - cessione di rottame e altri materiali di recupero'},
+        {:id => 'N6.2', :descrizione => 'inversione contabile - cessione di oro e argento puro'},
+        {:id => 'N6.3', :descrizione => 'inversione contabile - subappalto nel settore edile'},
+        {:id => 'N6.4', :descrizione => 'inversione contabile - cessione di fabbricati'},
+        {:id => 'N6.5', :descrizione => 'inversione contabile - cessione di telefoni cellulari'},
+        {:id => 'N6.6', :descrizione => 'inversione contabile - cessione di prodotti elettronici'},
+        {:id => 'N6.7', :descrizione => 'inversione contabile - prestazioni comparto edile e settori connessi'},
+        {:id => 'N6.8', :descrizione => 'inversione contabile - operazioni settore energetico'},
+        {:id => 'N6.9', :descrizione => 'inversione contabile - altri casi'},
         {:id => 'N7', :descrizione => 'IVA assolta in altro stato UE'}
       ]
     end
@@ -112,12 +126,28 @@ module Helpers
         {:id => 'TD03', :descrizione => 'Acconto/Anticipo su parcella'},
         {:id => 'TD04', :descrizione => 'Nota di Credito'},
         {:id => 'TD05', :descrizione => 'Nota di Debito'},
-        {:id => 'TD06', :descrizione => 'Parcella'}
+        {:id => 'TD06', :descrizione => 'Parcella'},
+        {:id => 'TD16', :descrizione => 'Integrazione fattura reverse charge interno'},
+        {:id => 'TD17', :descrizione => "Integrazione/Autofattura per acquisto servizio all' estero"},
+        {:id => 'TD18', :descrizione => 'Integrazione per acquisto di beni intracomunitari'},
+        {:id => 'TD19', :descrizione => 'Integrazione/Autofattura per acquisto beni ex art. 17 c.2 DPR 633/72'},
+        {:id => 'TD20', :descrizione => 'Autofattura per regolarizzazione e integrazione delle fatture (art.6 c.8 d.lgs. 471/97 o art. 46 c.5 D.L. 331/93)'},
+        {:id => 'TD21', :descrizione => 'Autofattura per splafonamento'},
+        {:id => 'TD22', :descrizione => 'Estrazione beni da Deposito IVA'},
+        {:id => 'TD23', :descrizione => "Estrazione beni da Deposito IVA con versamento dell'IVA"},
+        {:id => 'TD24', :descrizione => "Fattura differita di cui l'art. 21, comma 4, lettera a"},
+        {:id => 'TD25', :descrizione => "Fattura differita di cui l'art. 21, comma 4, terzo periodo lett. b"},
+        {:id => 'TD26', :descrizione => 'Cessione di beni ammortizzabili e per passaggi interni (ex art. 36 DPR 663/)'},
+        {:id => 'TD27', :descrizione => 'Fattura per autoconsume e per cessioni gratuite senza rivalsa'}
       ]
 
       TIPI_RITENUTA = [
         {:id => 'RT01', :descrizione => 'Ritenuta persone fisiche'},
-        {:id => 'RT02', :descrizione => 'Ritenuta persone giuridiche'}
+        {:id => 'RT02', :descrizione => 'Ritenuta persone giuridiche'},
+        {:id => 'RT03', :descrizione => 'Contributo INPS'},
+        {:id => 'RT04', :descrizione => 'Contributo ENASARCO'},
+        {:id => 'RT05', :descrizione => 'Contributo ENPAM'},
+        {:id => 'RT06', :descrizione => 'Altro contributo previdenziale'}
       ]
 
       CAUSALI_PAGAMENTO = [
