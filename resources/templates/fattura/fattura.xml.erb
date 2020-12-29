@@ -73,6 +73,11 @@ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.
             <CausalePagamento><%= fattura.causale_pagamento %></CausalePagamento>
           </DatiRitenuta>
         <% end %>
+        <% if totale_soggetto_a_bollo > 77.47 %>
+          <DatiBollo>
+            <BolloVirtuale>SI</BolloVirtuale>
+          </DatiBollo>
+        <% end %>
         <ImportoTotaleDocumento><%= Helpers::ApplicationHelper.number_text(fattura.importo) %></ImportoTotaleDocumento>
       </DatiGeneraliDocumento>
     </DatiGenerali>

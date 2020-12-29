@@ -976,7 +976,12 @@ module Views
         totale_ritenuta = righe_fattura_cliente_panel.totale_ritenuta
 
         riepilogo_imposte = []
+        totale_soggetto_a_bollo = 0.0
         riepilogo_importi.each_pair do |key, importo|
+          if Helpers::ApplicationHelper::Aliquote::TIPI_ESENZIONE.include?(aliquote[key].tipo_esenzione)
+            totale_soggetto_a_bollo += importo
+          end
+
           riepilogo_imposte << OpenStruct.new({:percentuale => aliquote[key].percentuale,
               :tipo_esenzione => aliquote[key].tipo_esenzione,
               :descrizione => aliquote[key].descrizione,
