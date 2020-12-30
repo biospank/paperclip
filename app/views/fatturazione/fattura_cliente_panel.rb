@@ -978,7 +978,7 @@ module Views
         riepilogo_imposte = []
         totale_soggetto_a_bollo = 0.0
         riepilogo_importi.each_pair do |key, importo|
-          if Helpers::ApplicationHelper::Aliquote::TIPI_ESENZIONE.include?(aliquote[key].tipo_esenzione)
+          if Helpers::ApplicationHelper::Aliquote::ESENZIONE_CON_BOLLO.include?(aliquote[key].tipo_esenzione)
             totale_soggetto_a_bollo += importo
           end
 
